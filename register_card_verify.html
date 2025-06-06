@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Confirmation photo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .id-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .dark .id-card {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .id-card-header {
+            background-color: #3194db;
+            color: white;
+            padding: 12px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark .id-card-header {
+            background-color: #124556;
+        }
+        
+        .id-card-body {
+            background-color: #f8f8f8;
+            padding: 16px;
+            display: flex;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark .id-card-body {
+            background-color: #1f2937;
+        }
+        
+        .id-photo {
+            width: 110px;
+            height: 145px;
+            object-fit: cover;
+            border: 2px solid #3194db;
+            border-radius: 5px;
+            margin-right: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .dark .id-photo {
+            border-color: #124556;
+        }
+        
+        .id-details {
+            flex: 1;
+        }
+        
+        .id-detail-row {
+            display: flex;
+            margin-bottom: 8px;
+            align-items: baseline;
+        }
+        
+        .id-detail-label {
+            width: 80px;
+            color: #666666;
+            transition: color 0.3s ease;
+        }
+
+        .dark .id-detail-label {
+            color: #9ca3af;
+        }
+        
+        .id-detail-value {
+            font-weight: 500;
+            color: #000;
+            margin-left: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .dark .id-detail-value {
+            color: #f9fafb;
+        }
+        
+        .btn-action {
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline {
+            border: 2px solid #3194db;
+            color: #3194db;
+            background-color: transparent;
+        }
+
+        .dark .btn-outline {
+            border-color: #3194db;
+            color: #3194db;
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(49, 148, 219, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(49, 148, 219, 0.3);
+        }
+        
+        .btn-primary {
+            background-color: #3194db;
+            color: white;
+        }
+
+        .dark .btn-primary {
+            background-color: #3194db;
+        }
+        
+        .btn-primary:hover {
+            background-color: #124556;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(49, 148, 219, 0.4);
+        }
+
+        /* Styles pour le bouton de thème */
+        .theme-toggle {
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 bg-gray-900 dark:bg-gray-900 text-white min-h-screen">
+    <div class="min-h-screen flex flex-col relative">
+        <!-- Header avec bouton retour et progress bar -->
+        <div class="w-full p-4 flex items-center">
+            <button id="back-button" class="text-white dark:text-gray-300 p-2 hover:bg-gray-800 dark:hover:bg-gray-700 rounded-full transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+            </button>
+            <div class="ml-4 flex-1 bg-gray-700 dark:bg-gray-600 rounded-full h-2 transition-colors">
+                <div class="bg-divy-blue rounded-full h-2 w-3/4 transition-all duration-300"></div>
+            </div>
+
+            <!-- Bouton de thème -->
+            <button id="theme-toggle" class="theme-toggle ml-4 p-2 rounded-full bg-white bg-opacity-20 backdrop-blur-sm text-white">
+                <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+                </svg>
+                <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 flex flex-col items-center px-4 pt-4">
+            <h1 class="text-3xl font-bold text-white dark:text-gray-100 mb-2 flex items-center">
+                Preuve d'identité <span class="ml-2">🪪</span>
+            </h1>
+            <p class="text-gray-300 dark:text-gray-400 text-center mb-6">
+                Reprenez la photo ou "Continuer" si vous êtes satisfait.
+            </p>
+
+            <!-- Carte d'identité capturée -->
+            <div class="w-full max-w-md id-card mb-8">
+                <div class="id-card-header">
+                    IDENTIFICATION CARD
+                </div>
+                <div class="id-card-body">
+                    <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="ID Photo" class="id-photo">
+                    
+                    <div class="id-details">
+                        <div class="id-detail-row">
+                            <span class="id-detail-label">Name</span>
+                            <span class="id-detail-colon">:</span>
+                            <span class="id-detail-value">Andrew Ainsley</span>
+                        </div>
+                        
+                        <div class="id-detail-row">
+                            <span class="id-detail-label">ID No.</span>
+                            <span class="id-detail-colon">:</span>
+                            <span class="id-detail-value">573813659</span>
+                        </div>
+                        
+                        <div class="id-detail-row">
+                            <span class="id-detail-label">Country</span>
+                            <span class="id-detail-colon">:</span>
+                            <span class="id-detail-value">United States</span>
+                        </div>
+                        
+                        <div class="id-detail-row">
+                            <span class="id-detail-label">Issued</span>
+                            <span class="id-detail-colon">:</span>
+                            <span class="id-detail-value">Dec 2023</span>
+                        </div>
+                        
+                        <div class="id-detail-row">
+                            <span class="id-detail-label">Expires</span>
+                            <span class="id-detail-colon">:</span>
+                            <span class="id-detail-value">Nov 2026</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Espace de remplissage pour pousser les boutons vers le bas -->
+            <div class="flex-grow"></div>
+
+            <!-- Boutons d'action -->
+            <div class="w-full max-w-md grid grid-cols-2 gap-4 mb-8">
+                <button id="retake-button" class="btn-action btn-outline">
+                    Reprendre
+                </button>
+                <button id="continue-button" class="btn-action btn-primary">
+                    Continuer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion du thème - identique aux autres pages pour la synchronisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser le thème exactement comme les autres pages
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                updateBodyClasses();
+            }
+            
+            // Gestionnaire pour le bouton de thème - identique aux autres pages
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+                updateBodyClasses();
+            });
+
+            // Écouter les changements de thème depuis d'autres pages (synchronisation)
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'theme') {
+                    if (e.newValue === 'dark') {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                    updateBodyClasses();
+                }
+            });
+
+            // Initialiser la page
+            initializePage();
+        });
+
+        // Fonction pour mettre à jour les classes du body selon le thème - identique aux autres pages
+        function updateBodyClasses() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const body = document.body;
+            
+            if (isDark) {
+                body.className = 'antialiased transition-colors duration-300 bg-gray-900 dark:bg-gray-900 text-white min-h-screen';
+            } else {
+                body.className = 'antialiased transition-colors duration-300 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen';
+            }
+        }
+
+        function initializePage() {
+            const backButton = document.getElementById('back-button');
+            const retakeButton = document.getElementById('retake-button');
+            const continueButton = document.getElementById('continue-button');
+            
+            // Animation subtile au chargement de la page
+            document.querySelector('.id-card').classList.add('opacity-0');
+            document.querySelector('.id-card').style.transform = 'translateY(20px)';
+            document.querySelector('.id-card').style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            
+            setTimeout(() => {
+                document.querySelector('.id-card').classList.remove('opacity-0');
+                document.querySelector('.id-card').style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Bouton de retour
+            backButton.addEventListener('click', function() {
+                // Animation de clic
+                this.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                    // Retour à la page précédente (caméra)
+                    history.back();
+                }, 150);
+            });
+            
+            // Bouton pour reprendre la photo
+            retakeButton.addEventListener('click', function() {
+                // Animation de clic
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+
+                // Animation de sortie
+                document.querySelector('.id-card').classList.add('opacity-0');
+                document.querySelector('.id-card').style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    // Retour à la page caméra
+                    window.location.href = "register_card_photo.html";
+                }, 300);
+            });
+            
+            // Bouton pour continuer
+            continueButton.addEventListener('click', function() {
+                // Animation de clic
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+
+                // Animation de sortie
+                document.querySelector('.id-card').classList.add('opacity-0');
+                document.querySelector('.id-card').style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    // Simuler une analyse en cours
+                    showProcessingOverlay();
+                    
+                    // Après un délai simulé, passer à la page suivante
+                    setTimeout(() => {
+                        // Redirection vers la page suivante
+                        window.location.href = "register_selfie.html";
+                    }, 2000);
+                }, 300);
+            });
+            
+            // Fonction pour afficher l'overlay de traitement
+            function showProcessingOverlay() {
+                const isDark = document.documentElement.classList.contains('dark');
+                const overlay = document.createElement('div');
+                overlay.className = 'fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50';
+                
+                const content = document.createElement('div');
+                content.className = `${isDark ? 'bg-gray-700' : 'bg-gray-800'} p-6 rounded-xl flex flex-col items-center`;
+                
+                const spinner = document.createElement('div');
+                spinner.className = 'w-12 h-12 border-4 border-divy-blue border-t-transparent rounded-full animate-spin mb-4';
+                
+                const text = document.createElement('p');
+                text.className = 'text-white text-lg';
+                text.textContent = 'Analyse en cours...';
+                
+                content.appendChild(spinner);
+                content.appendChild(text);
+                overlay.appendChild(content);
+                
+                document.body.appendChild(overlay);
+            }
+        }
+    </script>
+</body>
+</html>

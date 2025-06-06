@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Recharge réussie</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .success-enter {
+            animation: successScale 0.6s ease-out;
+        }
+        
+        @keyframes successScale {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .receipt-enter {
+            animation: slideInUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .action-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 3;
+            stroke: #fff;
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px #22c55e;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+        
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 3;
+            stroke-miterlimit: 10;
+            stroke: #22c55e;
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+        
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        @keyframes scale {
+            0%, 100% {
+                transform: none;
+            }
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+        
+        @keyframes fill {
+            100% {
+                box-shadow: inset 0px 0px 0px 30px #22c55e;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-900 bg-gray-50">
+    <div class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+        <!-- Header -->
+        <div class="flex justify-end p-4 pt-12">
+            <button onclick="window.location.href='home.html'" class="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors">
+                <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 flex flex-col items-center justify-center px-4 -mt-16">
+            <!-- Animation de succès -->
+            <div class="success-enter mb-8">
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark__circle" fill="none" cx="26" cy="26" r="25"/>
+                    <path class="checkmark__check" fill="none" d="m14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+            
+            <!-- Message de succès -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Recharge réussie !</h1>
+                <p class="text-gray-600 dark:text-gray-400">Votre compte a été rechargé avec succès</p>
+            </div>
+
+            <!-- Montant rechargé -->
+            <div class="success-enter bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8 mb-6 text-center" style="animation-delay: 0.2s">
+                <h2 class="text-4xl font-bold text-divy-blue mb-2" id="amount-display">0 XOF</h2>
+                <p class="text-gray-600 dark:text-gray-400">Montant rechargé</p>
+            </div>
+        </div>
+
+        <!-- Reçu de transaction -->
+        <div class="receipt-enter bg-white dark:bg-gray-800 rounded-t-3xl shadow-lg px-6 py-8" style="animation-delay: 0.4s">
+            <div class="max-w-md mx-auto">
+                <!-- En-tête du reçu -->
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Reçu de recharge</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400" id="transaction-date"></p>
+                </div>
+
+                <!-- Détails de la transaction -->
+                <div class="space-y-4 mb-6">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-400">Montant rechargé</span>
+                        <span class="font-semibold text-gray-800 dark:text-white" id="receipt-amount">0 XOF</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-400">Méthode de paiement</span>
+                        <div id="payment-method-display" class="font-semibold text-gray-800 dark:text-white">
+                            <!-- Sera rempli dynamiquement -->
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-400">Frais de transaction</span>
+                        <span class="font-semibold text-gray-800 dark:text-white">0 XOF</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-400">Ancien solde</span>
+                        <span class="font-semibold text-gray-800 dark:text-white">485 750 XOF</span>
+                    </div>
+                    
+                    <div class="border-t border-gray-200 dark:border-gray-600 pt-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-semibold text-gray-800 dark:text-white">Nouveau solde</span>
+                            <span class="text-lg font-bold text-divy-blue" id="new-balance-display">485 750 XOF</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-400">ID de transaction</span>
+                        <span class="font-mono text-sm font-semibold text-gray-800 dark:text-white" id="transaction-id">TOP12345678</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-400">Référence</span>
+                        <span class="font-mono text-sm font-semibold text-gray-800 dark:text-white" id="reference-id">REF789456123</span>
+                    </div>
+                </div>
+
+                <!-- Note -->
+                <div class="bg-blue-50 dark:bg-gray-700 rounded-xl p-4 mb-6">
+                    <p class="text-sm text-gray-600 dark:text-gray-300 text-center">
+                        Recharge effectuée avec succès via Divy Transfert. Conservez ce reçu pour vos dossiers.
+                    </p>
+                </div>
+
+                <!-- Boutons d'action -->
+                <div class="space-y-3">
+                    <button onclick="shareReceipt()" class="action-btn w-full py-3 bg-divy-blue text-white rounded-xl font-semibold hover:bg-opacity-90">
+                        Partager le reçu
+                    </button>
+                    
+                    <button onclick="downloadReceipt()" class="action-btn w-full py-3 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-xl font-semibold hover:bg-gray-300 dark:hover:bg-gray-500">
+                        Télécharger le reçu
+                    </button>
+                    
+                    <button onclick="window.location.href='home.html'" class="action-btn w-full py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700">
+                        Retour à l'accueil
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme toggle button -->
+        <button id="theme-toggle" class="fixed top-4 left-4 p-2 rounded-full bg-white dark:bg-gray-800 shadow-lg z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block text-gray-800" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        let currentAmount = 0;
+        let currentMethod = '';
+        let currentProvider = '';
+        let transactionId = '';
+        const currentBalance = 485750;
+
+        // Récupérer les paramètres de l'URL
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentAmount = parseInt(urlParams.get('amount')) || 0;
+            currentMethod = urlParams.get('method') || 'mobile';
+            currentProvider = urlParams.get('provider') || 'orange';
+            transactionId = urlParams.get('transactionId') || generateTransactionId();
+            
+            displayReceiptDetails();
+        }
+
+        function displayReceiptDetails() {
+            // Afficher le montant
+            const formattedAmount = currentAmount.toLocaleString('fr-FR');
+            document.getElementById('amount-display').textContent = formattedAmount + ' XOF';
+            document.getElementById('receipt-amount').textContent = formattedAmount + ' XOF';
+            
+            // Calculer et afficher le nouveau solde
+            const newBalance = currentBalance + currentAmount;
+            document.getElementById('new-balance-display').textContent = newBalance.toLocaleString('fr-FR') + ' XOF';
+            
+            // Afficher la date et l'heure actuelles
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+            const timeStr = now.toLocaleTimeString('fr-FR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('transaction-date').textContent = `${dateStr} • ${timeStr}`;
+            
+            // Afficher les IDs de transaction
+            document.getElementById('transaction-id').textContent = transactionId;
+            document.getElementById('reference-id').textContent = generateReferenceId();
+            
+            // Afficher la méthode de paiement
+            displayPaymentMethod();
+        }
+
+        function displayPaymentMethod() {
+            const paymentMethodElement = document.getElementById('payment-method-display');
+            
+            const methodNames = {
+                mobile: {
+                    orange: 'Orange Money',
+                    moov: 'Moov Money',
+                    mtn: 'MTN Mobile Money',
+                    payplus: 'Pay Plus'
+                },
+                card: {
+                    visa: 'Visa',
+                    mastercard: 'Mastercard',
+                    amex: 'American Express',
+                    gim: 'GIM-UEMOA'
+                }
+            };
+
+            const methodName = methodNames[currentMethod]?.[currentProvider] || 'Non spécifié';
+            paymentMethodElement.textContent = methodName;
+        }
+
+        function generateTransactionId() {
+            return 'TOP' + Date.now().toString().slice(-8) + Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+        }
+
+        function generateReferenceId() {
+            return 'REF' + Math.floor(Math.random() * 1000000000).toString().padStart(9, '0');
+        }
+
+        function shareReceipt() {
+            if (navigator.share) {
+                const shareData = {
+                    title: 'Reçu de recharge Divy Transfert',
+                    text: `Recharge de ${currentAmount.toLocaleString('fr-FR')} XOF effectuée avec succès.\nTransaction ID: ${transactionId}`,
+                    url: window.location.href
+                };
+                
+                navigator.share(shareData).catch(console.error);
+            } else {
+                // Fallback pour les navigateurs qui ne supportent pas l'API Web Share
+                const receiptText = `
+Reçu de recharge Divy Transfert
+Montant: ${currentAmount.toLocaleString('fr-FR')} XOF
+Transaction ID: ${transactionId}
+Date: ${new Date().toLocaleDateString('fr-FR')}
+                `.trim();
+                
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(receiptText).then(() => {
+                        alert('Reçu copié dans le presse-papiers');
+                    });
+                } else {
+                    alert('Partage non supporté sur ce navigateur');
+                }
+            }
+        }
+
+        function downloadReceipt() {
+            // Créer un contenu de reçu formaté
+            const receiptContent = `
+DIVY TRANSFERT - REÇU DE RECHARGE
+=====================================
+
+Date: ${new Date().toLocaleDateString('fr-FR')} ${new Date().toLocaleTimeString('fr-FR')}
+Montant rechargé: ${currentAmount.toLocaleString('fr-FR')} XOF
+Méthode: ${document.getElementById('payment-method-display').textContent}
+Frais: 0 XOF
+Ancien solde: 485 750 XOF
+Nouveau solde: ${(currentBalance + currentAmount).toLocaleString('fr-FR')} XOF
+
+Transaction ID: ${transactionId}
+Référence: ${document.getElementById('reference-id').textContent}
+
+=====================================
+Merci d'utiliser Divy Transfert
+            `.trim();
+
+            // Créer et télécharger le fichier
+            const blob = new Blob([receiptContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `recu_recharge_${transactionId}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            getUrlParams();
+            
+            // Gestion du thème
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

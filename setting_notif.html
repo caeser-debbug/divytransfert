@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Notifications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Animation pour les éléments de notification */
+        .notification-item {
+            transition: all 0.3s ease;
+            animation: slideInRight 0.4s ease-out;
+        }
+        
+        .notification-item:hover {
+            background: rgba(49, 148, 219, 0.05);
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Style pour les toggles - Simplifié et fonctionnel */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+            background-color: #d1d5db;
+            border-radius: 28px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .toggle-switch.active {
+            background: linear-gradient(135deg, #8bc34a, #4caf50);
+            box-shadow: 0 2px 8px rgba(139, 195, 74, 0.4);
+        }
+        
+        .toggle-knob {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        
+        .toggle-switch.active .toggle-knob {
+            transform: translateX(22px);
+        }
+        
+        /* Mode sombre */
+        .dark .toggle-switch {
+            background-color: #4b5563;
+        }
+        
+        .dark .toggle-switch.active {
+            background: linear-gradient(135deg, #8bc34a, #4caf50);
+        }
+        
+        /* Styles pour les sections */
+        .section-header {
+            color: #6b7280;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .section-header:first-child {
+            margin-top: 0;
+        }
+        
+        .dark .section-header {
+            color: #9ca3af;
+        }
+        
+        /* Animation des titres de section */
+        .section-title {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Animation de sauvegarde */
+        .save-indicator {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .save-indicator.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-900 bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <div class="bg-white dark:bg-gray-800 shadow-sm px-4 pt-12 pb-4">
+            <div class="flex items-center justify-between">
+                <!-- Bouton retour -->
+                <button onclick="window.location.href='compte.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </button>
+                
+                <!-- Titre -->
+                <h1 class="text-lg font-semibold text-gray-800 dark:text-white">Notifications</h1>
+                
+                <!-- Espace pour équilibrer -->
+                <div class="w-10"></div>
+            </div>
+        </div>
+
+        <!-- Indicateur de sauvegarde -->
+        <div id="save-indicator" class="save-indicator">
+            <div class="flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Paramètres sauvegardés
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="px-4 py-6">
+            <!-- Section Général -->
+            <div class="section-title">
+                <h2 class="section-header text-gray-500 dark:text-gray-400">Général</h2>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden mb-6">
+                <!-- Mises à jour du statut des transactions -->
+                <div class="notification-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700" style="animation-delay: 0.1s;">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 dark:text-white">Mises à jour du statut des transactions</h3>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleNotification(this, 'transaction-updates')">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+
+                <!-- Alertes de fraude ou activités suspectes -->
+                <div class="notification-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700" style="animation-delay: 0.2s;">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 dark:text-white">Alertes de fraude ou activités suspectes</h3>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleNotification(this, 'fraud-alerts')">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+
+                <!-- Notifications de demandes de paiement -->
+                <div class="notification-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700" style="animation-delay: 0.3s;">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 dark:text-white">Notifications de demandes de paiement</h3>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleNotification(this, 'payment-requests')">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+
+                <!-- Notifications d'activité de carte -->
+                <div class="notification-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700" style="animation-delay: 0.4s;">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 dark:text-white">Notifications d'activité de carte</h3>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleNotification(this, 'card-activity')">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+
+                <!-- Notifications du support client -->
+                <div class="notification-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700" style="animation-delay: 0.5s;">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 dark:text-white">Notifications du support client</h3>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleNotification(this, 'support-notifications')">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+
+                <!-- Alertes de solde de compte -->
+                <div class="notification-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700" style="animation-delay: 0.6s;">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 dark:text-white">Alertes de solde de compte</h3>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleNotification(this, 'balance-alerts')">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+
+                <!-- Alertes de sécurité -->
+                <div class="notification-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700" style="animation-delay: 0.7s;">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 dark:text-white">Alertes de sécurité</h3>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleNotification(this, 'security-alerts')">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+
+                <!-- Résumé quotidien ou hebdomadaire -->
+                <div class="notification-item flex items-center justify-between p-4" style="animation-delay: 0.8s;">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 dark:text-white">Résumé quotidien ou hebdomadaire</h3>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleNotification(this, 'summary-notifications')">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section App & Système -->
+            <div class="section-title" style="animation-delay: 0.9s;">
+                <h2 class="section-header text-gray-500 dark:text-gray-400">App & Système</h2>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <!-- Mises à jour et améliorations de l'app -->
+                <div class="notification-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700" style="animation-delay: 1.0s;">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 dark:text-white">Mises à jour et améliorations de l'app</h3>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleNotification(this, 'app-updates')">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+
+                <!-- Offres promotionnelles et mises à jour -->
+                <div class="notification-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700" style="animation-delay: 1.1s;">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 dark:text-white">Offres promotionnelles et mises à jour</h3>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleNotification(this, 'promotional-offers')">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+
+                <!-- Participer à un sondage -->
+                <div class="notification-item flex items-center justify-between p-4" style="animation-delay: 1.2s;">
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 dark:text-white">Participer à un sondage</h3>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleNotification(this, 'survey-participation')">
+                        <div class="toggle-knob"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informations supplémentaires -->
+            <div class="mt-8 bg-blue-50 dark:bg-gray-700 rounded-2xl p-4" style="animation-delay: 1.3s;">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-divy-blue mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <h4 class="font-medium text-gray-800 dark:text-white mb-1">À propos des notifications</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            Vous pouvez désactiver les notifications à tout moment. Certaines notifications de sécurité importantes resteront actives pour protéger votre compte.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boutons de contrôle global -->
+            <div class="mt-6 flex space-x-4" style="animation-delay: 1.4s;">
+                <button onclick="enableAllNotifications()" class="flex-1 py-3 bg-divy-blue text-white rounded-xl font-medium hover:bg-opacity-90 transition-colors">
+                    Tout activer
+                </button>
+                <button onclick="disableAllNotifications()" class="flex-1 py-3 bg-gray-500 text-white rounded-xl font-medium hover:bg-opacity-90 transition-colors">
+                    Tout désactiver
+                </button>
+            </div>
+        </div>
+
+        <!-- Theme toggle button -->
+        <button id="theme-toggle" class="fixed top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        // Stockage des états des notifications
+        let notificationStates = {
+            'transaction-updates': true,
+            'fraud-alerts': false,
+            'payment-requests': true,
+            'card-activity': false,
+            'support-notifications': false,
+            'balance-alerts': true,
+            'security-alerts': true,
+            'summary-notifications': false,
+            'app-updates': false,
+            'promotional-offers': true,
+            'survey-participation': false
+        };
+
+        // Variable pour gérer l'indicateur de sauvegarde
+        let saveTimeout;
+
+        // Fonction d'initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Charger les paramètres sauvegardés
+            loadNotificationSettings();
+            
+            // Appliquer les états initiaux aux toggles
+            applyToggleStates();
+
+            // Gestion du thème sombre/clair
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        });
+
+        // Fonction pour basculer l'état d'une notification
+        function toggleNotification(toggleElement, notificationId) {
+            // Basculer l'état
+            const isActive = toggleElement.classList.contains('active');
+            
+            if (isActive) {
+                toggleElement.classList.remove('active');
+                notificationStates[notificationId] = false;
+            } else {
+                toggleElement.classList.add('active');
+                notificationStates[notificationId] = true;
+            }
+
+            // Animation de feedback
+            toggleElement.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                toggleElement.style.transform = 'scale(1)';
+            }, 150);
+
+            // Sauvegarder et afficher l'indicateur
+            saveNotificationSettings();
+            showSaveIndicator();
+
+            // Log pour debug
+            console.log(`${notificationId}: ${notificationStates[notificationId] ? 'activé' : 'désactivé'}`);
+        }
+
+        // Fonction pour appliquer les états aux toggles
+        function applyToggleStates() {
+            Object.keys(notificationStates).forEach(notificationId => {
+                const toggleElement = document.querySelector(`[onclick*="${notificationId}"]`);
+                if (toggleElement) {
+                    if (notificationStates[notificationId]) {
+                        toggleElement.classList.add('active');
+                    } else {
+                        toggleElement.classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        // Fonction pour charger les paramètres sauvegardés
+        function loadNotificationSettings() {
+            const savedSettings = localStorage.getItem('notificationSettings');
+            if (savedSettings) {
+                try {
+                    notificationStates = { ...notificationStates, ...JSON.parse(savedSettings) };
+                } catch (e) {
+                    console.log('Erreur lors du chargement des paramètres:', e);
+                }
+            }
+        }
+
+        // Fonction pour sauvegarder les paramètres
+        function saveNotificationSettings() {
+            try {
+                localStorage.setItem('notificationSettings', JSON.stringify(notificationStates));
+            } catch (e) {
+                console.log('Erreur lors de la sauvegarde:', e);
+            }
+        }
+
+        // Fonction pour afficher l'indicateur de sauvegarde
+        function showSaveIndicator() {
+            const indicator = document.getElementById('save-indicator');
+            
+            // Effacer le timeout précédent s'il existe
+            if (saveTimeout) {
+                clearTimeout(saveTimeout);
+            }
+            
+            // Afficher l'indicateur
+            indicator.classList.add('show');
+            
+            // Masquer après 2 secondes
+            saveTimeout = setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
+        }
+
+        // Fonction pour activer toutes les notifications
+        function enableAllNotifications() {
+            // Mettre à jour les états
+            Object.keys(notificationStates).forEach(key => {
+                notificationStates[key] = true;
+            });
+            
+            // Appliquer visuellement
+            const toggles = document.querySelectorAll('.toggle-switch');
+            toggles.forEach(toggle => {
+                toggle.classList.add('active');
+                // Animation
+                toggle.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    toggle.style.transform = 'scale(1)';
+                }, 200);
+            });
+            
+            saveNotificationSettings();
+            showSaveIndicator();
+        }
+
+        // Fonction pour désactiver toutes les notifications (sauf sécurité)
+        function disableAllNotifications() {
+            // Mettre à jour les états (garder la sécurité activée)
+            Object.keys(notificationStates).forEach(key => {
+                if (key !== 'security-alerts') {
+                    notificationStates[key] = false;
+                }
+            });
+            
+            // Appliquer visuellement
+            const toggles = document.querySelectorAll('.toggle-switch');
+            toggles.forEach((toggle, index) => {
+                const notificationId = Object.keys(notificationStates)[index];
+                if (notificationId !== 'security-alerts') {
+                    toggle.classList.remove('active');
+                    // Animation
+                    toggle.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        toggle.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            });
+            
+            saveNotificationSettings();
+            showSaveIndicator();
+        }
+
+        // Fonction pour obtenir l'état actuel des notifications
+        function getNotificationStates() {
+            return { ...notificationStates };
+        }
+
+        // Fonction pour réinitialiser aux valeurs par défaut
+        function resetToDefaults() {
+            if (confirm('Voulez-vous réinitialiser tous les paramètres de notification ?')) {
+                notificationStates = {
+                    'transaction-updates': true,
+                    'fraud-alerts': false,
+                    'payment-requests': true,
+                    'card-activity': false,
+                    'support-notifications': false,
+                    'balance-alerts': true,
+                    'security-alerts': true,
+                    'summary-notifications': false,
+                    'app-updates': false,
+                    'promotional-offers': true,
+                    'survey-participation': false
+                };
+                
+                applyToggleStates();
+                saveNotificationSettings();
+                showSaveIndicator();
+            }
+        }
+    </script>
+</body>
+</html>

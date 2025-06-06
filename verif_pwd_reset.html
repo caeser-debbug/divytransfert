@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Vérification de sécurité</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-blue': '#5bc4ff',
+                        'divy-blue-dark': '#4da9e8',
+                        'divy-green': '#5bc4ff'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-spinner {
+            animation: spin 1.5s linear infinite;
+        }
+        
+        .logo-container {
+            width: 100px;
+            height: 60px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            height: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar-inner {
+            background-color: #8BC34A;
+            height: 6px;
+            border-radius: 9999px;
+            width: 66%;  /* 2/3 completed (Email → Security → New Password) */
+        }
+        
+        .pin-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .pin-input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 24px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-900 bg-white">
+    <div class="min-h-screen flex flex-col justify-between relative overflow-hidden">
+        <!-- Contenu principal (zone du haut) -->
+        <div class="w-full p-4 flex flex-col items-center">
+            <!-- Header avec bouton retour -->
+            <div class="w-full max-w-md flex items-center mb-8 mt-4">
+                <a href="4.html" class="text-gray-800 dark:text-white p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Barre de progression -->
+            <div class="w-full max-w-md px-4 mb-4">
+                <div class="progress-bar">
+                    <div class="progress-bar-inner"></div>
+                </div>
+            </div>
+
+            <!-- Contenu de vérification de sécurité -->
+            <div class="w-full max-w-md px-4">
+                <h1 class="text-3xl font-bold text-gray-800 dark:text-white flex items-center">
+                    Vérification de sécurité <span class="ml-2">🔒</span>
+                </h1>
+                <p class="text-gray-600 dark:text-gray-300 mt-2 mb-6">
+                    Pour sécuriser votre réinitialisation de mot de passe, veuillez compléter l'une des méthodes de vérification ci-dessous.
+                </p>
+
+                <!-- Méthodes de vérification en onglets -->
+                <div class="mb-8">
+                    <div class="flex border-b border-gray-200 dark:border-gray-700">
+                        <button id="tab-questions" class="py-3 px-4 text-center border-b-2 border-divy-green font-medium text-divy-green dark:text-divy-green flex-1">Questions de sécurité</button>
+                        <button id="tab-pin" class="py-3 px-4 text-center border-b-2 border-transparent font-medium text-gray-500 dark:text-gray-400 flex-1">Code PIN</button>
+                    </div>
+
+                    <!-- Section Questions de sécurité -->
+                    <div id="questions-section" class="mt-6">
+                        <form id="security-questions-form">
+                            <!-- Question 1 -->
+                            <div class="mb-6">
+                                <label for="question1" class="block text-gray-800 dark:text-white font-medium mb-2">Quel est le nom de votre premier animal de compagnie ?</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="question1" class="w-full pl-12 pr-4 py-4 bg-gray-100 dark:bg-gray-800 border-0 rounded-lg text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-divy-blue focus:outline-none transition-all duration-200">
+                                </div>
+                            </div>
+
+                            <!-- Question 2 -->
+                            <div class="mb-6">
+                                <label for="question2" class="block text-gray-800 dark:text-white font-medium mb-2">Dans quelle ville êtes-vous né(e) ?</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="question2" class="w-full pl-12 pr-4 py-4 bg-gray-100 dark:bg-gray-800 border-0 rounded-lg text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-divy-blue focus:outline-none transition-all duration-200">
+                                </div>
+                            </div>
+
+                            <!-- Question 3 -->
+                            <div class="mb-6">
+                                <label for="question3" class="block text-gray-800 dark:text-white font-medium mb-2">Quel est le nom de jeune fille de votre mère ?</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="question3" class="w-full pl-12 pr-4 py-4 bg-gray-100 dark:bg-gray-800 border-0 rounded-lg text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-divy-blue focus:outline-none transition-all duration-200">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Section Code PIN -->
+                    <div id="pin-section" class="mt-6 hidden">
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">
+                            Veuillez saisir le code PIN de sécurité à 4 chiffres associé à votre compte.
+                        </p>
+                        <div class="pin-container mb-6">
+                            <input type="text" maxlength="1" class="pin-input bg-gray-100 dark:bg-gray-800 border-0 rounded-lg text-gray-800 dark:text-white focus:ring-2 focus:ring-divy-blue focus:outline-none transition-all duration-200" inputmode="numeric" pattern="[0-9]*">
+                            <input type="text" maxlength="1" class="pin-input bg-gray-100 dark:bg-gray-800 border-0 rounded-lg text-gray-800 dark:text-white focus:ring-2 focus:ring-divy-blue focus:outline-none transition-all duration-200" inputmode="numeric" pattern="[0-9]*">
+                            <input type="text" maxlength="1" class="pin-input bg-gray-100 dark:bg-gray-800 border-0 rounded-lg text-gray-800 dark:text-white focus:ring-2 focus:ring-divy-blue focus:outline-none transition-all duration-200" inputmode="numeric" pattern="[0-9]*">
+                            <input type="text" maxlength="1" class="pin-input bg-gray-100 dark:bg-gray-800 border-0 rounded-lg text-gray-800 dark:text-white focus:ring-2 focus:ring-divy-blue focus:outline-none transition-all duration-200" inputmode="numeric" pattern="[0-9]*">
+                        </div>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm text-center">
+                            Vous avez oublié votre code PIN ? <a href="#" class="text-divy-blue">Contactez le support</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton Continue (zone du bas) -->
+        <div class="w-full p-4 flex justify-center pb-8">
+            <button id="continue-btn" class="w-full max-w-md py-4 rounded-full font-semibold transition-colors duration-200 bg-green-400 text-white">
+                Vérifier
+            </button>
+        </div>
+
+        <!-- Theme toggle button (fixed at top right) -->
+        <button id="theme-toggle" class="fixed top-4 right-4 p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for saved theme preference or use preferred color scheme
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            
+            // Theme toggle function
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+            
+            // Tab switching
+            document.getElementById('tab-questions').addEventListener('click', function() {
+                document.getElementById('questions-section').classList.remove('hidden');
+                document.getElementById('pin-section').classList.add('hidden');
+                this.classList.add('border-divy-green', 'text-divy-green');
+                this.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                document.getElementById('tab-pin').classList.remove('border-divy-green', 'text-divy-green');
+                document.getElementById('tab-pin').classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+            });
+            
+            document.getElementById('tab-pin').addEventListener('click', function() {
+                document.getElementById('pin-section').classList.remove('hidden');
+                document.getElementById('questions-section').classList.add('hidden');
+                this.classList.add('border-divy-green', 'text-divy-green');
+                this.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                document.getElementById('tab-questions').classList.remove('border-divy-green', 'text-divy-green');
+                document.getElementById('tab-questions').classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+            });
+            
+            // PIN input auto-focus next
+            const pinInputs = document.querySelectorAll('.pin-input');
+            pinInputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    if (this.value.length === 1) {
+                        if (index < pinInputs.length - 1) {
+                            pinInputs[index + 1].focus();
+                        }
+                    }
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && this.value.length === 0) {
+                        if (index > 0) {
+                            pinInputs[index - 1].focus();
+                        }
+                    }
+                });
+            });
+            
+            // Continue button event
+            document.getElementById('continue-btn').addEventListener('click', function() {
+                // Vérifier si c'est la section de questions ou de PIN qui est visible
+                if (!document.getElementById('questions-section').classList.contains('hidden')) {
+                    // Vérification des questions de sécurité
+                    const q1 = document.getElementById('question1').value;
+                    const q2 = document.getElementById('question2').value;
+                    const q3 = document.getElementById('question3').value;
+                    
+                    if (q1 && q2 && q3) {
+                        alert('Vérification réussie! Vous allez être redirigé vers la page de création d\'un nouveau mot de passe.');
+                        // Redirection vers la page de nouveau mot de passe
+                        // window.location.href = '/new-password.html';
+                    } else {
+                        alert('Veuillez répondre à toutes les questions de sécurité.');
+                    }
+                } else {
+                    // Vérification du code PIN
+                    let pin = '';
+                    pinInputs.forEach(input => {
+                        pin += input.value;
+                    });
+                    
+                    if (pin.length === 4) {
+                        alert('Code PIN vérifié! Vous allez être redirigé vers la page de création d\'un nouveau mot de passe.');
+                        // Redirection vers la page de nouveau mot de passe
+                        // window.location.href = '/new-password.html';
+                    } else {
+                        alert('Veuillez saisir un code PIN à 4 chiffres complet.');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

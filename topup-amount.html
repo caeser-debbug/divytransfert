@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Montant à recharger</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd',
+                        'lime-green': '#8bc34a'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #3194db 0%, #8bc34a 100%);
+        }
+        
+        .keypad-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .keypad-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .keypad-button:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .amount-display {
+            font-size: 48px;
+            font-weight: 700;
+            color: #1f2937;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .continue-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 195, 74, 0.4);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-4 pt-12">
+            <button onclick="goBack()" class="p-2 hover:bg-white hover:bg-opacity-10 rounded-full transition-colors">
+                <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+            </button>
+            <h1 class="text-lg font-semibold text-gray-800">Montant à recharger</h1>
+            <div class="w-10"></div>
+        </div>
+
+        <!-- Zone d'affichage du montant -->
+        <div class="flex-1 flex flex-col items-center justify-center px-4">
+            <div class="text-center mb-8">
+                <div class="amount-display mb-4" id="amount-display">0<span class="text-3xl"> XOF</span></div>
+                <p class="text-gray-700 text-sm">Solde actuel : <span class="font-semibold">485 750 XOF</span></p>
+                <div class="mt-4 flex items-center justify-center space-x-2" id="method-info">
+                    <!-- Les informations de méthode seront ajoutées ici -->
+                </div>
+            </div>
+
+            <!-- Montants prédéfinis -->
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <button onclick="setQuickAmount(10000)" class="bg-white bg-opacity-20 backdrop-blur-sm text-gray-800 py-3 px-4 rounded-xl font-semibold hover:bg-opacity-30 transition-all">
+                    10 000 XOF
+                </button>
+                <button onclick="setQuickAmount(25000)" class="bg-white bg-opacity-20 backdrop-blur-sm text-gray-800 py-3 px-4 rounded-xl font-semibold hover:bg-opacity-30 transition-all">
+                    25 000 XOF
+                </button>
+                <button onclick="setQuickAmount(50000)" class="bg-white bg-opacity-20 backdrop-blur-sm text-gray-800 py-3 px-4 rounded-xl font-semibold hover:bg-opacity-30 transition-all">
+                    50 000 XOF
+                </button>
+            </div>
+        </div>
+
+        <!-- Clavier numérique -->
+        <div class="bg-gray-800 rounded-t-3xl px-6 py-8">
+            <!-- Bouton Continuer -->
+            <button 
+                id="continue-btn"
+                onclick="proceedToConfirmation()"
+                class="continue-btn w-full py-4 bg-lime-green text-white rounded-full font-semibold mb-8 hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled
+            >
+                Continuer
+            </button>
+            
+            <!-- Grille du clavier -->
+            <div class="grid grid-cols-3 gap-4 max-w-xs mx-auto">
+                <!-- Première ligne -->
+                <button class="keypad-button" onclick="addDigit('1')">1</button>
+                <button class="keypad-button" onclick="addDigit('2')">2</button>
+                <button class="keypad-button" onclick="addDigit('3')">3</button>
+                
+                <!-- Deuxième ligne -->
+                <button class="keypad-button" onclick="addDigit('4')">4</button>
+                <button class="keypad-button" onclick="addDigit('5')">5</button>
+                <button class="keypad-button" onclick="addDigit('6')">6</button>
+                
+                <!-- Troisième ligne -->
+                <button class="keypad-button" onclick="addDigit('7')">7</button>
+                <button class="keypad-button" onclick="addDigit('8')">8</button>
+                <button class="keypad-button" onclick="addDigit('9')">9</button>
+                
+                <!-- Quatrième ligne -->
+                <button class="keypad-button" onclick="addDigit('*')">*</button>
+                <button class="keypad-button" onclick="addDigit('0')">0</button>
+                <button class="keypad-button" onclick="removeDigit()">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAmount = '';
+        const maxAmount = 1000000; // Limite de recharge
+        let currentMethod = '';
+        let currentProvider = '';
+
+        // Récupérer les paramètres de l'URL
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentMethod = urlParams.get('method') || 'mobile';
+            currentProvider = urlParams.get('provider') || 'orange';
+            displayMethodInfo();
+        }
+
+        function displayMethodInfo() {
+            const methodInfo = document.getElementById('method-info');
+            const methodNames = {
+                mobile: {
+                    orange: { name: 'Orange Money', color: 'bg-orange-500' },
+                    moov: { name: 'Moov Money', color: 'bg-blue-600' },
+                    mtn: { name: 'MTN Mobile Money', color: 'bg-yellow-500' },
+                    payplus: { name: 'Pay Plus', color: 'bg-green-600' }
+                },
+                card: {
+                    visa: { name: 'Visa', color: 'bg-blue-600' },
+                    mastercard: { name: 'Mastercard', color: 'bg-red-500' },
+                    amex: { name: 'American Express', color: 'bg-green-600' },
+                    gim: { name: 'GIM-UEMOA', color: 'bg-purple-600' }
+                }
+            };
+
+            const method = methodNames[currentMethod]?.[currentProvider];
+            if (method) {
+                methodInfo.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <div class="w-6 h-6 ${method.color} rounded-full"></div>
+                        <span class="text-gray-700 font-medium">${method.name}</span>
+                    </div>
+                `;
+            }
+        }
+
+        function goBack() {
+            if (currentMethod === 'mobile') {
+                window.location.href = 'mobile-money-options.html';
+            } else {
+                window.location.href = 'card-options.html';
+            }
+        }
+
+        function setQuickAmount(amount) {
+            currentAmount = amount.toString();
+            updateDisplay();
+        }
+
+        function addDigit(digit) {
+            if (digit === '*') return; // Ignorer l'astérisque pour cette application
+            
+            // Limiter la longueur
+            if (currentAmount.length >= 10) return;
+            
+            // Éviter les zéros en début
+            if (currentAmount === '' && digit === '0') return;
+            
+            currentAmount += digit;
+            updateDisplay();
+        }
+
+        function removeDigit() {
+            currentAmount = currentAmount.slice(0, -1);
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const display = document.getElementById('amount-display');
+            const continueBtn = document.getElementById('continue-btn');
+            
+            if (currentAmount === '') {
+                display.innerHTML = '0<span class="text-3xl"> XOF</span>';
+                continueBtn.disabled = true;
+            } else {
+                const formattedAmount = parseInt(currentAmount).toLocaleString('fr-FR');
+                display.innerHTML = `${formattedAmount}<span class="text-3xl"> XOF</span>`;
+                
+                const amount = parseInt(currentAmount);
+                continueBtn.disabled = amount === 0 || amount > maxAmount;
+            }
+        }
+
+        function proceedToConfirmation() {
+            if (currentAmount === '' || parseInt(currentAmount) === 0) return;
+            
+            // Rediriger vers la page de confirmation avec tous les paramètres
+            const params = new URLSearchParams({
+                amount: currentAmount,
+                method: currentMethod,
+                provider: currentProvider
+            });
+            window.location.href = `topup-confirmation.html?${params.toString()}`;
+        }
+
+        // Gestion des touches du clavier
+        document.addEventListener('keydown', function(event) {
+            if (event.key >= '0' && event.key <= '9') {
+                addDigit(event.key);
+            } else if (event.key === 'Backspace') {
+                removeDigit();
+            } else if (event.key === 'Enter') {
+                if (!document.getElementById('continue-btn').disabled) {
+                    proceedToConfirmation();
+                }
+            }
+        });
+
+        // Initialiser la page
+        document.addEventListener('DOMContentLoaded', function() {
+            getUrlParams();
+        });
+    </script>
+</body>
+</html>

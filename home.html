@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Accueil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .balance-animate {
+            animation: fadeInScale 0.8s ease-out forwards;
+        }
+        
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .action-button {
+            transition: all 0.3s ease;
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .transaction-item {
+            transition: all 0.2s ease;
+        }
+        
+        .transaction-item:hover {
+            transform: translateX(4px);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #3194db 0%, #124556 100%);
+        }
+        
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-button {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-1px);
+        }
+        
+        .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .logo-container {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: -30px;
+        }
+        
+        .logo-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-900 bg-gray-50">
+    <div class="min-h-screen flex flex-col relative">
+        <!-- Header avec balance -->
+        <div class="gradient-bg text-white px-4 pt-12 pb-8 relative overflow-hidden">
+            <!-- Notifications et profil -->
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center">
+                    <div class="logo-container">
+                        <img src="logo/logo1.png" alt="Divy Transfert" class="w-full h-full object-contain" />
+                    </div>
+                </div>
+                <h1 class="text-lg font-semibold">Divytransfert</h1>
+                <button class="relative" onclick="window.location.href='notifications.html'">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-3-3.5V9a6 6 0 10-12 0v4.5L2 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                    <div class="w-2 h-2 bg-red-500 rounded-full absolute -top-1 -right-1"></div>
+                </button>
+            </div>
+            
+            <!-- Balance principale -->
+            <div class="text-center balance-animate">
+                <div class="text-4xl font-bold mb-2" id="balance-amount">0<span class="text-2xl"> XOF</span></div>
+                <p class="text-white text-opacity-80 text-sm">Solde disponible</p>
+            </div>
+            
+            <!-- Éléments décoratifs -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-5 rounded-full -mr-16 -mt-16"></div>
+            <div class="absolute bottom-0 left-0 w-20 h-20 bg-white bg-opacity-5 rounded-full -ml-10 -mb-10"></div>
+        </div>
+
+        <!-- Actions rapides -->
+        <div class="px-4 -mt-6 mb-6">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 glass-effect">
+                <div class="grid grid-cols-4 gap-4">
+                    <!-- Envoyer -->
+                    <button class="action-button flex flex-col items-center p-4 rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-divy-light dark:hover:bg-gray-600">
+                        <div class="w-12 h-12 bg-divy-blue rounded-full flex items-center justify-center mb-2">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Envoyer</span>
+                    </button>
+
+                    <!-- Simuler -->
+                    <button class="action-button flex flex-col items-center p-4 rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-divy-light dark:hover:bg-gray-600">
+                        <div class="w-12 h-12 bg-divy-blue rounded-full flex items-center justify-center mb-2">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Simuler</span>
+                    </button>
+
+                    <!-- Recharger -->
+                    <button class="action-button flex flex-col items-center p-4 rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-divy-light dark:hover:bg-gray-600">
+                        <div class="w-12 h-12 bg-divy-blue rounded-full flex items-center justify-center mb-2">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Recharger</span>
+                    </button>
+
+                    <!-- Retirer -->
+                    <button class="action-button flex flex-col items-center p-4 rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-divy-light dark:hover:bg-gray-600">
+                        <div class="w-12 h-12 bg-divy-blue rounded-full flex items-center justify-center mb-2">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Retirer</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historique des transactions -->
+        <div class="flex-1 px-4 pb-20">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+                <!-- En-tête de la section -->
+                <div class="flex justify-between items-center p-4 border-b border-gray-100 dark:border-gray-700">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Historique des transactions</h2>
+                    <button class="flex items-center text-divy-blue text-sm font-medium">
+                        <span>Voir tout</span>
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Liste des transactions -->
+                <div id="transactions-list" class="divide-y divide-gray-100 dark:divide-gray-700">
+                    <!-- Les transactions seront ajoutées ici dynamiquement -->
+                </div>
+
+                <!-- État vide -->
+                <div id="empty-state" class="p-8 text-center">
+                    <div class="w-20 h-20 mx-auto mb-4 relative">
+                        <svg class="w-full h-full text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-8 h-8 bg-divy-blue bg-opacity-20 rounded-full"></div>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-2">Aucune transaction</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">Vous n'avez effectué aucune transaction.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation du bas -->
+        <div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2 safe-area-bottom">
+            <div class="flex justify-around items-center">
+                <button class="flex flex-col items-center p-2 text-divy-blue nav-button">
+                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Accueil</span>
+                </button>
+
+                <button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 nav-button">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Contacts</span>
+                </button>
+
+                <button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 relative nav-button">
+                    <div class="w-12 h-12 bg-divy-blue rounded-full flex items-center justify-center -mt-2 shadow-lg transition-transform duration-200">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zM19 13h2v2h-2v-2zM13 13h2v2h-2v-2zM15 15h2v2h-2v-2zM13 17h2v2h-2v-2zM15 19h2v2h-2v-2zM17 17h2v2h-2v-2zM17 13h2v2h-2v-2zM19 15h2v2h-2v-2z"/>
+                        </svg>
+                    </div>
+                </button>
+
+                <button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 nav-button">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Insights</span>
+                </button>
+
+                <button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 nav-button">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Compte</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Theme toggle button -->
+        <button id="theme-toggle" class="fixed top-4 right-4 p-2 rounded-full bg-white bg-opacity-20 backdrop-blur-sm text-white z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion du thème
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+
+            // Animation du solde
+            let currentBalance = 0;
+            const targetBalance = 485750.00; // Montant en XOF
+            const balanceElement = document.getElementById('balance-amount');
+            
+            function animateBalance() {
+                const increment = targetBalance / 100;
+                const timer = setInterval(() => {
+                    currentBalance += increment;
+                    if (currentBalance >= targetBalance) {
+                        currentBalance = targetBalance;
+                        clearInterval(timer);
+                    }
+                    balanceElement.innerHTML = `${Math.floor(currentBalance).toLocaleString('fr-FR')}<span class="text-2xl"> XOF</span>`;
+                }, 20);
+            }
+
+            // Simulation des transactions avec montants en XOF
+            const transactions = [
+                {
+                    name: "Aminata Diallo",
+                    amount: -25000,
+                    time: "09:40",
+                    type: "sent",
+                    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                },
+                {
+                    name: "Moussa Traoré",
+                    amount: 45000,
+                    time: "08:15",
+                    type: "request",
+                    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                },
+                {
+                    name: "Fatou Koné",
+                    amount: 75000,
+                    time: "22:38",
+                    type: "income",
+                    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                    date: "Hier"
+                },
+                {
+                    name: "Ibrahim Sanogo",
+                    amount: -15000,
+                    time: "16:49",
+                    type: "sent",
+                    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                    date: "Hier"
+                }
+            ];
+
+            function renderTransactions() {
+                const transactionsList = document.getElementById('transactions-list');
+                const emptyState = document.getElementById('empty-state');
+                
+                if (transactions.length === 0) {
+                    emptyState.style.display = 'block';
+                    transactionsList.style.display = 'none';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                transactionsList.style.display = 'block';
+                
+                let currentDate = '';
+                transactionsList.innerHTML = '';
+                
+                transactions.forEach(transaction => {
+                    const transactionDate = transaction.date || 'Aujourd\'hui';
+                    
+                    if (transactionDate !== currentDate) {
+                        currentDate = transactionDate;
+                        const dateHeader = document.createElement('div');
+                        dateHeader.className = 'px-4 py-2 bg-gray-50 dark:bg-gray-700';
+                        dateHeader.innerHTML = `<span class="text-sm font-medium text-gray-600 dark:text-gray-300">${transactionDate}</span>`;
+                        transactionsList.appendChild(dateHeader);
+                    }
+                    
+                    const transactionElement = document.createElement('div');
+                    transactionElement.className = 'transaction-item flex items-center p-4 hover:bg-gray-50 dark:hover:bg-gray-700';
+                    
+                    const typeText = {
+                        'sent': 'Envoyé',
+                        'request': 'Demande reçue',
+                        'income': 'Revenus',
+                        'withdraw': 'Retrait'
+                    };
+                    
+                    const amountColor = transaction.amount > 0 ? 'text-green-600' : 'text-red-600';
+                    const amountPrefix = transaction.amount > 0 ? '+' : '';
+                    
+                    transactionElement.innerHTML = `
+                        <img src="${transaction.avatar}" alt="${transaction.name}" class="w-12 h-12 rounded-full mr-4">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-800 dark:text-white">${transaction.name}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">${transaction.time}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold ${amountColor}">${amountPrefix}${Math.abs(transaction.amount).toLocaleString('fr-FR')} XOF</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${typeText[transaction.type]}</p>
+                        </div>
+                    `;
+                    
+                    transactionsList.appendChild(transactionElement);
+                });
+            }
+
+            // Démarrer les animations
+            setTimeout(animateBalance, 300);
+            setTimeout(renderTransactions, 800);
+
+            // Gestion des boutons d'action avec navigation
+            const actionButtons = document.querySelectorAll('.action-button');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.querySelector('span').textContent;
+                    
+                    // Animation de clic
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                    
+                    // Navigation selon l'action
+                    setTimeout(() => {
+                        switch(action) {
+                            case 'Envoyer':
+                                window.location.href = 'contacts.html';
+                                break;
+                            case 'Simuler':
+                                window.location.href = 'transfer-simulation.html';
+                                break;
+                            case 'Recharger':
+                                window.location.href = 'top-up-options.html';
+                                break;
+                            case 'Retirer':
+                                window.location.href = 'withdraw-options.html';
+                                break;
+                        }
+                    }, 200);
+                });
+            });
+
+            // Gestion de la navigation du bas
+            const navButtons = document.querySelectorAll('.nav-button');
+            navButtons.forEach((button, index) => {
+                button.addEventListener('click', function() {
+                    const navItems = ['home.html', 'contacts.html', 'scan.html', 'insights.html', 'compte.html']; // scan.html pour le bouton scan
+                    
+                    // Animation de clic pour le bouton central (scan)
+                    if (index === 2) { // Bouton central (scan)
+                        this.querySelector('div').style.transform = 'scale(0.9)';
+                        setTimeout(() => {
+                            this.querySelector('div').style.transform = '';
+                        }, 150);
+                    }
+                    
+                    // Navigation (sauf pour l'accueil qui est la page actuelle)
+                    if (index !== 0 && navItems[index]) {
+                        setTimeout(() => {
+                            window.location.href = navItems[index];
+                        }, 200);
+                    }
+                });
+            });
+
+            // Gestion du bouton "Voir tout" des transactions
+            document.querySelector('.text-divy-blue').addEventListener('click', function() {
+                window.location.href = 'historique_transaction.html';
+            });
+        });
+    </script>
+</body>
+</html>

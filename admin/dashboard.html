@@ -1,0 +1,2551 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin 3.0 - DivyTransfert</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#1e1a2e',
+                        'divy-purple': '#2d1b4e',
+                        'divy-blue': '#3194db',
+                        'divy-orange': '#ff6b35',
+                        'divy-green': '#10b981',
+                        'divy-red': '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e1a2e 0%, #2d1b4e 25%, #3194db 50%, #ff6b35 75%, #1e1a2e 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 10s ease infinite;
+            position: relative;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/><g opacity="0.1"><circle cx="200" cy="200" r="80" fill="white"/><circle cx="800" cy="300" r="60" fill="white"/><circle cx="300" cy="700" r="70" fill="white"/><circle cx="700" cy="800" r="50" fill="white"/></g></svg>');
+            background-size: 100px 100px;
+            opacity: 0.3;
+            pointer-events: none;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .sidebar-item {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .sidebar-item:hover::before {
+            left: 100%;
+        }
+        
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 3px solid #ff6b35;
+            padding-left: 1.5rem;
+            transform: translateX(5px);
+        }
+        
+        .sidebar-item.active {
+            background: rgba(255, 107, 53, 0.2);
+            border-left: 3px solid #ff6b35;
+            padding-left: 1.5rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: rotate 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+        
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 107, 53, 0.3);
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .chart-container:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .search-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ff6b35;
+            outline: none;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+            width: 400px !important;
+        }
+        
+        .status-online {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+
+        .task-status-risk {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+            animation: glow-red 2s ease-in-out infinite alternate;
+        }
+        
+        .task-status-on-track {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+            animation: glow-green 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow-red {
+            from { box-shadow: 0 0 5px #ef4444; }
+            to { box-shadow: 0 0 15px #ef4444; }
+        }
+        
+        @keyframes glow-green {
+            from { box-shadow: 0 0 5px #10b981; }
+            to { box-shadow: 0 0 15px #10b981; }
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 8px;
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            100% { left: 100%; }
+        }
+        
+        .notification-dot {
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .floating-element {
+            animation: float-gentle 3s ease-in-out infinite;
+        }
+        
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.show {
+            display: flex;
+            opacity: 1;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: rgba(30, 26, 46, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            backdrop-filter: blur(20px);
+            transform: scale(0.7);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b35, #ff8c42);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+        
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 53, 0.3);
+        }
+
+        .live-indicator {
+            position: relative;
+        }
+        
+        .live-indicator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -10px;
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            animation: pulse 1s infinite;
+        }
+
+        .section-content {
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .table-row {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-pending {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #ff6b35;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 10px rgba(255, 107, 53, 0.2);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="overflow-hidden">
+    <div class="flex h-screen gradient-bg text-white">
+        <!-- Sidebar -->
+        <div class="w-64 bg-black bg-opacity-20 backdrop-filter backdrop-blur-lg border-r border-white border-opacity-10 transition-all duration-300" id="sidebar">
+            <!-- Header -->
+            <div class="p-4 border-b border-white border-opacity-10">
+                <h1 class="text-xl font-bold floating-element">Super Admin 3.0</h1>
+                <div class="text-xs text-gray-400 live-indicator mt-1">En ligne</div>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="p-4 scrollbar-thin overflow-y-auto h-full">
+                <div class="space-y-2">
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Tableaux de bord</h3>
+                    
+                    <div class="sidebar-item active p-3 rounded-lg cursor-pointer" onclick="switchSection('gestion-transfert')">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Gestion de Transfert</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-item p-3 rounded-lg cursor-pointer" onclick="switchSection('gestion-clients')">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Gestion Clients</span>
+                            <span class="ml-auto bg-red-500 text-xs px-2 py-1 rounded-full notification-dot">3</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-item p-3 rounded-lg cursor-pointer" onclick="switchSection('analyses')">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Analyses</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-item p-3 rounded-lg cursor-pointer" onclick="switchSection('portefeuille')">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Portefeuille</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-item p-3 rounded-lg cursor-pointer" onclick="switchSection('support')">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Support Client</span>
+                            <span class="ml-auto bg-yellow-500 text-xs px-2 py-1 rounded-full notification-dot">7</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 space-y-2">
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Sécurité & Config</h3>
+                    
+                    <div class="sidebar-item p-3 rounded-lg cursor-pointer" onclick="showSecurityModal()">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="text-sm font-medium">Sécurité</span>
+                            </div>
+                            <svg class="w-4 h-4 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-item p-3 rounded-lg cursor-pointer" onclick="switchSection('apis')">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm font-medium">APIs & Partenaires</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-item p-3 rounded-lg cursor-pointer" onclick="generateReport()">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Rapports</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-item p-3 rounded-lg cursor-pointer" onclick="showSettings()">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Paramètres</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <div class="h-16 bg-black bg-opacity-20 backdrop-filter backdrop-blur-lg border-b border-white border-opacity-10 flex items-center justify-between px-6">
+                <div class="flex items-center space-x-4">
+                    <h2 class="text-xl font-semibold" id="section-title">Gestion de Transfert</h2>
+                    <span class="text-sm text-gray-300">Super Admin</span>
+                    <span class="text-sm text-gray-300">Tableau de bord</span>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <!-- Search -->
+                    <div class="relative">
+                        <input type="text" placeholder="Rechercher..." class="search-input w-80 px-4 py-2 rounded-lg text-white placeholder-gray-400 text-sm" id="searchInput">
+                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-gray-400 bg-gray-600 px-2 py-1 rounded">
+                            ⌘K
+                        </div>
+                    </div>
+                    
+                    <!-- Date Range -->
+                    <div class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-white hover:bg-opacity-10 p-2 rounded-lg" onclick="showDatePicker()">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span id="dateRange">07/10/2023 - 07/11/2023</span>
+                    </div>
+                    
+                    <!-- Icons -->
+                    <div class="flex items-center space-x-2">
+                        <button class="p-2 hover:bg-white hover:bg-opacity-10 rounded-lg transition-all relative" onclick="showNotifications()">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
+                            </svg>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full w-5 h-5 flex items-center justify-center notification-dot">5</span>
+                        </button>
+                        <button class="p-2 hover:bg-white hover:bg-opacity-10 rounded-lg transition-all" onclick="toggleFullscreen()">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <button class="p-2 hover:bg-white hover:bg-opacity-10 rounded-lg transition-all" onclick="showHelp()">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform" onclick="showUserMenu()">
+                            <span class="text-sm font-semibold">AD</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Content -->
+            <div class="flex-1 overflow-y-auto p-6 scrollbar-thin" id="mainContent">
+                
+                <!-- Section: Gestion de Transfert -->
+                <div id="gestion-transfert" class="section-content active">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-5 gap-6 mb-8">
+                        <!-- Total Transactions -->
+                        <div class="stat-card p-6 rounded-xl cursor-pointer" onclick="showTransactionDetails()">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-blue-500 bg-opacity-20 rounded-lg">
+                                    <svg class="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex items-center text-red-400 text-sm">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    2.6%
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-3xl font-bold mb-1" id="totalTransactions">2,687</div>
+                                <div class="text-sm text-gray-400">Total Transactions</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Volume Transfert -->
+                        <div class="stat-card p-6 rounded-xl cursor-pointer" onclick="showVolumeDetails()">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-orange-500 bg-opacity-20 rounded-lg">
+                                    <svg class="w-6 h-6 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"></path>
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex items-center text-green-400 text-sm">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    8.96%
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-3xl font-bold mb-1" id="volumeTransfert">284.92M</div>
+                                <div class="text-sm text-gray-400">Volume Transfert</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Frais Perçus -->
+                        <div class="stat-card p-6 rounded-xl cursor-pointer" onclick="showFeesDetails()">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-yellow-500 bg-opacity-20 rounded-lg">
+                                    <svg class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex items-center text-green-400 text-sm">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    18.45%
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-3xl font-bold mb-1" id="fraisPercus">28.35%</div>
+                                <div class="text-sm text-gray-400">Frais Perçus</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Solde Total -->
+                        <div class="stat-card p-6 rounded-xl cursor-pointer" onclick="showBalanceDetails()">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-green-500 bg-opacity-20 rounded-lg">
+                                    <svg class="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex items-center text-green-400 text-sm">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                   </svg>
+                                   19.45%
+                               </div>
+                           </div>
+                           <div>
+                               <div class="text-3xl font-bold mb-1" id="soldeTotal">5,982.12M</div>
+                               <div class="text-sm text-gray-400">Solde Total</div>
+                           </div>
+                       </div>
+                       
+                       <!-- Clients Actifs -->
+                       <div class="stat-card p-6 rounded-xl cursor-pointer" onclick="showClientsDetails()">
+                           <div class="flex items-center justify-between mb-4">
+                               <div class="p-3 bg-purple-500 bg-opacity-20 rounded-lg">
+                                   <svg class="w-6 h-6 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                                       <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+                                   </svg>
+                               </div>
+                               <div class="flex items-center text-red-400 text-sm">
+                                   <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                       <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                                   </svg>
+                                   0.54%
+                               </div>
+                           </div>
+                           <div>
+                               <div class="text-3xl font-bold mb-1" id="clientsActifs">42,847</div>
+                               <div class="text-sm text-gray-400">Clients Actifs</div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <!-- Charts Section -->
+                   <div class="grid grid-cols-3 gap-6 mb-8">
+                       <!-- Volume et Revenus -->
+                       <div class="col-span-2 chart-container p-6 rounded-xl">
+                           <div class="flex items-center justify-between mb-6">
+                               <h3 class="text-lg font-semibold">Volume et Revenus</h3>
+                               <div class="flex items-center space-x-4">
+                                   <button class="p-2 hover:bg-white hover:bg-opacity-10 rounded-lg transition-all" onclick="exportChart('volume')">
+                                       <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                           <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"></path>
+                                       </svg>
+                                   </button>
+                                   <button class="p-2 hover:bg-white hover:bg-opacity-10 rounded-lg transition-all" onclick="refreshChart('volume')">
+                                       <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                           <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                                       </svg>
+                                   </button>
+                               </div>
+                           </div>
+                           <div class="h-64">
+                               <canvas id="volumeChart"></canvas>
+                           </div>
+                       </div>
+                       
+                       <!-- Utilisation du Budget -->
+                       <div class="chart-container p-6 rounded-xl">
+                           <div class="flex items-center justify-between mb-6">
+                               <h3 class="text-lg font-semibold">Utilisation Budget</h3>
+                           </div>
+                           <div class="space-y-4">
+                               <div class="flex items-center justify-between cursor-pointer hover:bg-white hover:bg-opacity-5 p-2 rounded" onclick="showCountryDetails('CI')">
+                                   <span class="text-sm text-gray-400">Côte d'Ivoire (CI)</span>
+                                   <span class="text-sm font-semibold">45%</span>
+                               </div>
+                               <div class="progress-bar">
+                                   <div class="progress-fill bg-orange-500" style="width: 45%"></div>
+                               </div>
+                               
+                               <div class="flex items-center justify-between cursor-pointer hover:bg-white hover:bg-opacity-5 p-2 rounded" onclick="showCountryDetails('SN')">
+                                   <span class="text-sm text-gray-400">Sénégal (SN)</span>
+                                   <span class="text-sm font-semibold">68%</span>
+                               </div>
+                               <div class="progress-bar">
+                                   <div class="progress-fill bg-green-500" style="width: 68%"></div>
+                               </div>
+                               
+                               <div class="flex items-center justify-between cursor-pointer hover:bg-white hover:bg-opacity-5 p-2 rounded" onclick="showCountryDetails('BF')">
+                                   <span class="text-sm text-gray-400">Burkina Faso (BF)</span>
+                                   <span class="text-sm font-semibold">32%</span>
+                               </div>
+                               <div class="progress-bar">
+                                   <div class="progress-fill bg-blue-500" style="width: 32%"></div>
+                               </div>
+                               
+                               <div class="flex items-center justify-between cursor-pointer hover:bg-white hover:bg-opacity-5 p-2 rounded" onclick="showCountryDetails('ML')">
+                                   <span class="text-sm text-gray-400">Mali (ML)</span>
+                                   <span class="text-sm font-semibold">78%</span>
+                               </div>
+                               <div class="progress-bar">
+                                   <div class="progress-fill bg-purple-500" style="width: 78%"></div>
+                               </div>
+                               
+                               <div class="flex items-center justify-between cursor-pointer hover:bg-white hover:bg-opacity-5 p-2 rounded" onclick="showCountryDetails('TG')">
+                                   <span class="text-sm text-gray-400">Togo (TG)</span>
+                                   <span class="text-sm font-semibold">25%</span>
+                               </div>
+                               <div class="progress-bar">
+                                   <div class="progress-fill bg-yellow-500" style="width: 25%"></div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <!-- Bottom Section -->
+                   <div class="grid grid-cols-2 gap-6">
+                       <!-- Transactions par Statut -->
+                       <div class="chart-container p-6 rounded-xl">
+                           <div class="flex items-center justify-between mb-6">
+                               <h3 class="text-lg font-semibold">Transactions par Statut</h3>
+                           </div>
+                           <div class="h-64">
+                               <canvas id="statusChart"></canvas>
+                           </div>
+                       </div>
+                       
+                       <!-- Tâches Actuelles -->
+                       <div class="chart-container p-6 rounded-xl">
+                           <div class="flex items-center justify-between mb-6">
+                               <h3 class="text-lg font-semibold">Tâches Actuelles</h3>
+                           </div>
+                           
+                           <!-- Table Header -->
+                           <div class="grid grid-cols-4 gap-4 mb-4 text-sm text-gray-400 border-b border-gray-600 pb-2">
+                               <div>Projet</div>
+                               <div>Risque</div>
+                               <div>Date Fin</div>
+                               <div>Terminé</div>
+                           </div>
+                           
+                           <!-- Task Rows -->
+                           <div class="space-y-3">
+                               <div class="grid grid-cols-4 gap-4 items-center text-sm hover:bg-white hover:bg-opacity-5 p-2 rounded cursor-pointer transition-all">
+                                   <div class="font-medium">Migration API</div>
+                                   <div><span class="task-status-risk px-2 py-1 rounded-full text-xs">À Risque</span></div>
+                                   <div class="text-gray-400">2023-09-05</div>
+                                   <div class="font-semibold">65%</div>
+                               </div>
+                               
+                               <div class="grid grid-cols-4 gap-4 items-center text-sm hover:bg-white hover:bg-opacity-5 p-2 rounded cursor-pointer transition-all">
+                                   <div class="font-medium">App Mobile</div>
+                                   <div><span class="task-status-on-track px-2 py-1 rounded-full text-xs">En Cours</span></div>
+                                   <div class="text-gray-400">2023-09-08</div>
+                                   <div class="font-semibold">52%</div>
+                               </div>
+                               
+                               <div class="grid grid-cols-4 gap-4 items-center text-sm hover:bg-white hover:bg-opacity-5 p-2 rounded cursor-pointer transition-all">
+                                   <div class="font-medium">Sécurité KYC</div>
+                                   <div><span class="task-status-on-track px-2 py-1 rounded-full text-xs">En Cours</span></div>
+                                   <div class="text-gray-400">2023-09-12</div>
+                                   <div class="font-semibold">78%</div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                </div>
+
+                <!-- Section: Gestion Clients -->
+                <div id="gestion-clients" class="section-content">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-2xl font-bold">Gestion des Clients</h3>
+                            <div class="flex space-x-3">
+                                <button class="btn-primary" onclick="addNewClient()">
+                                    <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Nouveau Client
+                                </button>
+                                <button class="btn-secondary" onclick="exportClients()">
+                                    <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"></path>
+                                    </svg>
+                                    Exporter
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Filters -->
+                        <div class="grid grid-cols-4 gap-4 mb-6">
+                            <input type="text" placeholder="Rechercher client..." class="input-field">
+                            <select class="input-field">
+                                <option>Tous les pays</option>
+                                <option>Côte d'Ivoire</option>
+                                <option>Sénégal</option>
+                                <option>Burkina Faso</option>
+                                <option>Mali</option>
+                                <option>Togo</option>
+                            </select>
+                            <select class="input-field">
+                                <option>Tous les statuts</option>
+                                <option>Actif</option>
+                                <option>Inactif</option>
+                                <option>Suspendu</option>
+                                <option>VIP</option>
+                            </select>
+                            <select class="input-field">
+                                <option>Classification</option>
+                                <option>Standard</option>
+                                <option>Premium</option>
+                                <option>VIP</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Cards for Clients -->
+                    <div class="grid grid-cols-4 gap-6 mb-8">
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-blue-500 bg-opacity-20 rounded-lg">
+                                    <svg class="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-3xl font-bold mb-1">42,847</div>
+                                <div class="text-sm text-gray-400">Total Clients</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-green-500 bg-opacity-20 rounded-lg">
+                                    <svg class="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-3xl font-bold mb-1">38,245</div>
+                                <div class="text-sm text-gray-400">Clients Actifs</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-yellow-500 bg-opacity-20 rounded-lg">
+                                    <svg class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-3xl font-bold mb-1">1,247</div>
+                                <div class="text-sm text-gray-400">Clients VIP</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-red-500 bg-opacity-20 rounded-lg">
+                                    <svg class="w-6 h-6 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-3xl font-bold mb-1">355</div>
+                                <div class="text-sm text-gray-400">Clients Suspendus</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Clients Table -->
+                    <div class="chart-container p-6 rounded-xl">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-gray-600">
+                                        <th class="text-left py-3 px-2 text-gray-400">Client</th>
+                                        <th class="text-left py-3 px-2 text-gray-400">Pays</th>
+                                        <th class="text-left py-3 px-2 text-gray-400">Classification</th>
+                                        <th class="text-left py-3 px-2 text-gray-400">Dernière Transaction</th>
+                                        <th class="text-left py-3 px-2 text-gray-400">Volume Total</th>
+                                        <th class="text-left py-3 px-2 text-gray-400">Statut</th>
+                                        <th class="text-left py-3 px-2 text-gray-400">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-row">
+                                        <td class="py-4 px-2">
+                                            <div class="flex items-center">
+                                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                                                    <span class="text-sm font-bold">KA</span>
+                                                </div>
+                                                <div>
+                                                    <div class="font-medium">Kouame Adjoua</div>
+                                                    <div class="text-sm text-gray-400">ID: #12345</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-2">🇨🇮 Côte d'Ivoire</td>
+                                        <td class="py-4 px-2"><span class="status-badge bg-yellow-500 bg-opacity-20 text-yellow-400">Premium</span></td>
+                                        <td class="py-4 px-2 text-gray-400">Il y a 2h</td>
+                                        <td class="py-4 px-2 font-medium">2,485,000 FCFA</td>
+                                        <td class="py-4 px-2"><span class="status-success status-badge">Actif</span></td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex space-x-2">
+                                                <button class="p-1 hover:bg-blue-500 hover:bg-opacity-20 rounded" onclick="viewClient('12345')">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                </button>
+                                                <button class="p-1 hover:bg-green-500 hover:bg-opacity-20 rounded" onclick="editClient('12345')">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                                                    </svg>
+                                                </button>
+                                                <button class="p-1 hover:bg-red-500 hover:bg-opacity-20 rounded" onclick="suspendClient('12345')">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="py-4 px-2">
+                                            <div class="flex items-center">
+                                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                                                    <span class="text-sm font-bold">MD</span>
+                                                </div>
+                                                <div>
+                                                    <div class="font-medium">Mamadou Diallo</div>
+                                                    <div class="text-sm text-gray-400">ID: #12346</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-2">🇸🇳 Sénégal</td>
+                                        <td class="py-4 px-2"><span class="status-badge bg-purple-500 bg-opacity-20 text-purple-400">VIP</span></td>
+                                        <td class="py-4 px-2 text-gray-400">Il y a 1j</td>
+                                        <td class="py-4 px-2 font-medium">5,750,000 FCFA</td>
+                                        <td class="py-4 px-2"><span class="status-success status-badge">Actif</span></td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex space-x-2">
+                                                <button class="p-1 hover:bg-blue-500 hover:bg-opacity-20 rounded" onclick="viewClient('12346')">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                </button>
+                                                <button class="p-1 hover:bg-green-500 hover:bg-opacity-20 rounded" onclick="editClient('12346')">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                                                    </svg>
+                                                </button>
+                                                <button class="p-1 hover:bg-red-500 hover:bg-opacity-20 rounded" onclick="suspendClient('12346')">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Portefeuille -->
+                <div id="portefeuille" class="section-content">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold mb-4">Gestion du Portefeuille</h3>
+                        
+                        <!-- Portfolio Stats -->
+                        <div class="grid grid-cols-4 gap-6 mb-8">
+                            <div class="stat-card p-6 rounded-xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="p-3 bg-green-500 bg-opacity-20 rounded-lg">
+                                        <svg class="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex items-center text-green-400 text-sm">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        +12.5%
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-3xl font-bold mb-1">5,982.12M</div>
+                                    <div class="text-sm text-gray-400">Solde Total FCFA</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card p-6 rounded-xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="p-3 bg-blue-500 bg-opacity-20 rounded-lg">
+                                        <span class="text-blue-400 font-bold">€</span>
+                                    </div>
+                                    <div class="flex items-center text-green-400 text-sm">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        +8.2%
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-3xl font-bold mb-1">€9,125.50</div>
+                                    <div class="text-sm text-gray-400">Solde EUR</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card p-6 rounded-xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="p-3 bg-purple-500 bg-opacity-20 rounded-lg">
+                                        <span class="text-purple-400 font-bold">$</span>
+                                    </div>
+                                    <div class="flex items-center text-red-400 text-sm">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        -2.1%
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-3xl font-bold mb-1">$10,847.30</div>
+                                    <div class="text-sm text-gray-400">Solde USD</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card p-6 rounded-xl">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="p-3 bg-orange-500 bg-opacity-20 rounded-lg">
+                                        <svg class="w-6 h-6 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-3xl font-bold mb-1">247</div>
+                                    <div class="text-sm text-gray-400">Transactions Aujourd'hui</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Wallet Management Actions -->
+                        <div class="grid grid-cols-2 gap-6 mb-8">
+                            <div class="chart-container p-6 rounded-xl">
+                                <h4 class="text-lg font-semibold mb-4">Actions Rapides</h4>
+                                <div class="space-y-4">
+                                    <button class="w-full btn-primary" onclick="addFunds()">
+                                        <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Ajouter des Fonds
+                                    </button>
+                                    <button class="w-full btn-secondary" onclick="withdrawFunds()">
+                                        <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        Retirer des Fonds
+                                    </button>
+                                    <button class="w-full btn-secondary" onclick="transferBetweenWallets()">
+                                        <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8zM12 15a1 1 0 100-2H6.414l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L6.414 15H12z"></path>
+                                        </svg>
+                                        Virement Interne
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container p-6 rounded-xl">
+                                <h4 class="text-lg font-semibold mb-4">Alertes de Seuil</h4>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-3 bg-yellow-500 bg-opacity-20 rounded-lg">
+                                        <div>
+                                            <div class="font-medium">Seuil Minimum FCFA</div>
+                                            <div class="text-sm text-gray-400">Seuil: 1,000,000 FCFA</div>
+                                        </div>
+                                        <span class="status-pending status-badge">Attention</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-green-500 bg-opacity-20 rounded-lg">
+                                        <div>
+                                            <div class="font-medium">Seuil EUR</div>
+                                            <div class="text-sm text-gray-400">Seuil: €5,000</div>
+                                        </div>
+                                        <span class="status-success status-badge">OK</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-green-500 bg-opacity-20 rounded-lg">
+                                        <div>
+                                            <div class="font-medium">Seuil USD</div>
+                                            <div class="text-sm text-gray-400">Seuil: $5,000</div>
+                                        </div>
+                                        <span class="status-success status-badge">OK</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Transaction History -->
+                        <div class="chart-container p-6 rounded-xl">
+                            <div class="flex items-center justify-between mb-6">
+                                <h4 class="text-lg font-semibold">Historique des Mouvements</h4>
+                                <button class="btn-secondary" onclick="exportWalletHistory()">
+                                    <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"></path>
+                                    </svg>
+                                    Exporter
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-600">
+                                            <th class="text-left py-3 px-2 text-gray-400">Date/Heure</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Type</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Montant</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Devise</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Solde Après</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Référence</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="table-row">
+                                            <td class="py-4 px-2 text-gray-400">01/11/2023 14:30</td>
+                                            <td class="py-4 px-2">
+                                                <span class="status-badge bg-green-500 bg-opacity-20 text-green-400">Crédit</span>
+                                            </td>
+                                            <td class="py-4 px-2 font-medium text-green-400">+2,500,000</td>
+                                            <td class="py-4 px-2">FCFA</td>
+                                            <td class="py-4 px-2 font-medium">5,982,120,000</td>
+                                            <td class="py-4 px-2 text-gray-400">#TXN123456</td>
+                                        </tr>
+                                        <tr class="table-row">
+                                            <td class="py-4 px-2 text-gray-400">01/11/2023 12:15</td>
+                                            <td class="py-4 px-2">
+                                                <span class="status-badge bg-red-500 bg-opacity-20 text-red-400">Débit</span>
+                                            </td>
+                                            <td class="py-4 px-2 font-medium text-red-400">-1,200,000</td>
+                                            <td class="py-4 px-2">FCFA</td>
+                                            <td class="py-4 px-2 font-medium">5,979,620,000</td>
+                                            <td class="py-4 px-2 text-gray-400">#TXN123455</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Support Client -->
+                <div id="support" class="section-content">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-2xl font-bold">Support Client</h3>
+                            <div class="flex space-x-3">
+                                <button class="btn-primary" onclick="createTicket()">
+                                    <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Nouveau Ticket
+                                </button>
+                                <button class="btn-secondary" onclick="exportTickets()">
+                                    <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"></path>
+                                    </svg>
+                                    Exporter
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Support Stats -->
+                        <div class="grid grid-cols-4 gap-6 mb-8">
+                            <div class="stat-card p-6 rounded-xl">
+                                <div class="text-3xl font-bold mb-1 text-red-400">23</div>
+                                <div class="text-sm text-gray-400">Tickets Ouverts</div>
+                            </div>
+                            <div class="stat-card p-6 rounded-xl">
+                                <div class="text-3xl font-bold mb-1 text-yellow-400">45</div>
+                                <div class="text-sm text-gray-400">En Cours</div>
+                            </div>
+                            <div class="stat-card p-6 rounded-xl">
+                                <div class="text-3xl font-bold mb-1 text-green-400">156</div>
+                                <div class="text-sm text-gray-400">Résolus Aujourd'hui</div>
+                            </div>
+                            <div class="stat-card p-6 rounded-xl">
+                                <div class="text-3xl font-bold mb-1">2h 15m</div>
+                                <div class="text-sm text-gray-400">Temps Moyen Résolution</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tickets Table -->
+                        <div class="chart-container p-6 rounded-xl">
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-600">
+                                            <th class="text-left py-3 px-2 text-gray-400">Ticket ID</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Client</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Sujet</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Priorité</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Statut</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Agent</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Créé</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="table-row">
+                                            <td class="py-4 px-2 font-medium">#SUP-001</td>
+                                            <td class="py-4 px-2">Kouame Adjoua</td>
+                                            <td class="py-4 px-2">Problème de transfert</td>
+                                            <td class="py-4 px-2">
+                                                <span class="status-badge bg-red-500 bg-opacity-20 text-red-400">Urgent</span>
+                                            </td>
+                                            <td class="py-4 px-2">
+                                                <span class="status-pending status-badge">En Cours</span>
+                                            </td>
+                                            <td class="py-4 px-2">Sarah M.</td>
+                                            <td class="py-4 px-2 text-gray-400">Il y a 2h</td>
+                                            <td class="py-4 px-2">
+                                                <div class="flex space-x-2">
+                                                    <button class="p-1 hover:bg-blue-500 hover:bg-opacity-20 rounded" onclick="viewTicket('SUP-001')">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                                                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </button>
+                                                    <button class="p-1 hover:bg-green-500 hover:bg-opacity-20 rounded" onclick="assignTicket('SUP-001')">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+                                                        </svg>
+                                                    </button>
+                                                    <button class="p-1 hover:bg-orange-500 hover:bg-opacity-20 rounded" onclick="closeTicket('SUP-001')">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="table-row">
+                                            <td class="py-4 px-2 font-medium">#SUP-002</td>
+                                            <td class="py-4 px-2">Mamadou Diallo</td>
+                                            <td class="py-4 px-2">Question sur les frais</td>
+                                            <td class="py-4 px-2">
+                                                <span class="status-badge bg-yellow-500 bg-opacity-20 text-yellow-400">Moyen</span>
+                                            </td>
+                                            <td class="py-4 px-2">
+                                                <span class="status-badge bg-blue-500 bg-opacity-20 text-blue-400">Nouveau</span>
+                                            </td>
+                                            <td class="py-4 px-2">-</td>
+                                            <td class="py-4 px-2 text-gray-400">Il y a 30m</td>
+                                            <td class="py-4 px-2">
+                                                <div class="flex space-x-2">
+                                                    <button class="p-1 hover:bg-blue-500 hover:bg-opacity-20 rounded" onclick="viewTicket('SUP-002')">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
+                                                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </button>
+                                                    <button class="p-1 hover:bg-green-500 hover:bg-opacity-20 rounded" onclick="assignTicket('SUP-002')">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+                                                        </svg>
+                                                    </button>
+                                                    <button class="p-1 hover:bg-orange-500 hover:bg-opacity-20 rounded" onclick="closeTicket('SUP-002')">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: APIs & Partenaires -->
+                <div id="apis" class="section-content">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-2xl font-bold">APIs & Partenaires</h3>
+                            <div class="flex space-x-3">
+                                <button class="btn-primary" onclick="addNewAPI()">
+                                    <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Nouveau Partenaire
+                                </button>
+                                <button class="btn-secondary" onclick="testAllAPIs()">
+                                    <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Tester Toutes APIs
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- API Status Cards -->
+                        <div class="grid grid-cols-3 gap-6 mb-8">
+                            <div class="stat-card p-6 rounded-xl card-hover">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-green-500 rounded-full mr-3 status-online"></div>
+                                        <div class="p-3 bg-orange-500 bg-opacity-20 rounded-lg">
+                                            <span class="text-orange-400 font-bold text-lg">M</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-green-400 text-sm font-medium">En ligne</span>
+                                </div>
+                                <div>
+                                    <div class="text-xl font-bold mb-1">Orange Money</div>
+                                    <div class="text-sm text-gray-400">Dernière réponse: 120ms</div>
+                                    <div class="text-sm text-gray-400">Disponibilité: 99.8%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card p-6 rounded-xl card-hover">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-green-500 rounded-full mr-3 status-online"></div>
+                                        <div class="p-3 bg-red-500 bg-opacity-20 rounded-lg">
+                                            <span class="text-red-400 font-bold text-lg">A</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-green-400 text-sm font-medium">En ligne</span>
+                                </div>
+                                <div>
+                                    <div class="text-xl font-bold mb-1">Airtel Money</div>
+                                    <div class="text-sm text-gray-400">Dernière réponse: 85ms</div>
+                                    <div class="text-sm text-gray-400">Disponibilité: 99.9%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card p-6 rounded-xl card-hover">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3 notification-dot"></div>
+                                        <div class="p-3 bg-blue-500 bg-opacity-20 rounded-lg">
+                                            <span class="text-blue-400 font-bold text-lg">S</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-yellow-400 text-sm font-medium">Dégradé</span>
+                                </div>
+                                <div>
+                                    <div class="text-xl font-bold mb-1">SingPay</div>
+                                    <div class="text-sm text-gray-400">Dernière réponse: 2.5s</div>
+                                    <div class="text-sm text-gray-400">Disponibilité: 94.2%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- API Management Table -->
+                        <div class="chart-container p-6 rounded-xl mb-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h4 class="text-lg font-semibold">Gestion des APIs</h4>
+                                <button class="btn-secondary" onclick="refreshAPIStatus()">
+                                    <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Actualiser
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full">
+                                    <thead>
+                                        <tr class="border-b border-gray-600">
+                                            <th class="text-left py-3 px-2 text-gray-400">Service</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Endpoint</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Statut</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Dernière Vérification</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Taux Succès</th>
+                                            <th class="text-left py-3 px-2 text-gray-400">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="table-row">
+                                            <td class="py-4 px-2">
+                                                <div class="flex items-center">
+                                                    <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center mr-3">
+                                                        <span class="text-sm font-bold">OM</span>
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium">Orange Money</div>
+                                                        <div class="text-sm text-gray-400">Mobile Money</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-4 px-2 text-gray-400">api.orange-money.ci/v2</td>
+                                            <td class="py-4 px-2">
+                                                <span class="status-success status-badge">Actif</span>
+                                            </td>
+                                            <td class="py-4 px-2 text-gray-400">Il y a 1 min</td>
+                                            <td class="py-4 px-2 font-medium">99.8%</td>
+                                            <td class="py-4 px-2">
+                                                <div class="flex space-x-2">
+                                                    <button class="p-1 hover:bg-blue-500 hover:bg-opacity-20 rounded" onclick="testAPI('orange-money')">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </button>
+                                                    <button class="p-1 hover:bg-green-500 hover:bg-opacity-20 rounded" onclick="configureAPI('orange-money')">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </button>
+                                                    <button class="p-1 hover:bg-yellow-500 hover:bg-opacity-20 rounded" onclick="viewAPILogs('orange-money')">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="table-row">
+                                            <td class="py-4 px-2">
+                                                <div class="flex items-center">
+                                                    <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center mr-3">
+                                                        <span class="text-sm font-bold">AM</span>
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium">Airtel Money</div>
+                                                        <div class="text-sm text-gray-400">Mobile Money</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-4 px-2 text-gray-400">api.airtel.africa/merchant</td>
+                                            <td class="py-4 px-2">
+                                                <span class="status-success status-badge">Actif</span>
+                                            </td>
+                                            <td class="py-4 px-2 text-gray-400">Il y a 1 min</td>
+                                            <td class="py-4 px-2 font-medium">99.9%</td>
+                                            <td class="py-4 px-2">
+                                                <div class="flex space-x-2">
+                                                    <button class="p-1 hover:bg-blue-500 hover:bg-opacity-20 rounded" onclick="testAPI('airtel-money')">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </button>
+                                                    <button class="p-1 hover:bg-green-500 hover:bg-opacity-20 rounded" onclick="configureAPI('airtel-money')">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </button>
+                                                    <button class="p-1 hover:bg-yellow-500 hover:bg-opacity-20 rounded" onclick="viewAPILogs('airtel-money')">
+                                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- API Logs -->
+                        <div class="chart-container p-6 rounded-xl">
+                            <div class="flex items-center justify-between mb-6">
+                                <h4 class="text-lg font-semibold">Logs d'Activité API</h4>
+                                <div class="flex space-x-2">
+                                    <select class="input-field text-sm">
+                                        <option>Toutes les APIs</option>
+                                        <option>Orange Money</option>
+                                        <option>Airtel Money</option>
+                                        <option>SingPay</option>
+                                    </select>
+                                    <button class="btn-secondary" onclick="exportAPILogs()">
+                                        <svg class="w-4 h-4 mr-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"></path>
+                                        </svg>
+                                        Exporter
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="space-y-3 max-h-96 overflow-y-auto">
+                                <div class="flex items-center justify-between p-3 bg-green-500 bg-opacity-10 border-l-4 border-green-500 rounded">
+                                    <div class="flex items-center">
+                                        <span class="status-success status-badge mr-3">200</span>
+                                        <div>
+                                            <div class="font-medium">Orange Money - Transfert réussi</div>
+                                            <div class="text-sm text-gray-400">POST /api/v2/transfer - 120ms</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm text-gray-400">14:25:30</div>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-green-500 bg-opacity-10 border-l-4 border-green-500 rounded">
+                                    <div class="flex items-center">
+                                        <span class="status-success status-badge mr-3">200</span>
+                                        <div>
+                                            <div class="font-medium">Airtel Money - Vérification solde</div>
+                                            <div class="text-sm text-gray-400">GET /api/balance - 85ms</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm text-gray-400">14:24:15</div>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-red-500 bg-opacity-10 border-l-4 border-red-500 rounded">
+                                    <div class="flex items-center">
+                                        <span class="status-error status-badge mr-3">500</span>
+                                        <div>
+                                            <div class="font-medium">SingPay - Erreur serveur</div>
+                                            <div class="text-sm text-gray-400">POST /api/payment - Timeout</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-sm text-gray-400">14:22:50</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Analyses -->
+                <div id="analyses" class="section-content">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold mb-4">Analyses et Prédictions</h3>
+                        
+                        <!-- Analysis Tools -->
+                        <div class="grid grid-cols-2 gap-6 mb-8">
+                            <div class="chart-container p-6 rounded-xl">
+                                <h4 class="text-lg font-semibold mb-4">Prévisions de Volume</h4>
+                                <div class="h-64">
+                                    <canvas id="forecastChart"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container p-6 rounded-xl">
+                                <h4 class="text-lg font-semibold mb-4">Détection d'Anomalies</h4>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-3 bg-yellow-500 bg-opacity-20 rounded-lg">
+                                        <div>
+                                            <div class="font-medium">Volume inhabituel détecté</div>
+                                            <div class="text-sm text-gray-400">Client ID: #12345 - Volume +450% vs moyenne</div>
+                                        </div>
+                                        <span class="status-pending status-badge">Alerte</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-red-500 bg-opacity-20 rounded-lg">
+                                        <div>
+                                            <div class="font-medium">Tentatives multiples échouées</div>
+                                            <div class="text-sm text-gray-400">IP: 192.168.1.100 - 15 tentatives en 5min</div>
+                                        </div>
+                                        <span class="status-error status-badge">Critique</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-green-500 bg-opacity-20 rounded-lg">
+                                        <div>
+                                            <div class="font-medium">Client potentiel VIP identifié</div>
+                                            <div class="text-sm text-gray-400">Client ID: #98765 - Régularité élevée</div>
+                                        </div>
+                                        <span class="status-success status-badge">Opportunité</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Performance Analytics -->
+                        <div class="grid grid-cols-3 gap-6 mb-8">
+                            <div class="chart-container p-6 rounded-xl">
+                                <h4 class="text-lg font-semibold mb-4">Performance par Pays</h4>
+                                <div class="h-48">
+                                    <canvas id="countryPerformanceChart"></canvas>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container p-6 rounded-xl">
+                                <h4 class="text-lg font-semibold mb-4">Taux de Conversion</h4>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-400">Nouveaux clients</span>
+                                        <span class="font-semibold">23.5%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill bg-blue-500" style="width: 23.5%"></div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-400">Clients récurrents</span>
+                                        <span class="font-semibold">78.9%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill bg-green-500" style="width: 78.9%"></div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-400">Abandon de transaction</span>
+                                        <span class="font-semibold">4.2%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill bg-red-500" style="width: 4.2%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-container p-6 rounded-xl">
+                                <h4 class="text-lg font-semibold mb-4">Métriques Temps Réel</h4>
+                                <div class="space-y-6">
+                                    <div class="text-center">
+                                        <div class="text-3xl font-bold text-green-400" id="liveTransactions">247</div>
+                                        <div class="text-sm text-gray-400">Transactions/h</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-2xl font-bold text-blue-400" id="averageAmount">125,840</div>
+                                        <div class="text-sm text-gray-400">Montant moyen (FCFA)</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-2xl font-bold text-orange-400" id="responseTime">340ms</div>
+                                        <div class="text-sm text-gray-400">Temps de réponse moyen</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Security Modal -->
+    <div id="securityModal" class="modal">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold">Paramètres de Sécurité</h3>
+                <button onclick="closeModal('securityModal')" class="p-2 hover:bg-white hover:bg-opacity-10 rounded-lg">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-white bg-opacity-5 rounded-lg">
+                    <div>
+                        <div class="font-medium">Authentification à deux facteurs</div>
+                        <div class="text-sm text-gray-400">Sécurisez votre compte avec 2FA</div>
+                    </div>
+                    <button class="btn-primary" onclick="toggle2FA()">Activer</button>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-white bg-opacity-5 rounded-lg">
+                    <div>
+                        <div class="font-medium">Sessions actives</div>
+                        <div class="text-sm text-gray-400">Gérez vos sessions ouvertes</div>
+                    </div>
+                    <button class="btn-primary" onclick="manageSessions()">Gérer</button>
+                </div>
+                <div class="flex items-center justify-between p-4 bg-white bg-opacity-5 rounded-lg">
+                    <div>
+                        <div class="font-medium">Logs d'audit</div>
+                        <div class="text-sm text-gray-400">Consultez l'historique des actions</div>
+                    </div>
+                    <button class="btn-primary" onclick="viewAuditLogs()">Consulter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div id="notificationsModal" class="modal">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold">Notifications</h3>
+                <button onclick="closeModal('notificationsModal')" class="p-2 hover:bg-white hover:bg-opacity-10 rounded-lg">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-4 max-h-96 overflow-y-auto">
+                <div class="p-4 bg-red-500 bg-opacity-20 border-l-4 border-red-500 rounded">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-red-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div>
+                            <div class="font-medium">Alerte Sécurité</div>
+                            <div class="text-sm text-gray-300">Tentative de connexion suspecte détectée</div>
+                            <div class="text-xs text-gray-400 mt-1">Il y a 5 minutes</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 bg-yellow-500 bg-opacity-20 border-l-4 border-yellow-500 rounded">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-yellow-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div>
+                            <div class="font-medium">Budget Alert</div>
+                            <div class="text-sm text-gray-300">Budget Mali dépassé de 15%</div>
+                            <div class="text-xs text-gray-400 mt-1">Il y a 1 heure</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 bg-green-500 bg-opacity-20 border-l-4 border-green-500 rounded">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div>
+                            <div class="font-medium">Transaction Réussie</div>
+                            <div class="text-sm text-gray-300">Transfert de 50,000 FCFA vers CI</div>
+                            <div class="text-xs text-gray-400 mt-1">Il y a 2 heures</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Menu Modal -->
+    <div id="userMenuModal" class="modal">
+        <div class="modal-content max-w-xs">
+            <div class="text-center mb-4">
+                <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <span class="text-xl font-bold">AD</span>
+                </div>
+                <div class="font-semibold">Admin DivyTransfert</div>
+                <div class="text-sm text-gray-400">admin@divytransfert.com</div>
+            </div>
+            <div class="space-y-2">
+                <button class="w-full text-left p-3 hover:bg-white hover:bg-opacity-10 rounded-lg transition-all" onclick="editProfile()">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                        </svg>
+                        Modifier le profil
+                    </div>
+                </button>
+                <button class="w-full text-left p-3 hover:bg-white hover:bg-opacity-10 rounded-lg transition-all" onclick="changePassword()">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        Changer mot de passe
+                    </div>
+                </button>
+                <hr class="border-gray-600">
+                <button class="w-full text-left p-3 hover:bg-red-500 hover:bg-opacity-20 rounded-lg transition-all text-red-400" onclick="logout()">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path>
+                        </svg>
+                        Déconnexion
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Charts initialization
+        let volumeChart, statusChart, forecastChart, countryPerformanceChart;
+
+        // Volume Chart
+        const ctx1 = document.getElementById('volumeChart').getContext('2d');
+        volumeChart = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Q1 19', 'Q2 19', 'Q3 19', 'Q4 19', 'Q1 20', 'Q2 20', 'Q3 20', 'Q4 20', 'Q1 21', 'Q2 21', 'Q3 21', 'Q4 21', 'Q1 22', 'Q2 22', 'Q3 22', 'Q4 22', 'Q1 23', 'Q2 23', 'Q3 23'],
+                datasets: [{
+                    label: 'Volume',
+                    data: [100, 120, 80, 140, 160, 90, 180, 200, 160, 220, 190, 250, 180, 280, 240, 320, 290, 360, 340],
+                    borderColor: '#ff6b35',
+                    backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#ff6b35',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(30, 26, 46, 0.9)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#ff6b35',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Status Chart
+        const ctx2 = document.getElementById('statusChart').getContext('2d');
+        statusChart = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Réussies', 'En Attente', 'Échouées', 'Annulées'],
+                datasets: [{
+                    data: [1200, 300, 120, 80],
+                    backgroundColor: [
+                        '#10b981',
+                        '#3194db',
+                        '#ff6b35',
+                        '#ef4444'
+                    ],
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(30, 26, 46, 0.9)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#ff6b35',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Forecast Chart
+        if (document.getElementById('forecastChart')) {
+            const ctx3 = document.getElementById('forecastChart').getContext('2d');
+            forecastChart = new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: ['Nov 23', 'Déc 23', 'Jan 24', 'Fév 24', 'Mar 24', 'Avr 24'],
+                    datasets: [{
+                        label: 'Actuel',
+                        data: [340, 380, 420, 450, 490, 520],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: false
+                    }, {
+                        label: 'Prévision',
+                        data: [null, null, null, null, 490, 545, 580, 615],
+                        borderColor: '#ff6b35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        borderDash: [5, 5],
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Country Performance Chart
+        if (document.getElementById('countryPerformanceChart')) {
+            const ctx4 = document.getElementById('countryPerformanceChart').getContext('2d');
+            countryPerformanceChart = new Chart(ctx4, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Côte d\'Ivoire', 'Sénégal', 'Burkina Faso', 'Mali', 'Togo'],
+                    datasets: [{
+                        data: [35, 25, 15, 15, 10],
+                        backgroundColor: [
+                            '#ff6b35',
+                            '#10b981',
+                            '#3194db',
+                            '#8b5cf6',
+                            '#f59e0b'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                usePointStyle: true,
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Utility Functions
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300`;
+            
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500',
+                info: 'bg-blue-500'
+            };
+            
+            toast.classList.add(colors[type] || colors.info);
+            toast.innerHTML = `
+                <div class="flex items-center text-white">
+                    <span class="mr-2">${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 p-1 hover:bg-white hover:bg-opacity-20 rounded">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // Modal Functions
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('show');
+        }
+
+        // Navigation Functions
+        function switchSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all sidebar items
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(section).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            const titles = {
+                'gestion-transfert': 'Gestion de Transfert',
+                'gestion-clients': 'Gestion Clients',
+                'analyses': 'Analyses',
+                'portefeuille': 'Portefeuille',
+                'support': 'Support Client',
+                'apis': 'APIs & Partenaires'
+            };
+            
+            document.getElementById('section-title').textContent = titles[section];
+            showToast(`Section ${titles[section]} activée`, 'success');
+        }
+
+        // Action Functions
+        function showSecurityModal() {
+            showModal('securityModal');
+        }
+
+        function showNotifications() {
+            showModal('notificationsModal');
+        }
+
+        function showUserMenu() {
+            showModal('userMenuModal');
+        }
+
+        // Client Management Functions
+        function addNewClient() {
+            showToast('Formulaire d\'ajout de client ouvert', 'info');
+        }
+
+        function exportClients() {
+            showToast('Export des clients en cours...', 'info');
+            setTimeout(() => {
+                showToast('Export terminé avec succès!', 'success');
+            }, 2000);
+        }
+
+        function viewClient(clientId) {
+            showToast(`Affichage des détails du client ${clientId}`, 'info');
+        }
+
+        function editClient(clientId) {
+            showToast(`Édition du client ${clientId}`, 'info');
+        }
+
+        function suspendClient(clientId) {
+            showToast(`Client ${clientId} suspendu`, 'warning');
+        }
+
+        // Portfolio Functions
+        function addFunds() {
+            showToast('Interface d\'ajout de fonds ouverte', 'info');
+        }
+
+        function withdrawFunds() {
+            showToast('Interface de retrait de fonds ouverte', 'info');
+        }
+
+        function transferBetweenWallets() {
+            showToast('Interface de virement interne ouverte', 'info');
+        }
+
+        function exportWalletHistory() {
+            showToast('Export de l\'historique du portefeuille...', 'info');
+        }
+
+        // Support Functions
+        function createTicket() {
+            showToast('Création d\'un nouveau ticket de support', 'info');
+        }
+
+        function exportTickets() {
+            showToast('Export des tickets en cours...', 'info');
+        }
+
+        function viewTicket(ticketId) {
+            showToast(`Affichage du ticket ${ticketId}`, 'info');
+        }
+
+        function assignTicket(ticketId) {
+            showToast(`Attribution du ticket ${ticketId}`, 'info');
+        }
+
+        function closeTicket(ticketId) {
+            showToast(`Ticket ${ticketId} fermé`, 'success');
+        }
+
+        // API Functions
+        function addNewAPI() {
+            showToast('Ajout d\'un nouveau partenaire API', 'info');
+        }
+
+        function testAllAPIs() {
+            showToast('Test de toutes les APIs en cours...', 'info');
+            setTimeout(() => {
+                showToast('Tests terminés - Voir les résultats dans les logs', 'success');
+            }, 3000);
+        }
+
+        function testAPI(apiName) {
+            showToast(`Test de l'API ${apiName} en cours...`, 'info');
+        }
+
+        function configureAPI(apiName) {
+            showToast(`Configuration de l'API ${apiName}`, 'info');
+        }
+
+        function viewAPILogs(apiName) {
+            showToast(`Affichage des logs pour ${apiName}`, 'info');
+        }
+
+        function refreshAPIStatus() {
+            showToast('Actualisation du statut des APIs...', 'info');
+        }
+
+        function exportAPILogs() {
+            showToast('Export des logs d\'API en cours...', 'info');
+        }
+
+        // Other Functions
+        function showTransactionDetails() {
+            showToast('Ouverture des détails des transactions...', 'info');
+        }
+
+        function showVolumeDetails() {
+            showToast('Analyse du volume en cours...', 'info');
+        }
+
+        function showFeesDetails() {
+            showToast('Détails des frais affichés', 'info');
+        }
+
+        function showBalanceDetails() {
+            showToast('Solde détaillé chargé', 'success');
+        }
+
+        function showClientsDetails() {
+            showToast('Liste des clients actifs', 'info');
+        }
+
+        function exportChart(chartType) {
+            showToast(`Export du graphique ${chartType} en cours...`, 'info');
+            setTimeout(() => {
+                showToast('Export terminé avec succès!', 'success');
+            }, 2000);
+        }
+
+        function refreshChart(chartType) {
+            showToast('Actualisation des données...', 'info');
+            
+            if (chartType === 'volume') {
+                const newData = volumeChart.data.datasets[0].data.map(val => 
+                    val + Math.random() * 50 - 25
+                );
+                volumeChart.data.datasets[0].data = newData;
+                volumeChart.update('active');
+            }
+            
+            setTimeout(() => {
+                showToast('Données actualisées', 'success');
+            }, 1500);
+        }
+
+        function showCountryDetails(country) {
+            const countries = {
+                'CI': 'Côte d\'Ivoire',
+                'SN': 'Sénégal',
+                'BF': 'Burkina Faso',
+                'ML': 'Mali',
+                'TG': 'Togo'
+            };
+            showToast(`Détails pour ${countries[country]}`, 'info');
+        }
+
+        function showDatePicker() {
+            showToast('Sélecteur de dates ouvert', 'info');
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                showToast('Mode plein écran activé', 'success');
+            } else {
+                document.exitFullscreen();
+                showToast('Mode plein écran désactivé', 'info');
+            }
+        }
+
+        function showHelp() {
+            showToast('Centre d\'aide ouvert', 'info');
+        }
+
+        function generateReport() {
+            showToast('Génération du rapport en cours...', 'info');
+            setTimeout(() => {
+                showToast('Rapport généré avec succès!', 'success');
+            }, 3000);
+        }
+
+        function showSettings() {
+            showToast('Paramètres généraux ouverts', 'info');
+        }
+
+        // Security Functions
+        function toggle2FA() {
+            showToast('2FA activé avec succès', 'success');
+            event.target.textContent = 'Désactiver';
+            event.target.classList.add('bg-red-500');
+        }
+
+        function manageSessions() {
+            showToast('Gestion des sessions ouverte', 'info');
+        }
+
+        function viewAuditLogs() {
+            showToast('Logs d\'audit chargés', 'info');
+        }
+
+        // User Functions
+        function editProfile() {
+            closeModal('userMenuModal');
+            showToast('Édition du profil', 'info');
+        }
+
+        function changePassword() {
+            closeModal('userMenuModal');
+            showToast('Changement de mot de passe', 'info');
+        }
+
+        function logout() {
+            closeModal('userMenuModal');
+            showToast('Déconnexion en cours...', 'warning');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 2000);
+        }
+
+        // Animation Functions
+        function animateNumber(element, target, duration = 2000) {
+            const start = parseInt(element.textContent.replace(/[^0-9]/g, ''));
+            const increment = (target - start) / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current).toLocaleString();
+            }, 16);
+        }
+
+        function animateProgressBars() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+        }
+
+        // Real-time Updates
+        function updateLiveMetrics() {
+            // Update live transaction count
+            const liveTransactionsElement = document.getElementById('liveTransactions');
+            if (liveTransactionsElement) {
+                const currentValue = parseInt(liveTransactionsElement.textContent);
+                const newValue = currentValue + Math.floor(Math.random() * 10) - 5;
+                liveTransactionsElement.textContent = Math.max(0, newValue);
+            }
+
+            // Update average amount
+            const averageAmountElement = document.getElementById('averageAmount');
+            if (averageAmountElement) {
+                const currentValue = parseInt(averageAmountElement.textContent.replace(/,/g, ''));
+                const newValue = currentValue + Math.floor(Math.random() * 20000) - 10000;
+                averageAmountElement.textContent = Math.max(0, newValue).toLocaleString();
+            }
+
+            // Update response time
+            const responseTimeElement = document.getElementById('responseTime');
+            if (responseTimeElement) {
+                const responseTime = Math.floor(Math.random() * 500) + 50;
+                responseTimeElement.textContent = responseTime + 'ms';
+            }
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            if (query.length > 2) {
+                showToast(`Recherche: "${query}"`, 'info');
+                // Here you would implement actual search functionality
+                // For now, we'll just show a toast notification
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.metaKey || e.ctrlKey) {
+                switch(e.key) {
+                    case 'k':
+                        e.preventDefault();
+                        document.getElementById('searchInput').focus();
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        showNotifications();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        refreshChart('volume');
+                        break;
+                    case '1':
+                        e.preventDefault();
+                        switchSection('gestion-transfert');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        switchSection('gestion-clients');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        switchSection('portefeuille');
+                        break;
+                    case '4':
+                        e.preventDefault();
+                        switchSection('support');
+                        break;
+                    case '5':
+                        e.preventDefault();
+                        switchSection('apis');
+                        break;
+                    case '6':
+                        e.preventDefault();
+                        switchSection('analyses');
+                        break;
+                }
+            }
+            
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal.show').forEach(modal => {
+                    modal.classList.remove('show');
+                });
+            }
+        });
+
+        // Real-time simulation
+        setInterval(() => {
+            // Update stats randomly
+            const stats = document.querySelectorAll('.stat-card .text-3xl');
+            stats.forEach(stat => {
+                if (Math.random() > 0.9) {
+                    stat.style.transform = 'scale(1.05)';
+                    stat.style.color = '#ff6b35';
+                    setTimeout(() => {
+                        stat.style.transform = 'scale(1)';
+                        stat.style.color = '';
+                    }, 300);
+                }
+            });
+
+            // Update live metrics
+            updateLiveMetrics();
+
+            // Simulate new notifications
+            if (Math.random() > 0.98) {
+                const notificationDots = document.querySelectorAll('.notification-dot');
+                notificationDots.forEach(dot => {
+                    if (dot.textContent && !isNaN(parseInt(dot.textContent))) {
+                        const current = parseInt(dot.textContent);
+                        dot.textContent = current + 1;
+                    }
+                });
+                showToast('Nouvelle notification reçue', 'info');
+            }
+        }, 5000);
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            showToast('Dashboard Super Admin 3.0 chargé avec succès!', 'success');
+            
+            // Animate initial numbers
+            setTimeout(() => {
+                const totalTransactionsElement = document.getElementById('totalTransactions');
+                const clientsActifsElement = document.getElementById('clientsActifs');
+                
+                if (totalTransactionsElement) {
+                    animateNumber(totalTransactionsElement, 2687);
+                }
+                if (clientsActifsElement) {
+                    animateNumber(clientsActifsElement, 42847);
+                }
+            }, 1000);
+
+            // Trigger progress bar animation
+            setTimeout(animateProgressBars, 2000);
+
+            // Show welcome message
+            setTimeout(() => {
+                showToast('Bienvenue dans le Super Admin Dashboard 3.0!', 'success');
+            }, 500);
+        });
+
+        // Additional Helper Functions
+        function formatCurrency(amount, currency = 'FCFA') {
+            return new Intl.NumberFormat('fr-FR').format(amount) + ' ' + currency;
+        }
+
+        function formatDate(date) {
+            return new Intl.DateTimeFormat('fr-FR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+            
+            if (diffInSeconds < 60) return 'Il y a quelques secondes';
+            if (diffInSeconds < 3600) return `Il y a ${Math.floor(diffInSeconds / 60)} minutes`;
+            if (diffInSeconds < 86400) return `Il y a ${Math.floor(diffInSeconds / 3600)} heures`;
+            return `Il y a ${Math.floor(diffInSeconds / 86400)} jours`;
+        }
+
+        // Export functions for external use
+        window.dashboardFunctions = {
+            switchSection,
+            showToast,
+            showModal,
+            closeModal,
+            refreshChart,
+            updateLiveMetrics,
+            animateNumber,
+            formatCurrency,
+            formatDate,
+            getTimeAgo
+        };
+
+        // Console welcome message
+        console.log('%c🚀 Super Admin Dashboard 3.0 - DivyTransfert', 'color: #ff6b35; font-size: 20px; font-weight: bold;');
+        console.log('%cDashboard chargé avec succès!', 'color: #10b981; font-size: 14px;');
+        console.log('%cRaccourcis clavier disponibles:', 'color: #3194db; font-size: 12px;');
+        console.log('Ctrl+K: Recherche');
+        console.log('Ctrl+N: Notifications');
+        console.log('Ctrl+R: Actualiser graphiques');
+        console.log('Ctrl+1-6: Naviguer entre sections');
+        console.log('Escape: Fermer modals');
+
+    </script>
+</body>
+</html>

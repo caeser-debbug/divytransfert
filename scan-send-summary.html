@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Envoyer maintenant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd',
+                        'lime-green': '#3194db'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(166, 230, 110, 0.3);
+        }
+        
+        .btn-secondary {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            background-color: rgba(166, 230, 110, 0.1);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <div class="bg-white px-4 py-3 border-b border-gray-200">
+            <div class="flex items-center">
+                <button onclick="window.location.href='scan-send-amount.html'" class="p-2 hover:bg-gray-100 rounded-full transition-colors mr-3">
+                    <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </button>
+                <h1 class="text-lg font-semibold text-gray-800">Envoyer maintenant</h1>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 px-4 py-6">
+            <div class="max-w-md mx-auto space-y-6 fade-in">
+                <!-- Destinataire -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <h2 class="text-sm font-medium text-gray-600 mb-4">Destinataire</h2>
+                    <div class="flex items-center">
+                        <img 
+                            id="recipient-avatar"
+                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
+                            alt="Destinataire" 
+                            class="w-12 h-12 rounded-full mr-4"
+                        >
+                        <div class="flex-1">
+                            <h3 id="recipient-name" class="font-semibold text-gray-800">Cameron Williamson</h3>
+                            <p id="recipient-email" class="text-sm text-gray-500">cameron.williamson@gmail.com</p>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Montant à envoyer -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <h2 class="text-sm font-medium text-gray-600 mb-4">Montant à envoyer</h2>
+                    <div class="text-2xl font-bold text-gray-800" id="amount-display">
+                        150 000 XOF
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <h2 class="text-sm font-medium text-gray-600 mb-4">Ajouter des notes</h2>
+                    <textarea 
+                        id="notes-input"
+                        rows="3"
+                        placeholder="Paiement des salaires de fin d'année et des avantages."
+                        class="w-full px-0 py-2 border-0 resize-none text-gray-800 placeholder-gray-400 focus:ring-0 focus:outline-none bg-transparent"
+                    >Paiement des salaires de fin d'année et des avantages.</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="px-4 py-4 bg-white border-t border-gray-200">
+            <div class="max-w-md mx-auto flex space-x-4">
+                <button 
+                    onclick="cancelTransfer()"
+                    class="btn-secondary flex-1 py-4 border-2 border-lime-green text-lime-green rounded-full font-medium hover:bg-lime-green hover:bg-opacity-10 transition-colors"
+                >
+                    Annuler
+                </button>
+                <button 
+                    onclick="sendMoney()"
+                    class="btn-primary flex-1 py-4 bg-lime-green text-white rounded-full font-medium hover:bg-opacity-90 transition-colors"
+                    id="send-btn"
+                >
+                    Envoyer l'argent
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Récupérer les paramètres de l'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const amount = urlParams.get('amount');
+            const contactName = urlParams.get('contact');
+
+            // Mettre à jour l'affichage
+            if (amount) {
+                const formattedAmount = parseInt(amount).toLocaleString('fr-FR');
+                document.getElementById('amount-display').textContent = `${formattedAmount} XOF`;
+            }
+
+            if (contactName) {
+                document.getElementById('recipient-name').textContent = contactName;
+                // Mettre à jour l'email en fonction du nom (simulation)
+                const email = contactName.toLowerCase().replace(' ', '.') + '@gmail.com';
+                document.getElementById('recipient-email').textContent = email;
+            }
+        });
+
+        function cancelTransfer() {
+            window.location.href = 'scan-send-amount.html';
+        }
+
+        function sendMoney() {
+            const sendBtn = document.getElementById('send-btn');
+            const amount = new URLSearchParams(window.location.search).get('amount');
+            const contactName = new URLSearchParams(window.location.search).get('contact');
+            const notes = document.getElementById('notes-input').value;
+
+            // Animation du bouton
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = `
+                <svg class="loading-spinner w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Envoi en cours...
+            `;
+
+            // Simuler le traitement
+            setTimeout(() => {
+                // Rediriger vers la page de confirmation
+                const params = new URLSearchParams({
+                    amount: amount,
+                    contact: contactName,
+                    notes: notes,
+                    timestamp: new Date().toISOString()
+                });
+                window.location.href = `scan-send-success.html?${params.toString()}`;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

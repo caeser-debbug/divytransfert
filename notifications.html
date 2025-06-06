@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Notifications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .notification-item {
+            transition: all 0.2s ease;
+        }
+        
+        .notification-item:hover {
+            transform: translateX(4px);
+        }
+        
+        .action-button {
+            transition: all 0.2s ease;
+        }
+        
+        .action-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #3194db 0%, #124556 100%);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-800 bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <div class="bg-white dark:bg-gray-800 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+                <button onclick="window.location.href='home.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </button>
+                <h1 class="text-lg font-semibold text-gray-800 dark:text-white">Notification</h1>
+                <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 px-4 py-4">
+            <!-- Section Aujourd'hui -->
+            <div class="mb-6">
+                <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wide">Aujourd'hui</h2>
+                
+                <!-- Notification 1: Nouvelles mises à jour -->
+                <div class="notification-item bg-white dark:bg-gray-700 rounded-xl p-4 mb-3 shadow-sm border border-gray-100 dark:border-gray-600 fade-in">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 bg-divy-blue bg-opacity-20 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <svg class="w-5 h-5 text-divy-blue" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h3 class="text-sm font-semibold text-gray-800 dark:text-white mb-1">Nouvelles mises à jour disponibles!</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Mettez à jour l'application DivyTransfert et profitez de nouvelles fonctionnalités pour une meilleure expérience financière.</p>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">09:41</span>
+                                </div>
+                                <div class="flex items-center ml-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification 2: Authentification 2FA -->
+                <div class="notification-item bg-white dark:bg-gray-700 rounded-xl p-4 mb-3 shadow-sm border border-gray-100 dark:border-gray-600 fade-in">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h3 class="text-sm font-semibold text-gray-800 dark:text-white mb-1">Activer l'authentification à 2 facteurs</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Utilisez l'authentification à deux facteurs pour une sécurité supplémentaire sur votre compte.</p>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">09:10</span>
+                                </div>
+                                <div class="flex items-center ml-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification 3: Demande d'argent -->
+                <div class="notification-item bg-white dark:bg-gray-700 rounded-xl p-4 mb-3 shadow-sm border border-gray-100 dark:border-gray-600 fade-in">
+                    <div class="flex items-start">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Moussa Traoré" class="w-10 h-10 rounded-full mr-3 flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h3 class="text-sm font-semibold text-gray-800 dark:text-white mb-1">Moussa Traoré a demandé 45 000 XOF</h3>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">08:15</span>
+                                </div>
+                                <div class="flex items-center ml-3 space-x-2">
+                                    <button class="action-button w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                    <button class="action-button w-8 h-8 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </button>
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Hier -->
+            <div class="mb-6">
+                <h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wide">Hier</h2>
+                
+                <!-- Notification 4: Support paiements multiples -->
+                <div class="notification-item bg-white dark:bg-gray-700 rounded-xl p-4 mb-3 shadow-sm border border-gray-100 dark:border-gray-600 fade-in">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h3 class="text-sm font-semibold text-gray-800 dark:text-white mb-1">Mise à jour du support paiements multiples!</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Vous pouvez maintenant ajouter plusieurs cartes. Allez dans Compte → Méthodes de paiement pour ajouter un autre paiement.</p>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">09:47</span>
+                                </div>
+                                <div class="flex items-center ml-3">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notification 5: Promotions -->
+                <div class="notification-item bg-white dark:bg-gray-700 rounded-xl p-4 mb-3 shadow-sm border border-gray-100 dark:border-gray-600 fade-in">
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M8 11v6a2 2 0 002 2h4a2 2 0 002-2v-6a2 2 0 00-2-2H10a2 2 0 00-2 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h3 class="text-sm font-semibold text-gray-800 dark:text-white mb-1">Promotions de Noël et Nouvel An!</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Achetez chez vos marchands préférés avec un achat minimum de 50 000 XOF pour obtenir jusqu'à 20% de cashback.</p>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">15:23</span>
+                                </div>
+                                <div class="flex items-center ml-3">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme toggle button -->
+        <button id="theme-toggle" class="fixed top-4 right-16 p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion du thème
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+
+            // Animation progressive des notifications
+            const notifications = document.querySelectorAll('.notification-item');
+            notifications.forEach((notification, index) => {
+                notification.style.animationDelay = `${index * 0.1}s`;
+            });
+
+            // Gestion des boutons d'action pour les demandes
+            const actionButtons = document.querySelectorAll('.action-button');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Animation de clic
+                    this.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                    
+                    // Déterminer l'action (accepter ou refuser)
+                    const isAccept = this.classList.contains('bg-green-500');
+                    const notificationItem = this.closest('.notification-item');
+                    
+                    if (isAccept) {
+                        // Animation d'acceptation
+                        notificationItem.style.backgroundColor = '#f0fdf4';
+                        setTimeout(() => {
+                            notificationItem.style.opacity = '0.7';
+                        }, 500);
+                    } else {
+                        // Animation de refus
+                        notificationItem.style.backgroundColor = '#fef2f2';
+                        setTimeout(() => {
+                            notificationItem.style.opacity = '0.7';
+                        }, 500);
+                    }
+                });
+            });
+
+            // Gestion du clic sur les notifications
+            notifications.forEach(notification => {
+                notification.addEventListener('click', function() {
+                    // Animation de clic
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                    
+                    // Marquer comme lue (retirer le point vert)
+                    const greenDot = this.querySelector('.bg-green-500');
+                    if (greenDot && greenDot.classList.contains('w-2')) {
+                        greenDot.style.opacity = '0';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

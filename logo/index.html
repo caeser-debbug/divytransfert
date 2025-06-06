@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DivyTransfert</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Header Effects */
+        .dex-header-container {
+            position: fixed;
+            top: 0;
+            transition: all 0.3s ease-in-out;
+            z-index: 50;
+            border-bottom-width: 1px;
+            border-color: transparent;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .dex-header-container.hasscroll {
+            border-color: #e5e7eb;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Animations */
+        .fade-in-load {
+            animation: fadeInUp ease 0.6s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+        .fade-in-load-medium {
+            animation: fadeInUp ease 1.2s;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+        }
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Gradient Effects */
+        .blue-gradient {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%);
+            position: relative;
+        }
+        .blue-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.05) 100%);
+        }
+
+        /* Card Hover Effects */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Button Effects */
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Logo placeholder */
+        .logo-placeholder {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .logo-placeholder::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24"><path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 9.74s9-4.19 9-9.74V7l-10-5z"/></svg>') center/contain no-repeat;
+        }
+
+        /* Partner logos */
+        .partner-logo {
+            transition: all 0.3s ease;
+            filter: grayscale(100%);
+            opacity: 0.6;
+        }
+        .partner-logo:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        /* Mobile menu animation */
+        .mobile-menu-enter {
+            animation: slideDown 0.3s ease-out;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Testimonial cards */
+        .testimonial-card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            transition: all 0.3s ease;
+        }
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+
+        /* Feature icons animation */
+        .feature-icon {
+            transition: all 0.3s ease;
+        }
+        .feature-icon:hover {
+            transform: rotate(5deg) scale(1.1);
+        }
+
+        /* Statistics animation */
+        .stat-counter {
+            font-weight: 800;
+            color: #1e40af;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Responsive video container */
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1d4ed8;
+        }
+
+        /* Loading animation for images */
+        .img-loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Enhanced mobile styles */
+        @media (max-width: 768px) {
+            .mobile-padding { padding-left: 1rem; padding-right: 1rem; }
+            .mobile-text-sm { font-size: 0.875rem; }
+            .mobile-hidden { display: none; }
+            .mobile-full { width: 100%; }
+            .mobile-center { text-align: center; }
+            .mobile-stack > * { margin-bottom: 1rem; }
+        }
+
+        /* Parallax effect */
+        .parallax {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        /* Glass morphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+    <style>
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body class="bg-white overflow-x-hidden">
+    <!-- Header -->
+    <header class="dex-header-container mx-auto w-full bg-white fade-in-load">
+        <div class="container mx-auto flex items-center flex-col flex-wrap z-40 bg-white/95 lg:flex-no-wrap lg:static lg:justify-between lg:flex-row py-3 px-4">
+            <div class="flex justify-between w-full lg:w-1/4 py-2 items-center">
+                <a href="/" class="flex items-center group">
+                    <!-- Logo avec effet hover -->
+                    <div class="h-14 w-40 text-white rounded-lg flex items-center justify-center font-bold text-lg group-hover:scale-105 transition-transform">
+                        <img src="logo/logo1.png" alt="DivyTransfert" class="h-10 w-auto">
+                    </div>
+                </a>
+                <div class="flex lg:hidden items-center space-x-2">
+                    <a href="/get-started" class="btn-primary text-white px-3 py-2 rounded-lg text-sm font-medium">
+                        Commencer
+                    </a>
+                    <button class="button p-2 outline-none focus:outline-none" onclick="toggleMenu()">
+                        <span id="menu-open"><i class="fa fa-bars fa-lg text-blue-600"></i></span>
+                        <span id="menu-close" class="hidden"><i class="fal fa-times fa-lg text-gray-400"></i></span>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="mobile-menu" class="hidden text-center lg:border-0 lg:block w-full lg:w-auto">
+                <ul class="flex flex-col lg:flex-row lg:space-x-2 lg:pb-0 pb-6 mobile-stack">
+                    <li><a href="/guides" class="block w-full lg:w-auto text-gray-600 hover:text-blue-600 px-4 py-2 rounded-lg transition-colors">Guides</a></li>
+                    <li><a href="/pricing" class="block w-full lg:w-auto text-gray-600 hover:text-blue-600 px-4 py-2 rounded-lg transition-colors">Tarifs</a></li>
+                    <li><a href="/product" class="block w-full lg:w-auto text-gray-600 hover:text-blue-600 px-4 py-2 rounded-lg transition-colors">Produit</a></li>
+                    <li><a href="/login" class="block w-full lg:w-auto text-blue-600 hover:text-blue-700 px-4 py-2 transition-colors">Se connecter</a></li>
+                    <li class="lg:hidden"><a href="/get-started" class="btn-primary text-white px-6 py-3 rounded-lg font-medium block">Commencer gratuitement</a></li>
+                    <li class="hidden lg:block"><a href="/get-started" class="btn-primary text-white px-6 py-2 rounded-lg text-sm font-medium">Commencer gratuitement</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="mx-auto mt-16 lg:mt-20">
+        <!-- Modal vidéo -->
+        <dialog id="whatIsDivyModal" class="modal w-11/12 max-w-4xl aspect-video opacity-0 open:opacity-100 fixed p-0 border-0 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 backdrop:fixed backdrop:top-0 backdrop:bottom-0 backdrop:left-0 backdrop:right-0 backdrop:opacity-50 backdrop:bg-black rounded-lg overflow-hidden">
+            <main class="video-container">
+                <iframe src="https://www.youtube.com/embed/OtEMxkQJF7o" title="Qu'est-ce que DivyTransfert" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </main>
+            <form method="dialog">
+                <button class="absolute top-4 right-4 text-white hover:text-gray-300 z-10 bg-black/20 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur" aria-label="Fermer la modal">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </form>
+        </dialog>
+
+        <!-- Hero Section -->
+        <section class="fade-in-load-medium w-full items-center py-8 lg:py-16 px-4 lg:px-8">
+            <div class="flex items-center justify-center mb-6 lg:mb-8">
+                <div class="glass border border-blue-100 shadow-lg mx-auto rounded-full px-4 py-3 bg-gradient-to-r from-blue-50 to-white text-sm cursor-pointer hover:border-blue-200 transition-all flex items-center font-medium group">
+                    <div class="w-6 h-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full mr-3 flex items-center justify-center feature-icon">
+                        <i class="fas fa-star text-white text-xs"></i>
+                    </div>
+                    <span class="mr-1 text-gray-700">Vous cherchez un outil pour votre équipe ? Découvrez </span>
+                    <a href="page1.html" target="_blank" class="text-blue-600 hover:text-blue-700 font-semibold">Divytransfert</a>
+                    <i class="fas fa-arrow-right ml-2 text-blue-500 text-xs group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </div>
+            
+            <div class="w-full max-w-6xl mx-auto">
+                <h1 class="mx-auto mt-6 lg:mt-8 max-w-4xl text-center text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
+                    Un seul endroit pour vos <span class="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">transferts</span> — impressionnez par votre <span class="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">efficacité</span>
+                </h1>
+                <p class="mx-auto mt-4 lg:mt-6 max-w-2xl text-center text-gray-600 text-base lg:text-lg leading-relaxed mobile-padding">
+                    DivyTransfert rassemble vos fichiers, vos contacts, et tous vos outils quotidiens. Transférez facilement, 
+                    suivez vos envois, et gérez tous vos transferts en toute simplicité.
+                </p>
+                
+                <div class="mt-8 lg:mt-12 mb-6 text-center mobile-padding">
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a href="/get-started" class="btn-primary text-white text-center w-full sm:w-auto px-8 py-4 rounded-xl font-semibold text-lg shadow-lg">
+                            <i class="fas fa-rocket mr-2"></i>
+                            Commencer gratuitement
+                        </a>
+                        <button onclick="openVideoModal()" class="glass border border-gray-200 text-center w-full sm:w-auto px-8 py-4 rounded-xl font-medium hover:border-blue-300 transition-all group">
+                            <i class="far fa-play-circle mr-2 text-blue-600 group-hover:scale-110 transition-transform"></i>
+                            <span>Voir la vidéo · 1m</span>
+                        </button>
+                    </div>
+                    <div class="mt-6 lg:mt-8">
+                        <div class="text-sm text-gray-500 pt-4">30 000+ personnes utilisent DivyTransfert pour améliorer leurs transferts</div>
+                        <div class="pt-3 text-sm">
+                            <a href="/browser-extension" target="_blank" class="text-blue-600 hover:text-blue-700 font-medium flex items-center justify-center">
+                                <i class="fas fa-download mr-2"></i>
+                                Télécharger l'extension navigateur
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex w-full justify-center mt-8 lg:mt-12">
+                <div class="mx-auto max-w-6xl px-4 lg:px-16 py-6 lg:p-0 relative">
+                    <div class="w-full h-64 sm:h-80 lg:h-96 bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 rounded-2xl flex items-center justify-center shadow-2xl border border-blue-200 relative overflow-hidden">
+                        <!-- Remplacer par: <img src="./assets/images/hero-dashboard.png" alt="Interface DivyTransfert" class="w-full h-full object-cover rounded-2xl"> -->
+                        <div class="text-center relative z-10">
+                            <div class="w-16 h-16 lg:w-24 lg:h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                <i class="fas fa-cloud-upload-alt text-blue-600 text-2xl lg:text-4xl"></i>
+                            </div>
+                            <p class="text-gray-700 font-medium">Interface de transfert DivyTransfert</p>
+                        </div>
+                        <!-- Effet de brillance -->
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    </div>
+                    <button id="open-video-button" class="absolute border-0 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-4xl lg:text-6xl xl:text-7xl opacity-70 hover:opacity-100 transition-all duration-300 ease-in-out cursor-pointer group">
+                        <i class="fas fa-play-circle text-white drop-shadow-lg group-hover:scale-110 transition-transform"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- À Propos Section -->
+        <section class="py-12 lg:py-20 px-4 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-12 lg:mb-16">
+                    <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">À PROPOS DE NOUS</h2>
+                    <p class="text-center text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
+                        Notre solution innovante de transfert d'argent, créée par des développeurs gabonais, vise à renforcer les services existants en Afrique et dans le monde.
+                    </p>
+                </div>
+                
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+                    <div class="order-2 lg:order-1">
+                        <p class="text-gray-700 mb-6 text-lg leading-relaxed">
+                            Conçue pour être plus simple, plus sûre et plus rapide, notre solution se distingue par son approche flexible et moderne, utilisant des technologies avancées pour révolutionner les transferts d'argent.
+                        </p>
+                        <div class="space-y-6">
+                            <div class="flex items-center group">
+                                <div class="feature-icon w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-rocket text-blue-600 text-xl"></i>
+                                </div>
+                                <span class="text-gray-700 font-medium">Solution innovante intégrant les dernières technologies</span>
+                            </div>
+                            <div class="flex items-center group">
+                                <div class="feature-icon w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-shield-alt text-green-600 text-xl"></i>
+                                </div>
+                                <span class="text-gray-700 font-medium">Sécurisée et fiable, adaptée à vos besoins</span>
+                            </div>
+                            <div class="flex items-center group">
+                                <div class="feature-icon w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-globe text-purple-600 text-xl"></i>
+                                </div>
+                                <span class="text-gray-700 font-medium">Accessible partout et en toute flexibilité</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="order-1 lg:order-2">
+                        <div class="relative">
+                            <!-- Remplacer par: <img src="./assets/images/about-us.jpg" alt="À propos de nous" class="w-full h-80 object-cover rounded-2xl shadow-lg"> -->
+                            <div class="w-full h-80 bg-gradient-to-br from-blue-100 to-purple-200 rounded-2xl shadow-xl flex items-center justify-center relative overflow-hidden">
+                                <div class="text-center">
+                                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                        <i class="fas fa-users text-blue-600 text-3xl"></i>
+                                    </div>
+                                    <p class="text-gray-700 font-medium">Équipe DivyTransfert</p>
+                                </div>
+                            </div>
+                            <!-- Effet décoratif -->
+                            <div class="absolute -top-4 -right-4 w-24 h-24 bg-blue-500 rounded-full opacity-20"></div>
+                            <div class="absolute -bottom-4 -left-4 w-32 h-32 bg-purple-500 rounded-full opacity-20"></div>
+                        </div>
+                        <div class="text-center mt-8">
+                            <button class="glass border border-blue-600 text-blue-600 px-8 py-3 rounded-xl font-medium hover:bg-blue-50 transition-all group">
+                                En savoir plus
+                                <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Votre Partenaire Section -->
+        <section class="py-12 lg:py-20 px-4 lg:px-8">
+            <div class="max-w-7xl mx-auto text-center">
+                <h2 class="text-3xl lg:text-4xl font-bold text-blue-800 mb-6">Votre partenaire de confiance</h2>
+                <p class="text-gray-600 mb-8 text-lg">Rapide, sécurisé et accessible partout dans le monde</p>
+                <button class="btn-primary text-white px-10 py-4 rounded-xl font-semibold mb-16 text-lg">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Se connecter
+                </button>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                    <div class="card-hover text-center p-6 lg:p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+                        <div class="feature-icon w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                            <i class="fas fa-bolt text-white text-3xl"></i>
+                        </div>
+                        <h3 class="font-bold text-blue-800 mb-4 text-xl">Transfert rapide</h3>
+                        <p class="text-gray-600 leading-relaxed">Des transactions instantanées, sécurisées et faciles à réaliser en quelques clics</p>
+                    </div>
+                    
+                    <div class="card-hover text-center p-6 lg:p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+                        <div class="feature-icon w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                            <i class="fas fa-shield-alt text-white text-3xl"></i>
+                        </div>
+                        <h3 class="font-bold text-blue-800 mb-4 text-xl">Service fiable</h3>
+                        <p class="text-gray-600 leading-relaxed">Un service de transfert sans faille, avec une sécurité maximale et une disponibilité 24/7</p>
+                    </div>
+                    
+                    <div class="card-hover text-center p-6 lg:p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+                        <div class="feature-icon w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                            <i class="fas fa-lock text-white text-3xl"></i>
+                        </div>
+                        <h3 class="font-bold text-blue-800 mb-4 text-xl">Sécurité maximale</h3>
+                        <p class="text-gray-600 leading-relaxed">Des systèmes de sécurité avancés pour protéger vos informations personnelles et financières</p>
+                    </div>
+                    
+                    <div class="card-hover text-center p-6 lg:p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+                        <div class="feature-icon w-20 h-20 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                            <i class="fas fa-globe text-white text-3xl"></i>
+                        </div>
+                        <h3 class="font-bold text-blue-800 mb-4 text-xl">Accessibilité mondiale</h3>
+                        <p class="text-gray-600 leading-relaxed">Envoyez de l'argent à l'échelle mondiale, où que vous soyez, à tout moment</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Partenaires Section -->
+        <section class="py-8 lg:py-12 px-4 lg:px-8 bg-gray-50">
+            <div class="max-w-7xl mx-auto">
+                <h3 class="text-center text-gray-500 text-sm font-medium mb-8 uppercase tracking-wider">Nos partenaires de confiance</h3>
+                <div class="flex flex-wrap justify-center items-center gap-6 lg:gap-12">
+                    <!-- Remplacer chaque div par: <img src="./assets/images/partners/airtel.png" alt="Airtel" class="partner-logo h-12 w-auto"> -->
+                    <div class="partner-logo w-24 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+                        <span class="text-sm font-bold text-gray-600">Airtel</span>
+                    </div>
+                    <div class="partner-logo w-24 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+                        <span class="text-sm font-bold text-gray-600">Money</span>
+                    </div>
+                    <div class="partner-logo w-24 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+                        <span class="text-sm font-bold text-gray-600">Orange</span>
+                    </div>
+                    <div class="partner-logo w-24 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+                        <span class="text-sm font-bold text-gray-600">MTN</span>
+                    </div>
+                    <div class="partner-logo w-24 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+                        <span class="text-sm font-bold text-gray-600">VISA</span>
+                    </div>
+                    <div class="partner-logo w-24 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+                        <span class="text-sm font-bold text-gray-600">PayPal</span>
+                    </div>
+                    <div class="partner-logo w-24 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+                        <span class="text-sm font-bold text-gray-600">Mastercard</span>
+                    </div>
+                    <div class="partner-logo w-24 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+                        <span class="text-sm font-bold text-gray-600">Western Union</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Rejoignez DivyTransfert -->
+        <section class="blue-gradient py-16 lg:py-24 px-4 lg:px-8 text-white relative overflow-hidden">
+            <div class="max-w-5xl mx-auto text-center relative z-10">
+                <h2 class="text-3xl lg:text-5xl font-bold mb-8 leading-tight">Rejoignez DivyTransfert</h2>
+                <p class="text-lg lg:text-xl mb-10 opacity-95 max-w-3xl mx-auto leading-relaxed">
+                    Découvrez la solution innovante pour des transferts d'argent rapides, sécurisés et accessibles partout en Afrique. 
+                    Simplifiez vos transactions dès aujourd'hui et rejoignez des milliers d'utilisateurs satisfaits.
+                </p>
+                <button class="bg-white text-blue-600 px-10 py-4 rounded-xl font-bold hover:bg-gray-100 transition-all shadow-xl text-lg group">
+                    <i class="fas fa-rocket mr-2"></i>
+                    Commencez Maintenant
+                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
+            <!-- Éléments décoratifs -->
+            <div class="absolute top-10 left-10 w-32 h-32 bg-white opacity-10 rounded-full"></div>
+            <div class="absolute bottom-10 right-10 w-48 h-48 bg-white opacity-5 rounded-full"></div>
+            <div class="absolute top-1/2 left-1/4 w-2 h-2 bg-white opacity-30 rounded-full animate-pulse"></div>
+            <div class="absolute top-1/3 right-1/3 w-3 h-3 bg-white opacity-20 rounded-full animate-pulse"></div>
+        </section>
+
+        <!-- Statistiques Section -->
+        <section class="py-16 lg:py-24 px-4 lg:px-8 bg-white">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">Nos performances en chiffres</h2>
+                    <p class="text-gray-600 text-lg max-w-2xl mx-auto">Des résultats qui témoignent de notre engagement et de la confiance de nos utilisateurs</p>
+                </div>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 text-center">
+                    <div class="card-hover p-6 lg:p-8 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-200">
+                        <div class="text-4xl lg:text-5xl font-bold text-blue-600 mb-4 stat-counter">45</div>
+                        <p class="text-gray-700 font-medium text-sm lg:text-base">Pays africains desservis</p>
+                    </div>
+                    <div class="card-hover p-6 lg:p-8 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border border-green-200">
+                        <div class="text-4xl lg:text-5xl font-bold text-green-600 mb-4 stat-counter">12</div>
+                        <p class="text-gray-700 font-medium text-sm lg:text-base">Partenaires mobiles</p>
+                    </div>
+                    <div class="card-hover p-6 lg:p-8 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl border border-purple-200">
+                        <div class="text-4xl lg:text-5xl font-bold text-purple-600 mb-4 stat-counter">5000</div>
+                        <p class="text-gray-700 font-medium text-sm lg:text-base">Clients engagés</p>
+                    </div>
+                    <div class="card-hover p-6 lg:p-8 bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl border border-orange-200">
+                        <div class="text-4xl lg:text-5xl font-bold text-orange-600 mb-4 stat-counter">100</div>
+                        <p class="text-gray-700 font-medium text-sm lg:text-base">Transactions journalières</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Vidéo Solution -->
+        <section class="py-16 lg:py-24 px-4 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+                    <div class="relative order-2 lg:order-1">
+                        <div class="w-full h-64 lg:h-80 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center relative overflow-hidden shadow-xl">
+                            <!-- Remplacer par: <img src="./assets/images/solution-video-thumb.jpg" alt="Solution DivyTransfert" class="w-full h-full object-cover rounded-2xl"> -->
+                            <div class="absolute inset-0 bg-black bg-opacity-20 rounded-2xl"></div>
+                            <button class="relative z-10 w-20 h-20 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition-all shadow-xl group">
+                                <i class="fas fa-play text-blue-600 text-2xl ml-1 group-hover:scale-110 transition-transform"></i>
+                            </button>
+                            <div class="absolute top-6 left-6 text-white opacity-80 flex space-x-3">
+                                <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-pound-sign text-sm"></i>
+                                </div>
+                                <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-dollar-sign text-sm"></i>
+                                </div>
+                                <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-euro-sign text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="order-1 lg:order-2">
+                        <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-8 leading-tight">
+                            Une solution innovante de transfert d'argent <span class="text-blue-600">rapide et sécurisé</span>
+                        </h2>
+                        <p class="text-gray-600 mb-8 text-lg leading-relaxed italic">
+                            DivyTransfert simplifie les transferts d'argent, offrant une expérience fluide, rapide et totalement sécurisée pour tous vos besoins financiers.
+                        </p>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-start group">
+                                <div class="feature-icon w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-4 mt-1">
+                                    <i class="fas fa-check text-green-600"></i>
+                                </div>
+                                <span class="text-gray-700 leading-relaxed">Envoyez de l'argent en toute sécurité vers des pays africains et à l'international avec des frais compétitifs.</span>
+                            </div>
+                            <div class="flex items-start group">
+                                <div class="feature-icon w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-4 mt-1">
+                                    <i class="fas fa-check text-green-600"></i>
+                                </div>
+                                <span class="text-gray-700 leading-relaxed">Transactions instantanées, disponibles à toute heure du jour et de la nuit, même les week-ends.</span>
+                            </div>
+                            <div class="flex items-start group">
+                                <div class="feature-icon w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-4 mt-1">
+                                    <i class="fas fa-check text-green-600"></i>
+                                </div>
+                                <span class="text-gray-700 leading-relaxed">Interface simple et intuitive, accessible même aux utilisateurs les moins expérimentés en technologie.</span>
+                            </div>
+                            <div class="flex items-start group">
+                                <div class="feature-icon w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-4 mt-1">
+                                    <i class="fas fa-check text-green-600"></i>
+                                </div>
+                                <span class="text-gray-700 leading-relaxed">Support client réactif disponible 24/7 pour vous accompagner en cas de besoin ou de questions.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Proof Section -->
+        <section class="mx-auto max-w-6xl py-16 lg:py-20 px-4 lg:px-8 text-center">
+            <h4 class="mb-12 text-gray-900 text-xl lg:text-2xl font-bold leading-relaxed">
+                Les professionnels de premier plan construisent leur réseau avec <span class="text-blue-600">DivyTransfert</span>
+            </h4>
+            <ul class="flex flex-wrap items-center justify-center gap-6 lg:gap-12">
+                <!-- Remplacer chaque div par: <img src="./assets/images/social-proof/google.png" alt="Google" class="partner-logo h-12 w-auto"> -->
+                <li><div class="partner-logo w-32 h-12 bg-gray-200 rounded-xl flex items-center justify-center shadow-md"><span class="text-sm font-bold text-gray-600">Google</span></div></li>
+                <li><div class="partner-logo w-32 h-12 bg-gray-200 rounded-xl flex items-center justify-center shadow-md"><span class="text-sm font-bold text-gray-600">McKinsey</span></div></li>
+                <li><div class="partner-logo w-32 h-12 bg-gray-200 rounded-xl flex items-center justify-center shadow-md"><span class="text-sm font-bold text-gray-600">On Deck</span></div></li>
+                <li><div class="partner-logo w-32 h-12 bg-gray-200 rounded-xl flex items-center justify-center shadow-md"><span class="text-sm font-bold text-gray-600">YCombinator</span></div></li>
+            </ul>
+        </section>
+
+        <!-- Tarifs Section -->
+        <section class="py-16 lg:py-24 px-4 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-12 lg:mb-16">
+                    <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">TARIFS</h2>
+                    <p class="text-gray-600 text-lg max-w-4xl mx-auto leading-relaxed">
+                        Profitez de nos offres exclusives avec des frais de transfert réduits pour des périodes de 3 mois, 6 mois et 12 mois. 
+                        Choisissez l'option qui vous convient le mieux et commencez à économiser dès aujourd'hui !
+                    </p>
+                </div>
+                
+                <div class="grid lg:grid-cols-3 gap-6 lg:gap-8">
+                    <!-- Plan Particulier -->
+                    <div class="card-hover bg-white rounded-2xl p-6 lg:p-8 shadow-lg border border-gray-200">
+                        <div class="text-center">
+                            <h3 class="font-bold text-gray-800 mb-6 text-xl">PARTICULIER</h3>
+                            <div class="mb-8">
+                                <span class="text-4xl lg:text-5xl font-bold text-blue-600">5,000</span>
+                                <span class="text-gray-500 ml-2">FCFA / 3 mois</span>
+                            </div>
+                            <ul class="space-y-4 mb-8 text-left">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-3"></i>
+                                    <span class="text-gray-600">Réduction de 10% sur les frais</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-3"></i>
+                                    <span class="text-gray-600">Assistance 24/7</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-3"></i>
+                                    <span class="text-gray-600">Suivi des transactions en temps réel</span>
+                                </li>
+                                <li class="flex items-center opacity-50">
+                                    <i class="fas fa-times text-gray-400 mr-3"></i>
+                                    <span class="text-gray-400">Offres spéciales</span>
+                                </li>
+                                <li class="flex items-center opacity-50">
+                                    <i class="fas fa-times text-gray-400 mr-3"></i>
+                                    <span class="text-gray-400">Accès premium</span>
+                                </li>
+                            </ul>
+                            <button class="w-full border-2 border-blue-600 text-blue-600 py-4 rounded-xl font-semibold hover:bg-blue-50 transition-all">
+                                Souscrire
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Plan Professionnel (Recommandé) -->
+                    <div class="card-hover bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 lg:p-8 shadow-2xl border-2 border-blue-600 transform lg:scale-105 relative">
+                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold">
+                            RECOMMANDÉ
+                        </div>
+                        <div class="text-center">
+                            <h3 class="font-bold text-white mb-6 text-xl">PROFESSIONNEL</h3>
+                            <div class="mb-8">
+                                <span class="text-4xl lg:text-5xl font-bold text-white">9,000</span>
+                                <span class="text-blue-100 ml-2">FCFA / 6 mois</span>
+                            </div>
+                            <ul class="space-y-4 mb-8 text-left">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-300 mr-3"></i>
+                                    <span class="text-white">Réduction de 15% sur les frais</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-300 mr-3"></i>
+                                    <span class="text-white">Assistance 24/7 prioritaire</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-300 mr-3"></i>
+                                    <span class="text-white">Tableau de bord avancé</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-300 mr-3"></i>
+                                    <span class="text-white">Offres spéciales régulières</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-300 mr-3"></i>
+                                    <span class="text-white">Accès premium</span>
+                                </li>
+                            </ul>
+                            <button class="w-full bg-white text-blue-600 py-4 rounded-xl font-bold hover:bg-gray-100 transition-all shadow-lg">
+                                Souscrire
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Plan Entreprise -->
+                    <div class="card-hover bg-white rounded-2xl p-6 lg:p-8 shadow-lg border border-gray-200">
+                        <div class="text-center">
+                            <h3 class="font-bold text-gray-800 mb-6 text-xl">ENTREPRISE</h3>
+                            <div class="mb-8">
+                                <span class="text-4xl lg:text-5xl font-bold text-blue-600">15,000</span>
+                                <span class="text-gray-500 ml-2">FCFA / 12 mois</span>
+                            </div>
+                            <ul class="space-y-4 mb-8 text-left">
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-3"></i>
+                                    <span class="text-gray-600">Réduction de 20% sur les frais</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-3"></i>
+                                    <span class="text-gray-600">Assistance dédiée</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-3"></i>
+                                    <span class="text-gray-600">Tableau de bord premium</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-3"></i>
+                                    <span class="text-gray-600">Offres spéciales & remises</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-3"></i>
+                                    <span class="text-gray-600">Accès premium illimité</span>
+                                </li>
+                            </ul>
+                            <button class="w-full border-2 border-blue-600 text-blue-600 py-4 rounded-xl font-semibold hover:bg-blue-50 transition-all">
+                                Souscrire
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="py-16 lg:py-24 px-4 lg:px-8 bg-white">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-12 lg:mb-16">
+                    <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">QUESTIONS FRÉQUENTES</h2>
+                    <p class="text-gray-600 text-lg leading-relaxed">
+                        Trouvez ici des réponses claires à vos questions sur nos services, les frais de transfert, et bien plus encore. 
+                        N'hésitez pas à nous contacter pour toute autre information.
+                    </p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="glass border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors group" onclick="toggleFAQ(1)">
+                            <span class="font-semibold text-gray-800 text-lg">Quels services proposez-vous ?</span>
+                            <i class="fas fa-chevron-down text-gray-400 group-hover:text-blue-600 transition-colors" id="icon-1"></i>
+                        </button>
+                        <div id="faq-1" class="hidden p-6 pt-0 text-gray-600 leading-relaxed bg-gray-50">
+                            Nous proposons le transfert d'argent rapide et sécurisé vers plus de 45 pays africains, des options de paiements diversifiées (mobile money, cartes bancaires, virements), et des frais compétitifs adaptés à tous les budgets. Notre plateforme offre également un suivi en temps réel de vos transactions.
+                        </div>
+                    </div>
+                    
+                    <div class="glass border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors group" onclick="toggleFAQ(2)">
+                            <span class="font-semibold text-gray-800 text-lg">Comment puis-je envoyer de l'argent ?</span>
+                            <i class="fas fa-chevron-down text-gray-400 group-hover:text-blue-600 transition-colors" id="icon-2"></i>
+                        </button>
+                        <div id="faq-2" class="hidden p-6 pt-0 text-gray-600 leading-relaxed bg-gray-50">
+                            C'est très simple ! Créez un compte en quelques minutes, vérifiez votre identité, sélectionnez le destinataire et le montant à envoyer, choisissez votre mode de paiement préféré et confirmez la transaction. Vous recevrez une confirmation immédiate et pourrez suivre le statut en temps réel.
+                        </div>
+                    </div>
+                    
+                    <div class="glass border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors group" onclick="toggleFAQ(3)">
+                            <span class="font-semibold text-gray-800 text-lg">Quels sont les délais de transfert ?</span>
+                            <i class="fas fa-chevron-down text-gray-400 group-hover:text-blue-600 transition-colors" id="icon-3"></i>
+                        </button>
+                        <div id="faq-3" class="hidden p-6 pt-0 text-gray-600 leading-relaxed bg-gray-50">
+                            La plupart de nos transferts sont instantanés, particulièrement pour les transferts vers les portefeuilles mobile money. Pour certaines destinations ou modes de réception spécifiques (virements bancaires), le délai peut aller jusqu'à 24 heures maximum. Nous vous informons du délai exact avant la confirmation.
+                        </div>
+                    </div>
+                    
+                    <div class="glass border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors group" onclick="toggleFAQ(4)">
+                            <span class="font-semibold text-gray-800 text-lg">Quels sont les frais appliqués ?</span>
+                            <i class="fas fa-chevron-down text-gray-400 group-hover:text-blue-600 transition-colors" id="icon-4"></i>
+                        </button>
+                        <div id="faq-4" class="hidden p-6 pt-0 text-gray-600 leading-relaxed bg-gray-50">
+                            Nos frais sont très compétitifs et varient selon la destination, le montant envoyé et le mode de réception choisi. Utilisez notre simulateur de frais gratuit sur notre plateforme pour connaître le coût exact de votre transfert avant de l'effectuer. Transparence totale, aucun frais caché !
+                        </div>
+                    </div>
+
+                    <div class="glass border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors group" onclick="toggleFAQ(5)">
+                            <span class="font-semibold text-gray-800 text-lg">Mes données sont-elles sécurisées ?</span>
+                            <i class="fas fa-chevron-down text-gray-400 group-hover:text-blue-600 transition-colors" id="icon-5"></i>
+                        </button>
+                        <div id="faq-5" class="hidden p-6 pt-0 text-gray-600 leading-relaxed bg-gray-50">
+                            Absolument ! Nous utilisons un cryptage de niveau bancaire SSL 256 bits et respectons les normes internationales de sécurité. Vos données personnelles et financières sont protégées par des systèmes de sécurité avancés et ne sont jamais partagées avec des tiers sans votre consentement.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-12">
+                    <p class="text-gray-600 mb-6">Vous ne trouvez pas la réponse à votre question ?</p>
+                    <button class="btn-primary text-white px-8 py-3 rounded-xl font-semibold">
+                        <i class="fas fa-comments mr-2"></i>
+                        Contactez-nous
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="py-16 lg:py-24 px-4 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-12 lg:mb-16">
+                    <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">CONTACT</h2>
+                    <p class="text-gray-600 text-lg max-w-3xl mx-auto leading-relaxed">
+                        Pour toute information ou assistance, n'hésitez pas à nous contacter par email ou téléphone, ou via le formulaire ci-dessous. 
+                        Notre équipe est à votre disposition pour vous accompagner.
+                    </p>
+                </div>
+                
+                <div class="grid lg:grid-cols-2 gap-12 lg:gap-16">
+                    <!-- Carte et Informations -->
+                    <div>
+                        <!-- Simulation d'une carte -->
+                        <div class="w-full h-64 lg:h-80 bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 rounded-2xl mb-8 relative overflow-hidden shadow-xl">
+                            <!-- Remplacer par: <img src="./assets/images/map-niamey.jpg" alt="Localisation Niamey" class="w-full h-full object-cover rounded-2xl"> -->
+                            <iframe 
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3979.123456789!2d9.4714916!3d0.428967!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sCarrefour%20GP%2C%20Libreville%2C%20Gabon!5e0!3m2!1sfr!2sga!4v1691510818567" 
+                                    allowfullscreen="" 
+                                    loading="lazy" 
+                                    referrerpolicy="no-referrer-when-downgrade">
+                                </iframe>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-center group">
+                                <div class="feature-icon w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mr-6 shadow-md">
+                                    <i class="fas fa-map-marker-alt text-blue-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800 text-lg">Localisation</h3>
+                                    <p class="text-gray-600">Niamey, Niger</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center group">
+                                <div class="feature-icon w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mr-6 shadow-md">
+                                    <i class="fas fa-envelope text-green-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800 text-lg">Email</h3>
+                                    <a href="mailto:divytransfert241@gmail.com" class="text-blue-600 hover:text-blue-700 transition-colors">divytransfert241@gmail.com</a>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center group">
+                                <div class="feature-icon w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mr-6 shadow-md">
+                                    <i class="fas fa-phone text-purple-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800 text-lg">Téléphone</h3>
+                                    <a href="tel:+24174930760" class="text-gray-600 hover:text-blue-600 transition-colors">+241 74930760</a>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center group">
+                                <div class="feature-icon w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mr-6 shadow-md">
+                                    <i class="fas fa-clock text-orange-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800 text-lg">Horaires</h3>
+                                    <p class="text-gray-600">24h/24, 7j/7</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Formulaire de Contact -->
+                    <div>
+                        <div class="glass bg-white rounded-2xl p-6 lg:p-8 shadow-xl border border-gray-200">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-6">Envoyez-nous un message</h3>
+                            <form class="space-y-6" onsubmit="handleContactSubmit(event)">
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
+                                        <input type="text" required placeholder="Votre nom" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                        <input type="email" required placeholder="votre@email.com" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Sujet</label>
+                                    <input type="text" required placeholder="Sujet de votre message" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                                    <textarea required placeholder="Décrivez votre demande..." rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 resize-none transition-all"></textarea>
+                                </div>
+                                <button type="submit" class="btn-primary text-white px-8 py-4 rounded-xl font-semibold w-full text-lg">
+                                    <i class="fas fa-paper-plane mr-2"></i>
+                                    Envoyer le message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Sections améliorées -->
+        <section class="container mx-auto flex flex-wrap items-center flex-row-reverse my-16 lg:my-32 px-4 lg:px-8">
+            <div class="mb-8 w-full p-4 lg:p-8 md:mb-0 md:w-1/2 lg:w-1/2">
+                <div class="w-full h-64 lg:h-80 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center shadow-xl relative overflow-hidden">
+                    <!-- Remplacer par: <img src="./assets/images/feature-automation.jpg" alt="Consolidation automatique" class="w-full h-full object-cover rounded-2xl"> -->
+                    <div class="text-center relative z-10">
+                        <div class="feature-icon w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                            <i class="fas fa-sync-alt text-white text-2xl"></i>
+                        </div>
+                        <p class="text-gray-700 font-semibold">Consolidation automatique</p>
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-100/50 to-transparent"></div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 lg:w-1/2 mb-8 md:mb-0">
+                <h2 class="mb-6 w-full max-w-lg text-center md:text-left text-2xl lg:text-3xl font-bold leading-tight">
+                    Le moyen le plus simple de <span class="text-blue-600">consolider vos transferts</span>
+                </h2>
+                <div class="w-full text-gray-700 md:w-10/12 md:text-left space-y-6">
+                    <p class="mx-auto max-w-md md:mx-0 leading-relaxed">
+                        Gérer manuellement vos transferts de fichiers prend un temps que vous n'avez pas. Vous perdez du temps 
+                        à copier et coller. Il est encore plus difficile de garder vos transferts à jour.
+                    </p>
+                    <p class="mx-auto max-w-md md:mx-0 leading-relaxed">
+                        DivyTransfert vous permet de vous connecter à vos outils en quelques minutes. Les nouveaux transferts 
+                        seront synchronisés automatiquement.
+                    </p>
+                    <p class="mx-auto max-w-md md:mx-0 leading-relaxed">
+                        Passez moins de temps sur la saisie de données et concentrez-vous sur ce qui compte — gérer vos transferts efficacement.
+                    </p>
+                </div>
+                <div class="text-center md:text-left mt-8">
+                    <a class="btn-primary text-white px-6 py-3 rounded-xl font-semibold inline-flex items-center group" href="/get-started">
+                        Commencer gratuitement 
+                        <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Section 2 -->
+        <section class="container mx-auto flex flex-wrap items-center my-16 lg:my-32 px-4 lg:px-8">
+            <div class="mb-8 w-full p-4 lg:p-8 md:mb-0 md:w-1/2 lg:w-1/2 md:pr-24">
+                <div class="w-full h-64 lg:h-80 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl flex items-center justify-center shadow-xl relative overflow-hidden">
+                    <!-- Remplacer par: <img src="./assets/images/feature-ui.jpg" alt="Interface utilisateur" class="w-full h-full object-cover rounded-2xl"> -->
+                    <div class="text-center relative z-10">
+                        <div class="feature-icon w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                            <i class="fas fa-users text-white text-2xl"></i>
+                        </div>
+                        <p class="text-gray-700 font-semibold">Interface utilisateur intuitive</p>
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-br from-green-100/50 to-transparent"></div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 lg:w-1/2">
+                <h2 class="mb-6 w-full max-w-lg text-center md:text-left text-2xl lg:text-3xl font-bold leading-tight">
+                    Conçu pour les gens, pas pour les <span class="text-green-600">pipelines de vente</span>
+                </h2>
+                <div class="w-full text-gray-700 md:w-10/12 md:text-left space-y-6">
+                    <p class="mx-auto max-w-md md:mx-0 leading-relaxed">
+                        Gérer des systèmes lourds et compliqués comme Salesforce est excessif pour rester en contact. 
+                        Vos transferts n'appartiennent pas à un CRM de vente.
+                    </p>
+                    <p class="mx-auto max-w-md md:mx-0 leading-relaxed">
+                        Passez moins de temps à naviguer dans les menus et reprenez facilement là où vous vous êtes arrêté.
+                    </p>
+                </div>
+                <div class="text-center md:text-left mt-8">
+                    <a class="btn-primary text-white px-6 py-3 rounded-xl font-semibold inline-flex items-center group" href="/get-started">
+                        Créer des transferts plus efficaces 
+                        <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Replaced Tools Section -->
+            <section class="mt-16 w-full">
+                <div class="mx-auto mb-6 max-w-4xl text-center text-gray-500 font-medium">
+                    DivyTransfert remplace les outils compliqués et manuels
+                </div>
+                <div class="flex max-w-full flex-wrap justify-center px-4 gap-4 lg:gap-6">
+                    <div class="partner-logo w-16 h-16 bg-gray-200 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="text-xs font-bold">Airtable</span>
+                    </div>
+                    <div class="partner-logo w-16 h-16 bg-gray-200 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="text-xs font-bold">Excel</span>
+                    </div>
+                    <div class="partner-logo w-16 h-16 bg-gray-200 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="text-xs font-bold">Sheets</span>
+                    </div>
+                    <div class="partner-logo w-16 h-16 bg-gray-200 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="text-xs font-bold">Hubspot</span>
+                    </div>
+                    <div class="partner-logo w-16 h-16 bg-gray-200 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="text-xs font-bold">Pipedrive</span>
+                    </div>
+                    <div class="partner-logo w-16 h-16 bg-gray-200 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="text-xs font-bold">Notion</span>
+                    </div>
+                    <div class="partner-logo w-16 h-16 bg-gray-200 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="text-xs font-bold">iCloud</span>
+                    </div>
+                    <div class="partner-logo w-16 h-16 bg-gray-200 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="text-xs font-bold">Contacts</span>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- Testimonials Section améliorée -->
+        <section class="container mx-auto my-16 lg:my-24 px-4 lg:px-8 text-center">
+            <h3 class="mb-12 lg:mb-16 text-gray-900 text-2xl lg:text-3xl font-bold">
+                Adoré par des milliers de <span class="text-blue-600">professionnels</span>
+            </h3>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card rounded-2xl p-6 lg:p-8 shadow-lg">
+                    <div class="mb-6">
+                        <div class="flex text-yellow-400 mb-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-gray-700 text-left leading-relaxed">
+                            "Je cherchais quelque chose comme DivyTransfert depuis très longtemps et je suis si content de l'avoir trouvé. 
+                            Dans un monde occupé, cela me permet d'être l'ami que je veux être pour les gens qui me tiennent à cœur."
+                        </p>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="mr-4 h-12 w-12 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center shadow-lg">
+                            <span class="text-white font-bold">SD</span>
+                        </div>
+                        <div class="text-left">
+                            <div class="font-semibold text-gray-800">Sarah Dubois</div>
+                            <div class="text-sm text-gray-600">Ingénieur logiciel</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card rounded-2xl p-6 lg:p-8 shadow-lg">
+                    <div class="mb-6">
+                        <div class="flex text-yellow-400 mb-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-gray-700 text-left leading-relaxed">
+                            "DivyTransfert m'a permis d'être plus intentionnel avec mes transferts personnels et professionnels. 
+                            Cela a conduit à certaines de mes opportunités les plus fortuites."
+                        </p>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="mr-4 h-12 w-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg">
+                            <span class="text-white font-bold">ML</span>
+                        </div>
+                        <div class="text-left">
+                            <div class="font-semibold text-gray-800">Marc Leblanc</div>
+                            <div class="text-sm text-gray-600">Chef de produit et investisseur</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card rounded-2xl p-6 lg:p-8 shadow-lg md:col-span-2 lg:col-span-1">
+                    <div class="mb-6">
+                        <div class="flex text-yellow-400 mb-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="text-gray-700 text-left leading-relaxed">
+                            "DivyTransfert est le premier CRM personnel qui offre une expérience élégante pour gérer les transferts personnels, 
+                            tout en étant assez puissant pour enrichir les connexions professionnelles."
+                        </p>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="mr-4 h-12 w-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg">
+                            <span class="text-white font-bold">JM</span>
+                        </div>
+                        <div class="text-left">
+                            <div class="font-semibold text-gray-800">Julie Martin</div>
+                            <div class="text-sm text-gray-600">Candidate MBA à HEC</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA Section -->
+        <section class="mt-16 lg:mt-32 mb-16 container mx-auto px-4 lg:px-8">
+            <div class="blue-gradient rounded-3xl p-8 lg:p-16 text-center text-white relative overflow-hidden">
+                <h3 class="mx-auto mb-6 w-full max-w-4xl text-2xl lg:text-4xl font-bold leading-tight">
+                    Prêt à débloquer le potentiel de votre <span class="text-yellow-300">réseau</span> ?
+                </h3>
+                <p class="text-lg lg:text-xl mb-8 opacity-95 max-w-2xl mx-auto">
+                    Rejoignez plus de 30 000 utilisateurs qui font confiance à DivyTransfert pour leurs transferts
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a href="/get-started" class="bg-white text-blue-600 px-10 py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-gray-100 transition-all group">
+                        <i class="fas fa-rocket mr-2"></i>
+                        Commencer gratuitement
+                        <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <button onclick="openVideoModal()" class="glass border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white/10 transition-all">
+                        <i class="far fa-play-circle mr-2"></i>
+                        Voir la démo
+                    </button>
+                </div>
+                <div class="mt-8">
+                    <div class="text-sm opacity-80 pt-4">30 000+ personnes utilisent DivyTransfert pour améliorer leurs transferts</div>
+                    <div class="pt-3 text-sm">
+                        <a href="/browser-extension" target="_blank" class="text-white hover:text-yellow-300 font-medium transition-colors">
+                            <i class="fas fa-download mr-2"></i>
+                            Télécharger l'extension navigateur
+                        </a>
+                    </div>
+                </div>
+                <!-- Éléments décoratifs -->
+                <div class="absolute -top-10 -left-10 w-40 h-40 bg-white opacity-5 rounded-full"></div>
+                <div class="absolute -bottom-10 -right-10 w-60 h-60 bg-white opacity-5 rounded-full"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full border-t border-gray-200 bg-gradient-to-b from-gray-50 to-gray-100">
+        <div class="container mx-auto py-12 lg:py-20 px-4 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+                <!-- Company Info -->
+                <div class="lg:col-span-1">
+                    <div class="h-12 w-48 text-white rounded-lg flex items-center justify-center font-bold text-lg mb-6">
+                        <img src="logo/logo1.png" alt="DivyTransfert" class="h-12 w-auto">
+                    </div>
+                    <div class="space-y-3 text-gray-600 leading-relaxed">
+                        <p><strong>Siège social :</strong></p>
+                        <p>Niamey, Tillabery<br>Niger</p>
+                        <p><strong>Bureau secondaire :</strong></p>
+                        <p>Libreville, Gabon</p>
+                        <div class="mt-6 space-y-2">
+                            <p><strong>Téléphone :</strong> <a href="tel:+24174930760" class="text-blue-600 hover:text-blue-700">+241 74930760</a></p>
+                            <p><strong>Email :</strong> <a href="mailto:divytransfert241@gmail.com" class="text-blue-600 hover:text-blue-700">divytransfert241@gmail.com</a></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Social Media -->
+                    <div class="flex space-x-4 mt-8">
+                        <a href="#" class="feature-icon w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white hover:bg-blue-700 transition-all shadow-md">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="feature-icon w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white hover:bg-blue-700 transition-all shadow-md">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="feature-icon w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white hover:bg-blue-700 transition-all shadow-md">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="feature-icon w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white hover:bg-blue-700 transition-all shadow-md">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Liens Utiles -->
+                <div>
+                    <h4 class="font-bold text-gray-800 mb-6 text-lg">Liens Utiles</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i>Accueil</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i>À propos</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i>Contact</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i>Conditions d'utilisation</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i>Politique de confidentialité</a></li>
+                    </ul>
+                </div>
+
+                <!-- Nos Services -->
+                <div>
+                    <h4 class="font-bold text-gray-800 mb-6 text-lg">Nos Services</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i>Transfert d'argent</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i>Services de paiement</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i>Gestion des transactions</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i>Solutions personnalisées</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors flex items-center"><i class="fas fa-chevron-right text-xs mr-2"></i>Support 24/7</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="font-bold text-gray-800 mb-6 text-lg">Newsletter</h4>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Restez informé de nos dernières offres et actualités en vous inscrivant à notre newsletter.
+                    </p>
+                    <form class="space-y-4" onsubmit="handleNewsletterSubmit(event)">
+                        <input 
+                            type="email" 
+                            required
+                            placeholder="Votre adresse email" 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                        >
+                        <button type="submit" class="btn-primary text-white px-6 py-3 rounded-xl font-semibold w-full">
+                            <i class="fas fa-envelope mr-2"></i>
+                            S'inscrire
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Footer Bottom -->
+            <div class="border-t border-gray-300 mt-12 pt-8">
+                <div class="flex flex-col lg:flex-row justify-between items-center text-center lg:text-left">
+                    <p class="text-gray-600 mb-4 lg:mb-0">
+                        © 2024 <strong>Divysus Transfert</strong>. Tous droits réservés.
+                    </p>
+                    <p class="text-gray-600">
+                        Conçu avec ❤️ par <a href="https://netcrafterniger.com" class="text-blue-600 hover:text-blue-700 font-semibold">NETCRAFTER</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle mobile menu avec animation
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const openIcon = document.getElementById('menu-open');
+            const closeIcon = document.getElementById('menu-close');
+            
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('mobile-menu-enter');
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('mobile-menu-enter');
+            }
+            
+            openIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+        }
+
+        // Header scroll effect amélioré
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.dex-header-container');
+            const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (currentScrollTop > 20) {
+                header.classList.add('hasscroll');} else {
+                header.classList.remove('hasscroll');
+            }
+            
+            // Hide/show header on scroll
+            if (currentScrollTop > lastScrollTop && currentScrollTop > 100) {
+                // Scrolling down
+                header.style.transform = 'translateY(-100%)';
+            } else {
+                // Scrolling up
+                header.style.transform = 'translateY(0)';
+            }
+            lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+        });
+
+        // Video modal functions
+        function openVideoModal() {
+            const modal = document.getElementById('whatIsDivyModal');
+            modal.showModal();
+            // Track analytics
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'video_play', {
+                    'video_title': 'DivyTransfert Demo'
+                });
+            }
+        }
+
+        // Video modal event listeners
+        document.getElementById('open-video-button').addEventListener('click', openVideoModal);
+
+        // Close modal when clicking outside
+        document.getElementById('whatIsDivyModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.close();
+            }
+        });
+
+        // Enhanced FAQ Toggle Function
+        function toggleFAQ(id) {
+            const faqContent = document.getElementById(`faq-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+            
+            // Close all other FAQs
+            for (let i = 1; i <= 5; i++) {
+                if (i !== id) {
+                    const otherContent = document.getElementById(`faq-${i}`);
+                    const otherIcon = document.getElementById(`icon-${i}`);
+                    if (otherContent && !otherContent.classList.contains('hidden')) {
+                        otherContent.classList.add('hidden');
+                        otherIcon.classList.remove('fa-chevron-up');
+                        otherIcon.classList.add('fa-chevron-down');
+                    }
+                }
+            }
+            
+            // Toggle current FAQ
+            faqContent.classList.toggle('hidden');
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-up');
+            
+            // Smooth scroll to FAQ if opening
+            if (!faqContent.classList.contains('hidden')) {
+                setTimeout(() => {
+                    faqContent.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest'
+                    });
+                }, 100);
+            }
+        }
+
+        // Form submission handlers
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            // Show loading state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi en cours...';
+            submitBtn.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Show success message
+                showNotification('Message envoyé avec succès ! Nous vous répondrons rapidement.', 'success');
+                form.reset();
+                
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+                // Track analytics
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'form_submit', {
+                        'form_name': 'contact_form'
+                    });
+                }
+            }, 2000);
+        }
+
+        function handleNewsletterSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const email = form.querySelector('input[type="email"]').value;
+            
+            // Show loading state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Inscription...';
+            submitBtn.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                showNotification('Inscription réussie ! Merci de votre confiance.', 'success');
+                form.reset();
+                
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+                // Track analytics
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'newsletter_signup', {
+                        'email': email
+                    });
+                }
+            }, 1500);
+        }
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            // Remove existing notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => notification.remove());
+            
+            // Create notification
+            const notification = document.createElement('div');
+            notification.className = `notification fixed top-4 right-4 z-50 max-w-sm p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full`;
+            
+            if (type === 'success') {
+                notification.classList.add('bg-green-500', 'text-white');
+                notification.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle mr-3 text-xl"></i>
+                        <span class="font-medium">${message}</span>
+                    </div>
+                `;
+            } else if (type === 'error') {
+                notification.classList.add('bg-red-500', 'text-white');
+                notification.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-3 text-xl"></i>
+                        <span class="font-medium">${message}</span>
+                    </div>
+                `;
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 5000);
+        }
+
+        // Enhanced statistics animation
+        function animateStats() {
+            const stats = document.querySelectorAll('.stat-counter');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = parseInt(entry.target.textContent);
+                        animateValue(entry.target, 0, target, 2500);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            stats.forEach(stat => observer.observe(stat));
+        }
+
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.textContent = value.toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Intersection Observer for animations
+        function setupAnimationObserver() {
+            const animatedElements = document.querySelectorAll('.card-hover, .feature-icon, .testimonial-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            animatedElements.forEach(element => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(element);
+            });
+        }
+
+        // Analytics tracking functions
+        function trackGetStarted(source = 'general') {
+            console.log(`Get Started clicked from: ${source}`);
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'cta_click', {
+                    'button_name': 'get_started',
+                    'source': source
+                });
+            }
+        }
+
+        function trackVideoPlay() {
+            console.log('Video play button clicked');
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'video_play', {
+                    'video_title': 'DivyTransfert Demo'
+                });
+            }
+        }
+
+        // Add click tracking to CTA buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Track CTA buttons
+            document.querySelectorAll('a[href="/get-started"]').forEach((button, index) => {
+                button.addEventListener('click', () => trackGetStarted(`cta_${index + 1}`));
+            });
+
+            // Track video buttons
+            document.querySelectorAll('button[onclick*="openVideoModal"]').forEach(button => {
+                button.addEventListener('click', trackVideoPlay);
+            });
+
+            // Initialize animations
+            animateStats();
+            setupAnimationObserver();
+
+            // Add loading states to images
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                img.addEventListener('load', function() {
+                    this.classList.remove('img-loading');
+                });
+                img.addEventListener('error', function() {
+                    this.classList.remove('img-loading');
+                    // Fallback to placeholder
+                    this.style.display = 'none';
+                });
+            });
+
+            // Enhanced mobile menu behavior
+            const mobileMenuLinks = document.querySelectorAll('#mobile-menu a');
+            mobileMenuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    // Close mobile menu when link is clicked
+                    if (window.innerWidth < 1024) {
+                        toggleMenu();
+                    }
+                });
+            });
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        const headerHeight = document.querySelector('.dex-header-container').offsetHeight;
+                        const targetPosition = target.offsetTop - headerHeight - 20;
+                        
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Lazy loading for background images
+            const lazyBackgrounds = document.querySelectorAll('[data-bg]');
+            const bgObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.backgroundImage = `url(${entry.target.dataset.bg})`;
+                        bgObserver.unobserve(entry.target);
+                    }
+                });
+            });
+            
+            lazyBackgrounds.forEach(bg => bgObserver.observe(bg));
+
+            // Performance monitoring
+            if ('performance' in window) {
+                window.addEventListener('load', () => {
+                    setTimeout(() => {
+                        const perfData = performance.getEntriesByType('navigation')[0];
+                        console.log(`Page load time: ${perfData.loadEventEnd - perfData.loadEventStart}ms`);
+                    }, 0);
+                });
+            }
+
+            // Add keyboard navigation support
+            document.addEventListener('keydown', function(e) {
+                // Close modal with Escape key
+                if (e.key === 'Escape') {
+                    const modal = document.getElementById('whatIsDivyModal');
+                    if (modal.open) {
+                        modal.close();
+                    }
+                }
+            });
+
+            // Add touch support for hover effects on mobile
+            if ('ontouchstart' in window) {
+                document.querySelectorAll('.card-hover, .feature-icon, .partner-logo').forEach(element => {
+                    element.addEventListener('touchstart', function() {
+                        this.classList.add('touch-active');
+                    });
+                    element.addEventListener('touchend', function() {
+                        setTimeout(() => {
+                            this.classList.remove('touch-active');
+                        }, 150);
+                    });
+                });
+            }
+
+            // Parallax effect for hero section
+            const heroSection = document.querySelector('.parallax');
+            if (heroSection) {
+                window.addEventListener('scroll', () => {
+                    const scrolled = window.pageYOffset;
+                    const rate = scrolled * -0.5;
+                    heroSection.style.transform = `translateY(${rate}px)`;
+                });
+            }
+
+            // Add scroll-to-top button
+            const scrollToTopBtn = document.createElement('button');
+            scrollToTopBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+            scrollToTopBtn.className = 'fixed bottom-6 right-6 z-40 w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all transform scale-0 origin-center';
+            scrollToTopBtn.setAttribute('aria-label', 'Retour en haut');
+            document.body.appendChild(scrollToTopBtn);
+
+            scrollToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    scrollToTopBtn.classList.remove('scale-0');
+                    scrollToTopBtn.classList.add('scale-100');
+                } else {
+                    scrollToTopBtn.classList.remove('scale-100');
+                    scrollToTopBtn.classList.add('scale-0');
+                }
+            });
+        });
+
+        // Service Worker registration for PWA capabilities
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // Add CSS custom properties for dynamic theming
+        document.documentElement.style.setProperty('--primary-color', '#3b82f6');
+        document.documentElement.style.setProperty('--secondary-color', '#1d4ed8');
+        document.documentElement.style.setProperty('--accent-color', '#f59e0b');
+
+        // Theme switching function (for future use)
+        function switchTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.documentElement.style.setProperty('--primary-color', '#60a5fa');
+                document.documentElement.style.setProperty('--secondary-color', '#3b82f6');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.style.setProperty('--primary-color', '#3b82f6');
+                document.documentElement.style.setProperty('--secondary-color', '#1d4ed8');
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        // Auto-detect user preference for theme
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            // User prefers dark mode
+            const savedTheme = localStorage.getItem('theme');
+            if (!savedTheme) {
+                // Only apply dark theme if user hasn't explicitly chosen light
+                // switchTheme('dark');
+            }
+        }
+
+        // Error boundary for JavaScript errors
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript error:', e.error);
+            // Could send to error tracking service
+        });
+
+        // Unhandled promise rejection handler
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled promise rejection:', e.reason);
+            // Could send to error tracking service
+        });
+
+        // Add progressive enhancement
+        document.documentElement.classList.add('js-enabled');
+
+        // Preload critical resources
+        function preloadCriticalResources() {
+            const criticalImages = [
+                './assets/images/hero-dashboard.png',
+                './assets/images/logo.png'
+            ];
+            
+            criticalImages.forEach(src => {
+                const link = document.createElement('link');
+                link.rel = 'preload';
+                link.as = 'image';
+                link.href = src;
+                document.head.appendChild(link);
+            });
+        }
+
+        // Call preload function
+        preloadCriticalResources();
+
+        // Add focus management for accessibility
+        function trapFocus(element) {
+            const focusableElements = element.querySelectorAll('a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select');
+            const firstFocusableElement = focusableElements[0];
+            const lastFocusableElement = focusableElements[focusableElements.length - 1];
+
+            element.addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    if (e.shiftKey) {
+                        if (document.activeElement === firstFocusableElement) {
+                            lastFocusableElement.focus();
+                            e.preventDefault();
+                        }
+                    } else {
+                        if (document.activeElement === lastFocusableElement) {
+                            firstFocusableElement.focus();
+                            e.preventDefault();
+                        }
+                    }
+                }
+            });
+        }
+
+        // Apply focus trap to modal
+        const modal = document.getElementById('whatIsDivyModal');
+        if (modal) {
+            trapFocus(modal);
+        }
+
+        // Add reduced motion support
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        if (prefersReducedMotion.matches) {
+            document.documentElement.style.setProperty('--animation-duration', '0.01ms');
+        }
+
+        // Final initialization message
+        console.log('🚀 DivyTransfert website fully loaded and optimized!');
+    </script>
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "DivyTransfert",
+        "alternateName": "Divysus Transfert",
+        "url": "https://divytransfert.com",
+        "logo": "https://divytransfert.com/assets/images/logo.png",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+24174930760",
+            "contactType": "customer service",
+            "availableLanguage": ["French", "English"]
+        },
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Niamey",
+            "addressRegion": "Tillabery",
+            "addressCountry": "NE"
+        },
+        "sameAs": [
+            "https://facebook.com/divytransfert",
+            "https://twitter.com/divytransfert",
+            "https://linkedin.com/company/divytransfert"
+        ]
+    }
+    </script>
+
+    <!-- Meta Pixel Code (pour Facebook) -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'YOUR_PIXEL_ID');
+    fbq('track', 'PageView');
+    </script>
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
+</body>
+</html>

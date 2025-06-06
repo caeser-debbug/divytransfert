@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Confirmer la recharge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #3194db 0%, #124556 100%);
+        }
+        
+        .card-enter {
+            animation: slideInUp 0.4s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .confirm-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 195, 74, 0.4);
+        }
+        
+        .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-900 bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <div class="gradient-bg text-white px-4 pt-12 pb-6">
+            <div class="flex items-center justify-between mb-4">
+                <button onclick="goBack()" class="p-2 hover:bg-white hover:bg-opacity-10 rounded-full transition-colors">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </button>
+                <h1 class="text-lg font-semibold">Confirmer la recharge</h1>
+                <div class="w-10"></div>
+            </div>
+            
+            <div class="text-center">
+                <p class="text-white text-opacity-80 text-sm">Vérifiez les détails de votre recharge</p>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 px-4 py-6">
+            <!-- Montant principal -->
+            <div class="card-enter bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8 mb-6 text-center">
+                <div class="mb-4">
+                    <div class="w-20 h-20 bg-gradient-to-r from-divy-blue to-divy-dark rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-2" id="amount-display">0 XOF</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Montant à recharger</p>
+                </div>
+            </div>
+
+            <!-- Détails de la transaction -->
+            <div class="card-enter bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6" style="animation-delay: 0.1s">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Détails de la recharge</h3>
+                
+                <div class="space-y-4">
+                    <!-- Méthode de paiement -->
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-400">Méthode de paiement</span>
+                        <div class="flex items-center space-x-2" id="payment-method">
+                            <!-- Sera rempli dynamiquement -->
+                        </div>
+                    </div>
+                    
+                    <!-- Frais -->
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600 dark:text-gray-400">Frais de transaction</span>
+                        <span class="font-semibold text-gray-800 dark:text-white">0 XOF</span>
+                    </div>
+                    
+                    <!-- Total -->
+                    <div class="border-t border-gray-200 dark:border-gray-600 pt-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-semibold text-gray-800 dark:text-white">Total</span>
+                            <span class="text-lg font-bold text-divy-blue" id="total-amount">0 XOF</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nouveau solde -->
+            <div class="card-enter bg-blue-50 dark:bg-gray-700 rounded-2xl p-4 mb-6" style="animation-delay: 0.2s">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Nouveau solde après recharge</p>
+                        <p class="text-xl font-bold text-gray-800 dark:text-white" id="new-balance">485 750 XOF</p>
+                    </div>
+                    <div class="w-12 h-12 bg-divy-blue rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informations de sécurité -->
+            <div class="card-enter bg-green-50 dark:bg-gray-700 rounded-2xl p-4 mb-6" style="animation-delay: 0.3s">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <h4 class="font-medium text-gray-800 dark:text-white mb-1">Transaction sécurisée</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            Votre transaction est protégée par un cryptage de niveau bancaire.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="px-4 pb-8 safe-area-bottom">
+            <div class="space-y-3">
+                <button 
+                    id="confirm-btn"
+                    onclick="confirmTopUp()"
+                    class="confirm-btn w-full py-4 bg-green-600 text-white rounded-2xl font-semibold hover:bg-green-700 transition-all duration-300"
+                >
+                    Confirmer la recharge
+                </button>
+                
+                <button 
+                    onclick="goBack()"
+                    class="w-full py-4 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-2xl font-semibold hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300"
+                >
+                    Modifier
+                </button>
+            </div>
+        </div>
+
+        <!-- Theme toggle button -->
+        <button id="theme-toggle" class="fixed top-4 right-4 p-2 rounded-full bg-white bg-opacity-20 backdrop-blur-sm text-white z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        let currentAmount = 0;
+        let currentMethod = '';
+        let currentProvider = '';
+        const currentBalance = 485750;
+
+        // Récupérer les paramètres de l'URL
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentAmount = parseInt(urlParams.get('amount')) || 0;
+            currentMethod = urlParams.get('method') || 'mobile';
+            currentProvider = urlParams.get('provider') || 'orange';
+            
+            displayTransactionDetails();
+        }
+
+        function displayTransactionDetails() {
+            // Afficher le montant
+            document.getElementById('amount-display').textContent = currentAmount.toLocaleString('fr-FR') + ' XOF';
+            document.getElementById('total-amount').textContent = currentAmount.toLocaleString('fr-FR') + ' XOF';
+            
+            // Calculer et afficher le nouveau solde
+            const newBalance = currentBalance + currentAmount;
+            document.getElementById('new-balance').textContent = newBalance.toLocaleString('fr-FR') + ' XOF';
+            
+            // Afficher la méthode de paiement
+            displayPaymentMethod();
+        }
+
+        function displayPaymentMethod() {
+            const paymentMethodElement = document.getElementById('payment-method');
+            
+            const methodNames = {
+                mobile: {
+                    orange: { name: 'Orange Money', color: 'bg-orange-500', icon: 'O' },
+                    moov: { name: 'Moov Money', color: 'bg-blue-600', icon: 'M' },
+                    mtn: { name: 'MTN Mobile Money', color: 'bg-yellow-500', icon: 'MTN' },
+                    payplus: { name: 'Pay Plus', color: 'bg-green-600', icon: 'P+' }
+                },
+                card: {
+                    visa: { name: 'Visa', color: 'bg-blue-600', icon: 'VISA' },
+                    mastercard: { name: 'Mastercard', color: 'bg-red-500', icon: 'MC' },
+                    amex: { name: 'American Express', color: 'bg-green-600', icon: 'AMEX' },
+                    gim: { name: 'GIM-UEMOA', color: 'bg-purple-600', icon: 'GIM' }
+                }
+            };
+
+            const method = methodNames[currentMethod]?.[currentProvider];
+            if (method) {
+                paymentMethodElement.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 ${method.color} rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-xs">${method.icon}</span>
+                        </div>
+                        <span class="font-semibold text-gray-800 dark:text-white">${method.name}</span>
+                    </div>
+                `;
+            }
+        }
+
+        function goBack() {
+            // Retourner à la page de montant avec les paramètres
+            const params = new URLSearchParams({
+                method: currentMethod,
+                provider: currentProvider
+            });
+            window.location.href = `topup-amount.html?${params.toString()}`;
+        }
+
+        function confirmTopUp() {
+            // Simuler un délai de traitement
+            const confirmBtn = document.getElementById('confirm-btn');
+            confirmBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Traitement en cours...
+            `;
+            confirmBtn.disabled = true;
+
+            // Rediriger vers la page de succès après 2 secondes
+            setTimeout(() => {
+                const params = new URLSearchParams({
+                    amount: currentAmount,
+                    method: currentMethod,
+                    provider: currentProvider,
+                    transactionId: generateTransactionId()
+                });
+                window.location.href = `topup-success.html?${params.toString()}`;
+            }, 2000);
+        }
+
+        function generateTransactionId() {
+            return 'TOP' + Date.now().toString().slice(-8) + Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            getUrlParams();
+            
+            // Gestion du thème
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

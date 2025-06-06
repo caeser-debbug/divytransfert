@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Confirmation de selfie</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-blue': '#5bc4ff',
+                        'divy-blue-dark': '#4da9e8',
+                        'divy-green': '#5bc4ff',
+                        'lime-green': '#a6e66e'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .btn-action {
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline {
+            border: 2px solid #a6e66e;
+            color: #a6e66e;
+            background-color: transparent;
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(166, 230, 110, 0.1);
+        }
+        
+        .btn-primary {
+            background-color: #a6e66e;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #95d160;
+        }
+        
+        .selfie-container {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: white;
+            animation: sparkle 1.5s infinite;
+        }
+        
+        .sparkle-1 {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .sparkle-2 {
+            top: 10%;
+            right: 20%;
+            animation-delay: 0.3s;
+        }
+        
+        .sparkle-3 {
+            bottom: 15%;
+            left: 15%;
+            animation-delay: 0.5s;
+        }
+        
+        .sparkle-4 {
+            bottom: 25%;
+            right: 15%;
+            animation-delay: 0.7s;
+        }
+        
+        .id-card-overlay {
+            position: absolute;
+            bottom: 60px;
+            right: 40px;
+            border: 2px solid #a6e66e;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: rotate(2deg);
+            z-index: 10;
+        }
+        
+        .id-card-header {
+            background-color: #0a5b00;
+            color: white;
+            padding: 4px 8px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 10px;
+        }
+        
+        .id-card-body {
+            background-color: white;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .id-card-row {
+            display: flex;
+            margin-bottom: 3px;
+            font-size: 8px;
+        }
+        
+        .id-card-label {
+            color: #666;
+            width: 40px;
+        }
+        
+        .id-card-value {
+            color: #000;
+            font-weight: 500;
+        }
+        
+        @keyframes fade-in {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fade-in 0.6s ease forwards;
+        }
+        
+        .fade-in-delay-1 {
+            opacity: 0;
+            animation: fade-in 0.6s ease 0.2s forwards;
+        }
+        
+        .fade-in-delay-2 {
+            opacity: 0;
+            animation: fade-in 0.6s ease 0.4s forwards;
+        }
+    </style>
+</head>
+<body class="antialiased bg-gray-900 text-white">
+    <div class="min-h-screen flex flex-col relative">
+        <!-- Header avec bouton retour et progress bar -->
+        <div class="w-full p-4 flex items-center">
+            <button id="back-button" class="text-white p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+            </button>
+            <div class="ml-4 flex-1 bg-gray-700 rounded-full h-2">
+                <div class="bg-lime-green rounded-full h-2 w-4/5"></div>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 flex flex-col items-center px-4 pt-4 pb-8">
+            <h1 class="text-2xl font-bold text-white mb-2 fade-in">
+                Selfie avec carte d'identité
+            </h1>
+            <p class="text-gray-300 text-center mb-8 fade-in-delay-1">
+                Reprenez la photo ou "Continuer" si vous êtes satisfait.
+            </p>
+
+            <!-- Selfie avec carte d'identité -->
+            <div class="w-full max-w-md selfie-container mb-8 fade-in-delay-2">
+                <!-- L'image est ici remplacée par l'image exemple de l'écran précédent -->
+                <img id="selfie-preview" src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Selfie avec carte d'identité" class="w-full">
+                
+                <!-- Carte d'identité (simulée comme sur l'image) -->
+                <div class="id-card-overlay">
+                    <div class="id-card-header">
+                        IDENTIFICATION CARD
+                    </div>
+                    <div class="id-card-body">
+                        <div class="id-card-row">
+                            <div class="id-card-label">Name</div>
+                            <div class="id-card-value">Andrew Ainsley</div>
+                        </div>
+                        <div class="id-card-row">
+                            <div class="id-card-label">ID No.</div>
+                            <div class="id-card-value">573813659</div>
+                        </div>
+                        <div class="id-card-row">
+                            <div class="id-card-label">Country</div>
+                            <div class="id-card-value">United States</div>
+                        </div>
+                        <div class="id-card-row">
+                            <div class="id-card-label">Issued</div>
+                            <div class="id-card-value">Dec 2023</div>
+                        </div>
+                        <div class="id-card-row">
+                            <div class="id-card-label">Expires</div>
+                            <div class="id-card-value">Nov 2026</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Effets décoratifs -->
+                <div class="sparkle sparkle-1"></div>
+                <div class="sparkle sparkle-2"></div>
+                <div class="sparkle sparkle-3"></div>
+                <div class="sparkle sparkle-4"></div>
+            </div>
+
+            <!-- Espace de remplissage pour pousser les boutons vers le bas -->
+            <div class="flex-grow"></div>
+
+            <!-- Boutons d'action -->
+            <div class="w-full max-w-md grid grid-cols-2 gap-4 mt-6 fade-in-delay-2">
+                <button id="retake-button" class="btn-action btn-outline">
+                    Reprendre
+                </button>
+                <button id="continue-button" class="btn-action btn-primary">
+                    Continuer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const backButton = document.getElementById('back-button');
+            const retakeButton = document.getElementById('retake-button');
+            const continueButton = document.getElementById('continue-button');
+            const selfiePreview = document.getElementById('selfie-preview');
+            
+            // Récupérer le selfie capturé s'il existe
+            const storedSelfie = localStorage.getItem('selfieWithIdCard');
+            if (storedSelfie) {
+                selfiePreview.src = storedSelfie;
+            }
+            
+            // Bouton retour
+            backButton.addEventListener('click', function() {
+                history.back();
+            });
+            
+            // Bouton pour reprendre le selfie
+            retakeButton.addEventListener('click', function() {
+                fadeOutContent(() => {
+                    window.location.href = "selfie-camera.html";
+                });
+            });
+            
+            // Bouton pour continuer
+            continueButton.addEventListener('click', function() {
+                fadeOutContent(() => {
+                    // Afficher un écran de traitement
+                    showProcessingOverlay();
+                    
+                    // Simuler une vérification
+                    setTimeout(() => {
+                        // Redirection vers la page suivante
+                        window.location.href = "verification-success.html";
+                    }, 2000);
+                });
+            });
+            
+            // Animation de disparition en fondu
+            function fadeOutContent(callback) {
+                document.querySelector('h1').style.opacity = '0';
+                document.querySelector('p').style.opacity = '0';
+                document.querySelector('.selfie-container').style.opacity = '0';
+                document.querySelector('.grid').style.opacity = '0';
+                
+                document.querySelector('h1').style.transform = 'translateY(-20px)';
+                document.querySelector('p').style.transform = 'translateY(-20px)';
+                document.querySelector('.selfie-container').style.transform = 'translateY(20px)';
+                document.querySelector('.grid').style.transform = 'translateY(20px)';
+                
+                document.querySelector('h1').style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                document.querySelector('p').style.transition = 'opacity 0.3s ease 0.05s, transform 0.3s ease 0.05s';
+                document.querySelector('.selfie-container').style.transition = 'opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s';
+                document.querySelector('.grid').style.transition = 'opacity 0.3s ease 0.15s, transform 0.3s ease 0.15s';
+                
+                setTimeout(callback, 500);
+            }
+            
+            // Afficher un overlay de traitement
+            function showProcessingOverlay() {
+                const overlay = document.createElement('div');
+                overlay.className = 'fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50';
+                
+                const content = document.createElement('div');
+                content.className = 'bg-gray-800 p-6 rounded-xl flex flex-col items-center';
+                
+                const spinner = document.createElement('div');
+                spinner.className = 'w-12 h-12 border-4 border-lime-green border-t-transparent rounded-full animate-spin mb-4';
+                
+                const text = document.createElement('p');
+                text.className = 'text-white text-lg';
+                text.textContent = 'Vérification en cours...';
+                
+                content.appendChild(spinner);
+                content.appendChild(text);
+                overlay.appendChild(content);
+                
+                document.body.appendChild(overlay);
+            }
+        });
+    </script>
+</body>
+</html>

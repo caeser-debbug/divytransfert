@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Ajouter un contact</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd',
+                        'lime-green': '#3194db'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(49, 148, 219, 0.15);
+        }
+        
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(166, 230, 110, 0.3);
+        }
+        
+        .btn-secondary {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            background-color: rgba(166, 230, 110, 0.1);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-800 bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <div class="bg-white dark:bg-gray-800 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center">
+                <button onclick="window.location.href='contacts.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors mr-3">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </button>
+                <h1 class="text-lg font-semibold text-gray-800 dark:text-white">Ajouter un contact</h1>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 px-4 py-6">
+            <div class="max-w-md mx-auto space-y-6">
+                <!-- Nom du titulaire du compte -->
+                <div class="fade-in">
+                    <label for="account-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Nom du titulaire du compte
+                    </label>
+                    <input 
+                        type="text" 
+                        id="account-name" 
+                        placeholder="Brooklyn Simmons"
+                        class="input-field w-full px-4 py-4 bg-gray-100 dark:bg-gray-700 border-0 rounded-lg text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-divy-blue focus:outline-none"
+                        required
+                    >
+                </div>
+
+                <!-- Email -->
+                <div class="fade-in" style="animation-delay: 0.1s">
+                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Email
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                            </svg>
+                        </div>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            placeholder="brooklyn.simmons@gmail.com"
+                            class="input-field w-full pl-12 pr-4 py-4 bg-gray-100 dark:bg-gray-700 border-0 rounded-lg text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-divy-blue focus:outline-none"
+                            required
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="px-4 py-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+            <div class="max-w-md mx-auto flex space-x-4">
+                <button 
+                    type="button" 
+                    onclick="cancelAddContact()"
+                    class="btn-secondary flex-1 py-4 border-2 border-lime-green text-lime-green rounded-full font-medium hover:bg-lime-green hover:bg-opacity-10 transition-colors"
+                >
+                    Annuler
+                </button>
+                <button 
+                    type="button" 
+                    onclick="searchContact()"
+                    class="btn-primary flex-1 py-4 bg-lime-green text-white rounded-full font-medium hover:bg-opacity-90 transition-colors"
+                    id="search-contact-btn"
+                >
+                    <span id="btn-text">Rechercher le contact</span>
+                    <svg id="loading-spinner" class="loading-spinner w-5 h-5 hidden inline ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Theme toggle button -->
+        <button id="theme-toggle" class="fixed top-4 right-4 p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion du thème
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        });
+
+        function cancelAddContact() {
+            window.location.href = 'contacts.html';
+        }
+
+        function searchContact() {
+            const accountName = document.getElementById('account-name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            
+            if (!accountName || !email) {
+                alert('Veuillez remplir tous les champs requis');
+                return;
+            }
+            
+            // Afficher le spinner de chargement
+            const btnText = document.getElementById('btn-text');
+            const spinner = document.getElementById('loading-spinner');
+            const searchBtn = document.getElementById('search-contact-btn');
+            
+            btnText.textContent = 'Recherche...';
+            spinner.classList.remove('hidden');
+            searchBtn.disabled = true;
+            
+            // Simuler une recherche
+            setTimeout(() => {
+                // Rediriger vers la page de résultat avec les paramètres
+                const params = new URLSearchParams({
+                    name: accountName,
+                    email: email
+                });
+                window.location.href = `search-result.html?${params.toString()}`;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

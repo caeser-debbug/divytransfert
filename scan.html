@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Scanner QR Code</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd',
+                        'lime-green': '#3194db'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .scanner-frame {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            border: 3px solid #3194db;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+
+        .dark .scanner-frame {
+            border-color: #3194db;
+        }
+
+        .light .scanner-frame {
+            border-color: #8bc34a;
+        }
+        
+        .scanner-corners {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 4px solid #3194db;
+            transition: border-color 0.3s ease;
+        }
+
+        .dark .scanner-corners {
+            border-color: #3194db;
+        }
+
+        .light .scanner-corners {
+            border-color: #8bc34a;
+        }
+        
+        .corner-tl {
+            top: -3px;
+            left: -3px;
+            border-right: none;
+            border-bottom: none;
+            border-top-left-radius: 20px;
+        }
+        
+        .corner-tr {
+            top: -3px;
+            right: -3px;
+            border-left: none;
+            border-bottom: none;
+            border-top-right-radius: 20px;
+        }
+        
+        .corner-bl {
+            bottom: -3px;
+            left: -3px;
+            border-right: none;
+            border-top: none;
+            border-bottom-left-radius: 20px;
+        }
+        
+        .corner-br {
+            bottom: -3px;
+            right: -3px;
+            border-left: none;
+            border-top: none;
+            border-bottom-right-radius: 20px;
+        }
+        
+        .scanning-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #3194db, transparent);
+            animation: scan 2s ease-in-out infinite;
+            transition: background 0.3s ease;
+        }
+
+        .light .scanning-line {
+            background: linear-gradient(90deg, transparent, #8bc34a, transparent);
+        }
+        
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(276px); }
+            100% { transform: translateY(0); }
+        }
+        
+        .qr-code {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-card {
+            animation: slideUp 0.5s ease-out;
+            transition: all 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(166, 230, 110, 0.3);
+        }
+
+        .dark .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(49, 148, 219, 0.3);
+        }
+        
+        .btn-secondary {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            background-color: rgba(166, 230, 110, 0.1);
+        }
+
+        .dark .btn-secondary:hover {
+            background-color: rgba(49, 148, 219, 0.1);
+        }
+        
+        .action-button {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .action-button:hover {
+            transform: scale(1.1);
+        }
+
+        .scan-bg {
+            transition: background-color 0.3s ease;
+        }
+
+        .dark .scan-bg {
+            background-color: #111827;
+        }
+
+        .light .scan-bg {
+            background-color: #f1f5f9;
+        }
+
+        .result-bg {
+            transition: background-color 0.3s ease;
+        }
+
+        .dark .result-bg {
+            background-color: #1f2937;
+        }
+
+        .light .result-bg {
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="antialiased bg-gray-900 dark:bg-gray-900 bg-slate-100 text-white dark:text-white text-gray-900 transition-colors duration-300 scan-bg">
+    <!-- Page de scan -->
+    <div id="scan-page" class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-4">
+            <button onclick="closeScan()" class="p-2 hover:bg-gray-800 dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-colors">
+                <svg class="w-6 h-6 text-white dark:text-white text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+
+            <!-- Theme toggle button -->
+            <button id="theme-toggle" class="p-2 rounded-full bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-50 backdrop-blur-sm text-gray-800 dark:text-gray-200 hover:bg-opacity-30 transition-all">
+                <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+                </svg>
+                <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                </svg>
+            </button>
+
+            <div class="w-10"></div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 flex flex-col items-center justify-center px-4">
+            <h1 class="text-2xl font-semibold mb-2 text-center text-white dark:text-white text-gray-900">Scanner le QR Code</h1>
+            <p class="text-gray-300 dark:text-gray-300 text-gray-600 mb-8 text-center">Pointez la caméra sur le QR Code pour scanner.</p>
+            
+            <!-- Zone de scan -->
+            <div class="scanner-frame mb-8 relative">
+                <!-- Simulation de la caméra avec un QR code -->
+                <img 
+                    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDI4MCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMjgwIiBmaWxsPSIjMzMzIi8+CjxyZWN0IHg9IjQwIiB5PSI0MCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IndoaXRlIi8+CjxyZWN0IHg9IjUwIiB5PSI1MCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiBmaWxsPSJibGFjayIvPgo8cmVjdCB4PSI2MCIgeT0iNjAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0id2hpdGUiLz4KPHJlY3QgeD0iMjAwIiB5PSI1MCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiBmaWxsPSJibGFjayIvPgo8cmVjdCB4PSIyMTAiIHk9IjYwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IndoaXRlIi8+CjxyZWN0IHg9IjUwIiB5PSIyMDAiIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgZmlsbD0iYmxhY2siLz4KPHJlY3QgeD0iNjAiIHk9IjIxMCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K" 
+                    alt="QR Code Scanner" 
+                    class="qr-code"
+                >
+                
+                <!-- Coins du scanner -->
+                <div class="scanner-corners corner-tl"></div>
+                <div class="scanner-corners corner-tr"></div>
+                <div class="scanner-corners corner-bl"></div>
+                <div class="scanner-corners corner-br"></div>
+                
+                <!-- Ligne de scan -->
+                <div class="scanning-line"></div>
+            </div>
+            
+            <!-- Boutons d'action -->
+            <div class="flex space-x-6">
+                <button class="action-button bg-gray-700 dark:bg-gray-700 bg-gray-300 hover:bg-gray-600 dark:hover:bg-gray-600 hover:bg-gray-400" onclick="openGallery()">
+                    <svg class="w-6 h-6 text-white dark:text-white text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <button class="action-button bg-gray-700 dark:bg-gray-700 bg-gray-300 hover:bg-gray-600 dark:hover:bg-gray-600 hover:bg-gray-400" onclick="openFiles()">
+                    <svg class="w-6 h-6 text-white dark:text-white text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page de résultat -->
+    <div id="result-page" class="min-h-screen flex-col hidden">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-4 bg-gray-900 dark:bg-gray-900 bg-white">
+            <button onclick="backToScan()" class="p-2 hover:bg-gray-800 dark:hover:bg-gray-800 hover:bg-gray-100 rounded-full transition-colors">
+                <svg class="w-6 h-6 text-white dark:text-white text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+
+            <!-- Theme toggle button pour la page de résultat -->
+            <button id="theme-toggle-result" class="p-2 rounded-full bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-50 backdrop-blur-sm text-gray-800 dark:text-gray-200 hover:bg-opacity-30 transition-all">
+                <svg class="light-icon w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+                </svg>
+                <svg class="dark-icon w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                </svg>
+            </button>
+
+            <div class="w-10"></div>
+        </div>
+
+        <!-- Contenu du profil -->
+        <div class="flex-1 flex flex-col items-center justify-center px-4 py-8 result-bg">
+            <div class="profile-card max-w-sm w-full bg-white dark:bg-gray-700 rounded-2xl p-8 shadow-lg text-center">
+                <!-- Avatar -->
+                <div class="w-24 h-24 mx-auto mb-6 relative">
+                    <img 
+                        id="profile-avatar" 
+                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
+                        alt="Profile"
+                        class="w-full h-full rounded-full object-cover border-4 border-blue-400"
+                    >
+                </div>
+                
+                <!-- Informations utilisateur -->
+                <h2 id="profile-name" class="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+                    Cameron Williamson
+                </h2>
+                <p id="profile-email" class="text-gray-600 dark:text-gray-300 mb-4">
+                    cameron.williamson@gmail.com
+                </p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                    Compte DivyTransfert
+                </p>
+                
+                <!-- Message d'état -->
+                <div class="bg-gray-50 dark:bg-gray-600 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                        Ce compte n'est pas encore dans vos contacts.
+                    </p>
+                </div>
+                
+                <!-- Bouton ajouter aux contacts -->
+                <button 
+                    onclick="addToContacts()"
+                    class="w-full py-3 border-2 border-lime-green dark:border-divy-blue text-lime-green dark:text-divy-blue rounded-full font-medium hover:bg-lime-green hover:bg-opacity-10 dark:hover:bg-divy-blue dark:hover:bg-opacity-10 transition-colors mb-4"
+                >
+                    Ajouter à mes contacts
+                </button>
+            </div>
+        </div>
+
+        <!-- Boutons d'action principaux -->
+        <div class="px-4 py-4 bg-gray-900 dark:bg-gray-900 bg-white">
+            <div class="max-w-sm mx-auto flex space-x-4">
+                <button 
+                    onclick="requestMoney()"
+                    class="btn-secondary flex-1 py-4 border-2 border-lime-green dark:border-divy-blue text-lime-green dark:text-divy-blue rounded-full font-medium hover:bg-lime-green hover:bg-opacity-10 dark:hover:bg-divy-blue dark:hover:bg-opacity-10 transition-colors"
+                >
+                    Demander de l'argent
+                </button>
+                <button 
+                    onclick="sendMoney()"
+                    class="btn-primary flex-1 py-4 bg-lime-green dark:bg-divy-blue text-white rounded-full font-medium hover:bg-opacity-90 transition-colors"
+                >
+                    Envoyer de l'argent
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion du thème
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser le thème
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark');
+                document.body.classList.remove('light');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.body.classList.add('light');
+                document.body.classList.remove('dark');
+            }
+            
+            // Gestionnaire du bouton de thème principal
+            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+            
+            // Gestionnaire du bouton de thème de la page de résultat
+            document.getElementById('theme-toggle-result').addEventListener('click', toggleTheme);
+        });
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                document.body.classList.add('light');
+                document.body.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark');
+                document.body.classList.remove('light');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Simuler un scan réussi après 3 secondes
+        setTimeout(() => {
+            showScanResult();
+        }, 3000);
+
+        function closeScan() {
+            window.location.href = 'home.html';
+        }
+
+        function backToScan() {
+            document.getElementById('result-page').classList.add('hidden');
+            document.getElementById('scan-page').classList.remove('hidden');
+            
+            // Changer le thème pour la page de scan
+            if (document.documentElement.classList.contains('dark')) {
+                document.body.className = 'antialiased bg-gray-900 dark:bg-gray-900 bg-slate-100 text-white dark:text-white text-gray-900 transition-colors duration-300 scan-bg dark';
+            } else {
+                document.body.className = 'antialiased bg-gray-900 dark:bg-gray-900 bg-slate-100 text-white dark:text-white text-gray-900 transition-colors duration-300 scan-bg light';
+            }
+        }
+
+        function showScanResult() {
+            document.getElementById('scan-page').classList.add('hidden');
+            document.getElementById('result-page').classList.remove('hidden');
+            document.getElementById('result-page').classList.add('flex');
+            
+            // Changer le thème pour la page de résultat
+            if (document.documentElement.classList.contains('dark')) {
+                document.body.className = 'antialiased transition-colors duration-300 dark:bg-gray-800 bg-gray-50 dark';
+            } else {
+                document.body.className = 'antialiased transition-colors duration-300 dark:bg-gray-800 bg-gray-50 light';
+            }
+        }
+
+        function openGallery() {
+            // Simuler l'ouverture de la galerie
+            alert('Ouverture de la galerie - Fonctionnalité à implémenter');
+        }
+
+        function openFiles() {
+            // Simuler l'ouverture des fichiers
+            alert('Ouverture des fichiers - Fonctionnalité à implémenter');
+        }
+
+        function addToContacts() {
+            const name = document.getElementById('profile-name').textContent;
+            // Simuler l'ajout aux contacts
+            alert(`${name} ajouté aux contacts !`);
+        }
+
+        function requestMoney() {
+            const name = document.getElementById('profile-name').textContent;
+            // Rediriger vers la page de demande d'argent
+            window.location.href = `request-money.html?contact=${encodeURIComponent(name)}`;
+        }
+
+        function sendMoney() {
+            const name = document.getElementById('profile-name').textContent;
+            // Rediriger vers la page d'envoi d'argent
+            window.location.href = `scan_send_money.html?contact=${encodeURIComponent(name)}`;
+        }
+    </script>
+</body>
+</html>

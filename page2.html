@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap'>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-blue': '#5bc4ff',
+                        'divy-blue-dark': '#4da9e8',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Styles pour le logo */
+        .logo-container {
+            width: 100px;
+            height: 60px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Styles du loader hexagonal */
+        :root {
+            --hex-dur: 8s;
+            --hex-color: #5bc4ff;
+            --hex-color-dark: #4da9e8;
+        }
+
+        .hexagon {
+            margin-bottom: 1.5em;
+            overflow: hidden;
+            position: relative;
+            width: 15em;
+            height: 15em;
+        }
+
+        .hexagon__group, .hexagon__sector, .hexagon__sector:before, .hexagon__sector:after {
+            position: absolute;
+        }
+
+        .hexagon__group {
+            width: 100%;
+            height: 100%;
+        }
+
+        .hexagon__group:nth-child(2) .hexagon__sector,
+        .hexagon__group:nth-child(2) .hexagon__sector:before,
+        .hexagon__group:nth-child(2) .hexagon__sector:after {
+            animation-delay: calc(var(--hex-dur) * -1/6);
+        }
+
+        .hexagon__group:nth-child(3) .hexagon__sector,
+        .hexagon__group:nth-child(3) .hexagon__sector:before,
+        .hexagon__group:nth-child(3) .hexagon__sector:after {
+            animation-delay: calc(var(--hex-dur) * -2/6);
+        }
+
+        .hexagon__group:nth-child(4) .hexagon__sector,
+        .hexagon__group:nth-child(4) .hexagon__sector:before,
+        .hexagon__group:nth-child(4) .hexagon__sector:after {
+            animation-delay: calc(var(--hex-dur) * -3/6);
+        }
+
+        .hexagon__group:nth-child(5) .hexagon__sector,
+        .hexagon__group:nth-child(5) .hexagon__sector:before,
+        .hexagon__group:nth-child(5) .hexagon__sector:after {
+            animation-delay: calc(var(--hex-dur) * -4/6);
+        }
+
+        .hexagon__group:nth-child(6) .hexagon__sector,
+        .hexagon__group:nth-child(6) .hexagon__sector:before,
+        .hexagon__group:nth-child(6) .hexagon__sector:after {
+            animation-delay: calc(var(--hex-dur) * -5/6);
+        }
+
+        .hexagon__group:nth-child(odd) {
+            transform: rotate(30deg);
+        }
+
+        .hexagon__sector, .hexagon__sector:before, .hexagon__sector:after {
+            animation-duration: var(--hex-dur);
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+            width: 0.2em;
+            height: 0.2em;
+        }
+
+        .hexagon__sector {
+            animation-name: moveOut1;
+            top: calc(50% - 0.1em);
+            left: calc(50% - 0.1em);
+        }
+
+        .hexagon__sector:nth-child(2) {
+            animation-name: moveOut2;
+        }
+
+        .hexagon__sector:nth-child(3) {
+            animation-name: moveOut3;
+        }
+
+        .hexagon__sector:nth-child(4) {
+            animation-name: moveOut4;
+        }
+
+        .hexagon__sector:nth-child(5) {
+            animation-name: moveOut5;
+        }
+
+        .hexagon__sector:nth-child(6) {
+            animation-name: moveOut6;
+        }
+
+        .hexagon__sector:before, .hexagon__sector:after {
+            animation-name: ripple;
+            content: "";
+            display: block;
+            top: 0;
+            left: 0;
+            transform-origin: 0.1em 0.1em;
+            border-radius: 0.1em;
+        }
+        
+        /* Couleurs adaptées au thème clair/sombre */
+        .hexagon__sector:before, .hexagon__sector:after {
+            background-color: var(--hex-color);
+        }
+        
+        .dark .hexagon__sector:before, .dark .hexagon__sector:after {
+            background-color: var(--hex-color-dark);
+        }
+
+        .hexagon__sector:before {
+            transform: rotate(-30deg)
+        }
+
+        .hexagon__sector:after {
+            transform: rotate(-150deg)
+        }
+
+        .loader-text {
+            font-family: 'Comfortaa', sans-serif;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: var(--hex-color);
+        }
+        
+        .dark .loader-text {
+            color: var(--hex-color-dark);
+        }
+
+        /* Animations */
+        @keyframes moveOut1 {
+            from { transform: translateY(0) scale(0); }
+            3% { transform: translateY(0.2em) scale(1); }
+            97% { transform: translateY(7.3em) scale(1); }
+            to { transform: translateY(7.5em) scale(0); }
+        }
+
+        @keyframes moveOut2 {
+            from { transform: rotate(60deg) translateY(0) scale(0); }
+            3% { transform: rotate(60deg) translateY(0.2em) scale(1); }
+            97% { transform: rotate(60deg) translateY(7.3em) scale(1); }
+            to { transform: rotate(60deg) translateY(7.5em) scale(0); }
+        }
+
+        @keyframes moveOut3 {
+            from { transform: rotate(120deg) translateY(0) scale(0); }
+            3% { transform: rotate(120deg) translateY(0.2em) scale(1); }
+            97% { transform: rotate(120deg) translateY(7.3em) scale(1); }
+            to { transform: rotate(120deg) translateY(7.5em) scale(0); }
+        }
+
+        @keyframes moveOut4 {
+            from { transform: rotate(180deg) translateY(0) scale(0); }
+            3% { transform: rotate(180deg) translateY(0.2em) scale(1); }
+            97% { transform: rotate(180deg) translateY(7.3em) scale(1); }
+            to { transform: rotate(180deg) translateY(7.5em) scale(0); }
+        }
+
+        @keyframes moveOut5 {
+            from { transform: rotate(240deg) translateY(0) scale(0); }
+            3% { transform: rotate(240deg) translateY(0.2em) scale(1); }
+            97% { transform: rotate(240deg) translateY(7.3em) scale(1); }
+            to { transform: rotate(240deg) translateY(7.5em) scale(0); }
+        }
+
+        @keyframes moveOut6 {
+            from { transform: rotate(300deg) translateY(0) scale(0); }
+            3% { transform: rotate(300deg) translateY(0.2em) scale(1); }
+            97% { transform: rotate(300deg) translateY(7.3em) scale(1); }
+            to { transform: rotate(300deg) translateY(7.5em) scale(0); }
+        }
+
+        @keyframes ripple {
+            from, to { width: 0.2em; }
+            33% { width: 2.4em; }
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-900 bg-white">
+    <div class="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+        <!-- Desktop Header (Only visible on larger screens) -->
+        <header class="fixed top-0 left-0 right-0 hidden lg:flex items-center justify-between px-8 py-4 transition-colors duration-300 bg-white dark:bg-gray-900 z-10">
+            <div class="flex items-center">
+                <div class="logo-container">
+                    <!-- Remplacez le src par le chemin vers votre image -->
+                    <img src="logo/logo1.png" alt="Divy Transfert Logo" class="logo-image">
+                </div>
+                <h1 class="text-xl font-bold ml-2 text-gray-800 dark:text-white">Divy Transfert</h1>
+            </div>
+            <div class="flex items-center space-x-6">
+                <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-divy-blue dark:hover:text-divy-blue transition-colors duration-200">Fonctionnalités</a>
+                <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-divy-blue dark:hover:text-divy-blue transition-colors duration-200">Tarifs</a>
+                <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-divy-blue dark:hover:text-divy-blue transition-colors duration-200">Aide</a>
+                <button id="theme-toggle-desktop" class="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                    <svg id="light-icon-desktop" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+                    </svg>
+                    <svg id="dark-icon-desktop" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Loading Screen avec loader hexagonal -->
+        <div id="loading-screen" class="absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-500 bg-white dark:bg-gray-900 z-20">
+            <div class="logo-container mb-4">
+                <!-- Remplacez le src par le chemin vers votre image -->
+                <img src="logo/logo1.png" alt="Divy Transfert Logo" class="logo-image">
+            </div>
+            <h1 class="text-2xl font-bold mb-8 text-gray-800 dark:text-white">Divy Transfert</h1>
+            
+            <!-- Hexagonal Loader -->
+            <div class="hexagon" aria-label="Animation de chargement hexagonale">
+                <div class="hexagon__group">
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                </div>
+                <div class="hexagon__group">
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                </div>
+                <div class="hexagon__group">
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                </div>
+                <div class="hexagon__group">
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                </div>
+                <div class="hexagon__group">
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                </div>
+                <div class="hexagon__group">
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                    <div class="hexagon__sector"></div>
+                </div>
+            </div>
+            <p class="loader-text mt-4" aria-label="Chargement">Chargement</p>
+        </div>
+        
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="hidden opacity-0 transition-opacity duration-500 w-full max-w-md px-4 sm:px-0 lg:max-w-4xl">
+            <!-- Mobile View -->
+            <div class="lg:hidden flex flex-col items-center">
+                <div class="logo-container">
+                    <!-- Remplacez le src par le chemin vers votre image -->
+                    <img src="logo/logo1.png" alt="Divy Transfert Logo" class="logo-image">
+                </div>
+                <h1 class="text-2xl font-bold mt-4 text-gray-800 dark:text-white">Divy Transfert</h1>
+                <h2 class="text-3xl font-bold mt-16 text-center text-gray-800 dark:text-white">Commençons !</h2>
+                <p class="text-center mt-4 text-gray-600 dark:text-gray-300">
+                    Avec Divy Transfert, envoyer et recevoir de l'argent n'a jamais été aussi simple.
+                </p>
+                <div class="mt-16 flex w-full space-x-4">
+                    <button onclick="window.location.href='register.html'" class="flex-1 py-3 px-6 border-2 border-divy-blue rounded-full text-divy-blue dark:text-divy-blue font-semibold hover:bg-divy-blue hover:text-white transition-colors duration-200">S'inscrire</button>
+                    <button onclick="window.location.href='login.html'" class="flex-1 py-3 px-6 bg-divy-blue rounded-full text-white font-semibold hover:bg-divy-blue-dark transition-colors duration-200">Se connecter</button>
+                </div>
+                <button id="theme-toggle-mobile" class="mt-8 p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                    <svg id="light-icon-mobile" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+                    </svg>
+                    <svg id="dark-icon-mobile" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Desktop View -->
+            <div class="hidden lg:flex items-center justify-between">
+                <div class="w-1/2 pr-8">
+                    <h2 class="text-5xl font-bold text-gray-800 dark:text-white">Commençons !</h2>
+                    <p class="text-xl mt-6 text-gray-600 dark:text-gray-300">
+                        Avec Divy Transfert, envoyer et recevoir de l'argent n'a jamais été aussi simple. Effectuez des transferts instantanés vers vos amis, votre famille et les entreprises du monde entier.
+                    </p>
+                    <div class="mt-10 flex space-x-6">
+                        <button onclick="window.location.href='register.html'" class="py-4 px-8 border-2 border-divy-blue rounded-full text-divy-blue dark:text-divy-blue font-semibold hover:bg-divy-blue hover:text-white transition-colors duration-200">S'inscrire</button>
+                        <button onclick="window.location.href='login.html'" class="py-4 px-8 bg-divy-blue rounded-full text-white font-semibold hover:bg-divy-blue-dark transition-colors duration-200">Se connecter</button>
+                    </div>
+                </div>
+                <div class="w-1/2 relative">
+                    <div class="bg-divy-blue/5 dark:bg-divy-blue/10 rounded-3xl p-10 relative overflow-hidden">
+                        <div class="absolute -top-20 -right-20 w-40 h-40 bg-divy-blue/20 rounded-full"></div>
+                        <div class="absolute -bottom-10 -left-10 w-20 h-20 bg-divy-blue/20 rounded-full"></div>
+                        
+                        <div class="relative z-10 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 rounded-full bg-divy-blue/20 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-divy-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="font-semibold text-gray-800 dark:text-white">Envoyer de l'argent</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Transferts rapides et sécurisés</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="relative z-10 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 rounded-full bg-divy-blue/20 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-divy-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="font-semibold text-gray-800 dark:text-white">Recevoir de l'argent</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Directement sur votre compte</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for saved theme preference or use preferred color scheme
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            
+            // Theme toggle functions
+            function toggleTheme() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            }
+            
+            // Add event listeners to theme toggle buttons
+            document.getElementById('theme-toggle-desktop')?.addEventListener('click', toggleTheme);
+            document.getElementById('theme-toggle-mobile')?.addEventListener('click', toggleTheme);
+            
+            // Simulate loading sequence
+            setTimeout(function() {
+                const loadingScreen = document.getElementById('loading-screen');
+                const welcomeScreen = document.getElementById('welcome-screen');
+                
+                loadingScreen.classList.add('opacity-0');
+                
+                setTimeout(function() {
+                    loadingScreen.classList.add('hidden');
+                    welcomeScreen.classList.remove('hidden');
+                    
+                    setTimeout(function() {
+                        welcomeScreen.classList.remove('opacity-0');
+                    }, 50);
+                }, 500);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

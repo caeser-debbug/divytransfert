@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Définir votre code PIN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .pin-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .pin-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60px;
+            border-radius: 8px;
+            width: 70px;
+            font-size: 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .pin-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 40px 0;
+        }
+        
+        .pin-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 320px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+        
+        .pin-key {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            user-select: none;
+            cursor: pointer;
+        }
+        
+        .pin-key-light {
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        
+        .pin-key-light:active {
+            background-color: #e5e5e5;
+            transform: scale(0.95);
+        }
+        
+        .pin-key-dark {
+            background-color: #1f2937;
+            color: white;
+        }
+        
+        .pin-key-dark:active {
+            background-color: #111827;
+            transform: scale(0.95);
+        }
+
+        .pin-key:hover {
+            transform: scale(1.05);
+        }
+        
+        .delete-key svg {
+            width: 28px;
+            height: 28px;
+        }
+        
+        .pin-filled {
+            background-color: #3194db;
+            border: 2px solid #3194db;
+            color: white;
+        }
+        
+        .pin-empty-light {
+            background-color: white;
+            border: 2px solid #d1d5db;
+        }
+        
+        .pin-empty-dark {
+            background-color: #374151;
+            border: 2px solid #4b5563;
+        }
+        
+        .pin-active {
+            border: 2px solid #3194db;
+            box-shadow: 0 0 0 3px rgba(49, 148, 219, 0.1);
+        }
+        
+        .pin-display-active {
+            border: 2px solid #3194db;
+            box-shadow: 0 0 0 3px rgba(49, 148, 219, 0.1);
+        }
+        
+        .pin-display-light {
+            background-color: white;
+            color: #333;
+            border: 2px solid #d1d5db;
+        }
+        
+        .pin-display-dark {
+            background-color: #1f2937;
+            color: white;
+            border: 2px solid #4b5563;
+        }
+        
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .pin-error {
+            color: #ef4444;
+            font-size: 14px;
+            text-align: center;
+            height: 20px;
+            margin-top: -20px;
+            margin-bottom: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .pin-error.show {
+            opacity: 1;
+        }
+        
+        .continue-button {
+            width: 90%;
+            max-width: 400px;
+            padding: 16px;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: #3194db;
+            color: white;
+            display: none;
+            margin: 30px auto;
+            cursor: pointer;
+            border: none;
+        }
+
+        .continue-button:hover {
+            background-color: #124556;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(49, 148, 219, 0.4);
+        }
+        
+        .continue-button.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Styles pour le bouton de thème */
+        .theme-toggle {
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 bg-white dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen">
+    <div class="min-h-screen flex flex-col relative">
+        <!-- Header avec bouton retour et progress bar -->
+        <div class="w-full p-4 flex items-center">
+            <button id="back-button" class="text-gray-800 dark:text-gray-300 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+            </button>
+            <div class="ml-4 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div class="bg-divy-blue rounded-full h-2 w-4/5 transition-all duration-300"></div>
+            </div>
+
+            <!-- Bouton de thème -->
+            <button id="theme-toggle" class="theme-toggle ml-4 p-2 rounded-full bg-white bg-opacity-20 backdrop-blur-sm text-gray-600 dark:text-gray-300">
+                <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+                </svg>
+                <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="w-full max-w-md mx-auto px-4 pt-8">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
+                Définissez votre code PIN <span class="ml-2">🔒</span>
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400 mt-2 mb-4">
+                Ajoutez un PIN pour sécuriser votre compte. Vous pourriez être invité à saisir ce PIN lors d'une transaction.
+            </p>
+
+            <!-- Affichage des champs PIN -->
+            <div class="pin-container" id="pin-container">
+                <div class="pin-display pin-display-light dark:pin-display-dark pin-display-active" id="pin-1">
+                    <span class="pin-text"></span>
+                </div>
+                <div class="pin-display pin-display-light dark:pin-display-dark" id="pin-2">
+                    <span class="pin-text"></span>
+                </div>
+                <div class="pin-display pin-display-light dark:pin-display-dark" id="pin-3">
+                    <span class="pin-text"></span>
+                </div>
+                <div class="pin-display pin-display-light dark:pin-display-dark" id="pin-4">
+                    <span class="pin-text"></span>
+                </div>
+            </div>
+
+            <!-- Message d'erreur (caché par défaut) -->
+            <div class="pin-error" id="pin-error">
+                Le code PIN doit comporter 4 chiffres
+            </div>
+
+            <!-- Clavier PIN -->
+            <div class="pin-keypad">
+                <!-- Rangée 1 -->
+                <div class="pin-key pin-key-light dark:pin-key-dark" data-key="1">1</div>
+                <div class="pin-key pin-key-light dark:pin-key-dark" data-key="2">2</div>
+                <div class="pin-key pin-key-light dark:pin-key-dark" data-key="3">3</div>
+                
+                <!-- Rangée 2 -->
+                <div class="pin-key pin-key-light dark:pin-key-dark" data-key="4">4</div>
+                <div class="pin-key pin-key-light dark:pin-key-dark" data-key="5">5</div>
+                <div class="pin-key pin-key-light dark:pin-key-dark" data-key="6">6</div>
+                
+                <!-- Rangée 3 -->
+                <div class="pin-key pin-key-light dark:pin-key-dark" data-key="7">7</div>
+                <div class="pin-key pin-key-light dark:pin-key-dark" data-key="8">8</div>
+                <div class="pin-key pin-key-light dark:pin-key-dark" data-key="9">9</div>
+                
+                <!-- Rangée 4 -->
+                <div class="pin-key pin-key-light dark:pin-key-dark" data-key="*">*</div>
+                <div class="pin-key pin-key-light dark:pin-key-dark" data-key="0">0</div>
+                <div class="pin-key pin-key-light dark:pin-key-dark delete-key" data-key="delete">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Bouton Continuer (s'affiche quand le PIN est complet) -->
+            <div class="mt-8">
+                <button id="continue-button" class="continue-button">
+                    Continuer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion du thème - identique aux autres pages pour la synchronisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser le thème exactement comme les autres pages
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                updateBodyClasses();
+            }
+            
+            // Gestionnaire pour le bouton de thème - identique aux autres pages
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+                updateBodyClasses();
+            });
+
+            // Écouter les changements de thème depuis d'autres pages (synchronisation)
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'theme') {
+                    if (e.newValue === 'dark') {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                    updateBodyClasses();
+                }
+            });
+
+            // Initialiser la page
+            initializePage();
+        });
+
+        // Fonction pour mettre à jour les classes du body selon le thème - identique aux autres pages
+        function updateBodyClasses() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const body = document.body;
+            
+            if (isDark) {
+                body.className = 'antialiased transition-colors duration-300 bg-gray-900 dark:bg-gray-900 text-white min-h-screen';
+            } else {
+                body.className = 'antialiased transition-colors duration-300 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen';
+            }
+        }
+
+        function initializePage() {
+            // Gestion du code PIN
+            const pinContainer = document.getElementById('pin-container');
+            const pinDisplays = document.querySelectorAll('.pin-display');
+            const pinKeys = document.querySelectorAll('.pin-key');
+            const continueButton = document.getElementById('continue-button');
+            const pinError = document.getElementById('pin-error');
+            const backButton = document.getElementById('back-button');
+            
+            let currentPin = ['', '', '', '']; // PIN vide au départ
+            let currentPosition = 0; // Position actuelle du curseur (1ère case active)
+            
+            // Mettre à jour l'affichage du PIN
+            function updatePinDisplay() {
+                pinDisplays.forEach((display, index) => {
+                    // Supprimer toutes les classes actives
+                    display.classList.remove('pin-display-active');
+                    
+                    // Mettre à jour le texte
+                    const textElement = display.querySelector('.pin-text');
+                    textElement.textContent = currentPin[index];
+                    
+                    // Changer la couleur selon si c'est rempli ou vide
+                    if (currentPin[index] !== '') {
+                        display.style.backgroundColor = '#3194db';
+                        display.style.borderColor = '#3194db';
+                        display.style.color = 'white';
+                    } else {
+                        const isDark = document.documentElement.classList.contains('dark');
+                        if (isDark) {
+                            display.style.backgroundColor = '#1f2937';
+                            display.style.borderColor = '#4b5563';
+                            display.style.color = 'white';
+                        } else {
+                            display.style.backgroundColor = 'white';
+                            display.style.borderColor = '#d1d5db';
+                            display.style.color = '#333';
+                        }
+                    }
+                    
+                    // Ajouter la classe active pour la position actuelle
+                    if (index === currentPosition) {
+                        display.classList.add('pin-display-active');
+                    }
+                });
+                
+                // Vérifier si le PIN est complet
+                const isComplete = currentPin.every(digit => digit !== '');
+                if (isComplete) {
+                    continueButton.classList.add('show');
+                } else {
+                    continueButton.classList.remove('show');
+                }
+            }
+            
+            // Gestionnaire d'événements pour les touches du clavier PIN
+            pinKeys.forEach(key => {
+                key.addEventListener('click', function() {
+                    const keyValue = this.getAttribute('data-key');
+                    
+                    // Animation de clic
+                    this.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 100);
+                    
+                    // Si c'est la touche de suppression
+                    if (keyValue === 'delete') {
+                        // Trouver la position précédente non vide
+                        let prevPosition = currentPosition;
+                        while (prevPosition > 0 && currentPin[prevPosition] === '') {
+                            prevPosition--;
+                        }
+                        
+                        // Supprimer le chiffre à cette position
+                        if (currentPin[prevPosition] !== '') {
+                            currentPin[prevPosition] = '';
+                            currentPosition = prevPosition;
+                            pinError.classList.remove('show');
+                            updatePinDisplay();
+                        } else if (pinContainer.classList.contains('shake')) {
+                            // Ne rien faire si déjà en train de secouer
+                        } else {
+                            // Animation de secousse si rien à supprimer
+                            pinContainer.classList.add('shake');
+                            setTimeout(() => {
+                                pinContainer.classList.remove('shake');
+                            }, 500);
+                        }
+                    } else {
+                        // Si c'est un chiffre ou *
+                        if (currentPosition < 4) {
+                            currentPin[currentPosition] = keyValue;
+                            currentPosition++; // Passer à la position suivante
+                            pinError.classList.remove('show');
+                            updatePinDisplay();
+                        } else {
+                            // Animation de secousse si le PIN est complet
+                            pinContainer.classList.add('shake');
+                            pinError.classList.add('show');
+                            setTimeout(() => {
+                                pinContainer.classList.remove('shake');
+                            }, 500);
+                        }
+                    }
+                });
+            });
+            
+            // Initialiser l'affichage du PIN
+            updatePinDisplay();
+            
+            // Bouton Continuer
+            continueButton.addEventListener('click', function() {
+                // Animation du bouton
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+
+                // Simuler l'enregistrement du PIN
+                const pin = currentPin.join('');
+                localStorage.setItem('userPin', pin);
+                
+                // Animation de chargement
+                this.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Traitement en cours...
+                `;
+                
+                // Afficher un message de succès adapté au thème
+                const isDark = document.documentElement.classList.contains('dark');
+                const successMessage = document.createElement('div');
+                successMessage.className = `fixed top-6 left-1/2 transform -translate-x-1/2 ${isDark ? 'bg-gray-700' : 'bg-divy-blue'} text-white px-6 py-3 rounded-full shadow-lg z-50 flex items-center space-x-2`;
+                successMessage.innerHTML = `
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span>Code PIN enregistré avec succès !</span>
+                `;
+                document.body.appendChild(successMessage);
+                
+                // Redirection après un court délai
+                setTimeout(() => {
+                    // window.location.href = "register_card_type.html";
+                    
+                    // Simulation de redirection
+                    if (successMessage.parentNode) {
+                        successMessage.parentNode.removeChild(successMessage);
+                    }
+                    
+                    const redirectMessage = document.createElement('div');
+                    redirectMessage.className = `fixed bottom-6 left-1/2 transform -translate-x-1/2 ${isDark ? 'bg-gray-700' : 'bg-gray-800'} text-white px-6 py-3 rounded-full shadow-lg z-50`;
+                    redirectMessage.textContent = 'Redirection vers l\'étape suivante...';
+                    document.body.appendChild(redirectMessage);
+                    
+                    setTimeout(() => {
+                        if (redirectMessage.parentNode) {
+                            redirectMessage.parentNode.removeChild(redirectMessage);
+                        }
+                    }, 2000);
+                }, 1500);
+            });
+            
+            // Bouton retour
+            backButton.addEventListener('click', function() {
+                // Animation de clic
+                this.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                    history.back();
+                }, 150);
+            });
+        }
+    </script>
+</body>
+</html>

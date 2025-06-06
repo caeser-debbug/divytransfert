@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Selfie avec carte d'identité</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-blue': '#5bc4ff',
+                        'divy-blue-dark': '#4da9e8',
+                        'divy-green': '#5bc4ff',
+                        'lime-green': '#a6e66e'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .bounce-animation {
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+        
+        .circle-1 {
+            width: 30px;
+            height: 30px;
+            background-color: #FF6B6B;
+            left: 10%;
+            bottom: 20%;
+            animation: float 7s ease-in-out infinite;
+        }
+        
+        .circle-2 {
+            width: 20px;
+            height: 20px;
+            background-color: #4ECDC4;
+            right: 15%;
+            bottom: 15%;
+            animation: float 5s ease-in-out infinite;
+        }
+        
+        .circle-3 {
+            width: 15px;
+            height: 15px;
+            background-color: #FFD166;
+            left: 30%;
+            bottom: 25%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .circle-4 {
+            width: 25px;
+            height: 25px;
+            background-color: #6B5CA5;
+            right: 25%;
+            bottom: 10%;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .circle-5 {
+            width: 12px;
+            height: 12px;
+            background-color: #F79824;
+            left: 40%;
+            bottom: 18%;
+            animation: float 9s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+            }
+            50% {
+                transform: translateY(-20px) translateX(10px);
+            }
+            100% {
+                transform: translateY(0) translateX(0);
+            }
+        }
+        
+        .take-selfie-btn {
+            background-color: #a6e66e;
+            transition: all 0.3s ease;
+        }
+        
+        .take-selfie-btn:hover {
+            background-color: #95d160;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(166, 230, 110, 0.3);
+        }
+        
+        .take-selfie-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased bg-white text-gray-900">
+    <div class="min-h-screen flex flex-col relative overflow-hidden">
+        <!-- Header avec bouton retour et progress bar -->
+        <div class="w-full p-4 flex items-center">
+            <button id="back-button" class="text-gray-800 p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+            </button>
+            <div class="ml-4 flex-1 bg-gray-200 rounded-full h-2">
+                <div class="bg-lime-green rounded-full h-2 w-4/5"></div>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 flex flex-col items-center px-6 pt-4">
+            <h1 class="text-3xl font-bold text-gray-800 text-center mb-2">
+                Attendez, vous devez prendre un selfie avec votre carte d'identité 📸
+            </h1>
+            <p class="text-gray-600 text-center mb-8">
+                Assurez-vous que votre visage est clairement visible. Tenez votre carte d'identité dans le même cadre que le selfie.
+            </p>
+
+            <!-- Illustration animée -->
+            <div class="relative w-full max-w-xs h-72 mb-12">
+                <!-- Personne tenant une carte d'identité -->
+                <div class="absolute inset-0">
+                    <svg class="w-full h-full" viewBox="0 0 300 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Cadre en pointillés -->
+                        <rect x="20" y="30" width="260" height="340" rx="20" stroke="#a6e66e" stroke-width="2" stroke-dasharray="10 5" fill="none" class="pulse-animation" />
+                        
+                        <!-- Tête -->
+                        <circle cx="150" cy="100" r="40" fill="#333333" />
+                        <path d="M150 150 L150 250" stroke="#333333" stroke-width="25" />
+                        
+                        <!-- Corps -->
+                        <rect x="110" y="200" width="80" height="150" rx="5" fill="#333333" />
+                        
+                        <!-- Bras tenant la carte d'identité -->
+                        <path d="M110 210 L70 180 L50 220" stroke="#a6e66e" stroke-width="20" stroke-linecap="round" />
+                        
+                        <!-- Carte d'identité -->
+                        <rect x="30" y="200" width="50" height="35" rx="3" fill="#333333" stroke="#a6e66e" stroke-width="2" />
+                        <rect x="38" y="210" width="15" height="15" rx="2" fill="#a6e66e" />
+                        
+                        <!-- Visage simplifié -->
+                        <path d="M140 100 L160 100" stroke="#7E3F3F" stroke-width="8" stroke-linecap="round" />
+                        
+                        <!-- Position suggérée de la carte -->
+                        <rect x="155" y="180" width="30" height="20" rx="2" stroke="#a6e66e" stroke-width="2" stroke-dasharray="4 2" fill="none" />
+                    </svg>
+                </div>
+                
+                <!-- Cercles flottants décoratifs -->
+                <div class="floating-circle circle-1"></div>
+                <div class="floating-circle circle-2"></div>
+                <div class="floating-circle circle-3"></div>
+                <div class="floating-circle circle-4"></div>
+                <div class="floating-circle circle-5"></div>
+                
+                <!-- Indicateurs d'alignement -->
+                <div class="absolute top-10 left-10 w-10 h-10 border-t-2 border-l-2 border-lime-green rounded-tl-lg"></div>
+                <div class="absolute top-10 right-10 w-10 h-10 border-t-2 border-r-2 border-lime-green rounded-tr-lg"></div>
+            </div>
+
+            <!-- Espace de remplissage pour pousser le bouton vers le bas -->
+            <div class="flex-grow"></div>
+
+            <!-- Bouton de prise de selfie -->
+            <button id="take-selfie-button" class="take-selfie-btn w-full max-w-md py-4 rounded-full text-white font-semibold flex items-center justify-center space-x-2 mb-8">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span>Prendre un Selfie</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const backButton = document.getElementById('back-button');
+            const takeSelfieButton = document.getElementById('take-selfie-button');
+            
+            // Animation au chargement de la page
+            document.querySelector('h1').style.opacity = '0';
+            document.querySelector('p').style.opacity = '0';
+            document.querySelector('.relative').style.opacity = '0';
+            document.querySelector('.take-selfie-btn').style.opacity = '0';
+            
+            document.querySelector('h1').style.transform = 'translateY(-20px)';
+            document.querySelector('p').style.transform = 'translateY(-15px)';
+            document.querySelector('.relative').style.transform = 'translateY(20px)';
+            document.querySelector('.take-selfie-btn').style.transform = 'translateY(20px)';
+            
+            document.querySelector('h1').style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            document.querySelector('p').style.transition = 'opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s';
+            document.querySelector('.relative').style.transition = 'opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s';
+            document.querySelector('.take-selfie-btn').style.transition = 'opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s, background-color 0.3s ease, box-shadow 0.3s ease';
+            
+            setTimeout(() => {
+                document.querySelector('h1').style.opacity = '1';
+                document.querySelector('p').style.opacity = '1';
+                document.querySelector('.relative').style.opacity = '1';
+                document.querySelector('.take-selfie-btn').style.opacity = '1';
+                
+                document.querySelector('h1').style.transform = 'translateY(0)';
+                document.querySelector('p').style.transform = 'translateY(0)';
+                document.querySelector('.relative').style.transform = 'translateY(0)';
+                document.querySelector('.take-selfie-btn').style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Bouton de retour
+            backButton.addEventListener('click', function() {
+                history.back();
+            });
+            
+            // Bouton pour prendre un selfie
+            takeSelfieButton.addEventListener('click', function() {
+                // Animation de sortie
+                document.querySelector('h1').style.opacity = '0';
+                document.querySelector('p').style.opacity = '0';
+                document.querySelector('.relative').style.opacity = '0';
+                document.querySelector('.take-selfie-btn').style.opacity = '0';
+                
+                document.querySelector('h1').style.transform = 'translateY(-20px)';
+                document.querySelector('p').style.transform = 'translateY(-15px)';
+                document.querySelector('.relative').style.transform = 'translateY(20px)';
+                document.querySelector('.take-selfie-btn').style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    // Redirection vers la page caméra pour selfie
+                    window.location.href = "selfie-camera.html";
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>

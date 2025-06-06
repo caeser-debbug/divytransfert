@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Compte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #3194db 0%, #124556 100%);
+        }
+        
+        .menu-item {
+            transition: all 0.2s ease;
+        }
+        
+        .menu-item:hover {
+            background: rgba(49, 148, 219, 0.05);
+            transform: translateX(2px);
+        }
+        
+        .menu-item:active {
+            transform: scale(0.98);
+        }
+        
+        .profile-section {
+            animation: slideUp 0.6s ease-out forwards;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            border-radius: 12px;
+            background-color: #e5e7eb;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .toggle-switch.active {
+            background-color: #22c55e;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: white;
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+        
+        .nav-button {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-1px);
+        }
+        
+        .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin: 20px;
+            max-width: 400px;
+            width: 100%;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+        
+        .dark .modal-content {
+            background: #1f2937;
+        }
+        
+        .qr-code {
+            width: 280px;
+            height: 280px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 0 auto 24px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qr-pattern {
+            width: 240px;
+            height: 240px;
+            position: relative;
+            background: white;
+        }
+        
+        .qr-pattern::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                /* Carré supérieur gauche */
+                linear-gradient(to right, black 0px, black 50px, transparent 50px, transparent 60px, black 60px, black 70px, transparent 70px),
+                linear-gradient(to bottom, black 0px, black 50px, transparent 50px, transparent 60px, black 60px, black 70px, transparent 70px),
+                
+                /* Carré supérieur droit */
+                linear-gradient(to right, transparent 170px, black 170px, black 220px, transparent 220px, transparent 230px, black 230px, black 240px),
+                linear-gradient(to bottom, black 0px, black 50px, transparent 50px, transparent 60px, black 60px, black 70px, transparent 70px),
+                
+                /* Carré inférieur gauche */
+                linear-gradient(to right, black 0px, black 50px, transparent 50px, transparent 60px, black 60px, black 70px, transparent 70px),
+                linear-gradient(to bottom, transparent 170px, black 170px, black 220px, transparent 220px, transparent 230px, black 230px, black 240px),
+                
+                /* Intérieurs des carrés */
+                radial-gradient(circle 15px at 35px 35px, black 50%, transparent 50%),
+                radial-gradient(circle 15px at 205px 35px, black 50%, transparent 50%),
+                radial-gradient(circle 15px at 35px 205px, black 50%, transparent 50%),
+                
+                /* Motif central de timing */
+                radial-gradient(circle 8px at 120px 120px, black 50%, transparent 50%),
+                
+                /* Points de données simulés */
+                radial-gradient(circle 2px at 90px 90px, black 50%, transparent 50%),
+                radial-gradient(circle 2px at 110px 90px, black 50%, transparent 50%),
+                radial-gradient(circle 2px at 130px 90px, black 50%, transparent 50%),
+                radial-gradient(circle 2px at 150px 90px, black 50%, transparent 50%),
+                radial-gradient(circle 2px at 90px 110px, black 50%, transparent 50%),
+                radial-gradient(circle 2px at 150px 110px, black 50%, transparent 50%),
+                radial-gradient(circle 2px at 90px 130px, black 50%, transparent 50%),
+                radial-gradient(circle 2px at 110px 130px, black 50%, transparent 50%),
+                radial-gradient(circle 2px at 130px 130px, black 50%, transparent 50%),
+                radial-gradient(circle 2px at 150px 130px, black 50%, transparent 50%),
+                radial-gradient(circle 2px at 90px 150px, black 50%, transparent 50%),
+                radial-gradient(circle 2px at 110px 150px, black 50%, transparent 50%),
+                radial-gradient(circle 2px at 130px 150px, black 50%, transparent 50%),
+                radial-gradient(circle 2px at 150px 150px, black 50%, transparent 50%);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn-outline {
+            flex: 1;
+            padding: 12px 24px;
+            border: 2px solid #22c55e;
+            background: transparent;
+            color: #22c55e;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-outline:hover {
+            background: #22c55e;
+            color: white;
+        }
+        
+        .btn-solid {
+            flex: 1;
+            padding: 12px 24px;
+            background: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-solid:hover {
+            background: #16a34a;
+        }
+        
+        .dark .btn-outline {
+            color: #22c55e;
+            border-color: #22c55e;
+        }
+
+        /* Styles pour le modal de déconnexion */
+        .logout-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .logout-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin: 20px;
+            max-width: 360px;
+            width: 90%;
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        .logout-modal.show .logout-modal-content {
+            transform: scale(1);
+        }
+        
+        .dark .logout-modal-content {
+            background: #1f2937;
+        }
+        
+        .logout-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .cancel-btn {
+            flex: 1;
+            padding: 14px 24px;
+            border: 2px solid #22c55e;
+            background: transparent;
+            color: #22c55e;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .cancel-btn:hover {
+            background: #22c55e;
+            color: white;
+        }
+        
+        .logout-confirm-btn {
+            flex: 1;
+            padding: 14px 24px;
+            background: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .logout-confirm-btn:hover {
+            background: #16a34a;
+        }
+        
+        .dark .cancel-btn {
+            color: #22c55e;
+            border-color: #22c55e;
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-900 bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <div class="gradient-bg text-white px-4 pt-12 pb-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="w-16 h-16 mr-3 flex items-center justify-center">
+                        <img src="logo/logo1.png" alt="Divy Transfert" class="w-full h-full object-contain" />
+                    </div>
+                    <h1 class="text-xl font-bold text-white">Compte</h1>
+                </div>
+                <button class="p-2 hover:bg-white hover:bg-opacity-10 rounded-full transition-colors">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Section Profil -->
+        <div class="profile-section bg-white dark:bg-gray-800 mx-4 -mt-6 rounded-2xl shadow-lg p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
+                         alt="Andrew Ainsley" 
+                         class="w-16 h-16 rounded-full mr-4 object-cover">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-white">Andrew Ainsley</h2>
+                        <p class="text-gray-600 dark:text-gray-400">andrew.ainsley@gmail.com</p>
+                    </div>
+                </div>
+                <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" onclick="showQRCode()">
+                    <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V6a1 1 0 00-1-1H5a1 1 0 00-1 1v1a1 1 0 001 1zm12 0h2a1 1 0 001-1V6a1 1 0 00-1-1h-2a1 1 0 00-1 1v1a1 1 0 001 1zM5 20h2a1 1 0 001-1v-1a1 1 0 00-1-1H5a1 1 0 00-1 1v1a1 1 0 001 1z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 px-4 pb-20">
+            <!-- Section Général -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Général</h3>
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+                    <div class="menu-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer" onclick="window.location.href='payment-methods.html'">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                </svg>
+                            </div>
+                            <span class="font-medium text-gray-800 dark:text-white">Méthodes de Paiement</span>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+
+                    <div class="menu-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer" onclick="window.location.href='setting_personnal_info.html'">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <span class="font-medium text-gray-800 dark:text-white">Informations Personnelles</span>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+
+                    <div class="menu-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer" onclick="window.location.href='setting_notif.html'">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-3-3.5V9a6 6 0 10-12 0v4.5L2 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                </svg>
+                            </div>
+                            <span class="font-medium text-gray-800 dark:text-white">Notifications</span>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+
+                    <div class="menu-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer" onclick="window.location.href='setting_securite.html'">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                            </div>
+                            <span class="font-medium text-gray-800 dark:text-white">Sécurité</span>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+
+                    <div class="menu-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer" onclick="window.location.href='setting_langue.html'">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+                                </svg>
+                            </div>
+                            <span class="font-medium text-gray-800 dark:text-white">Langue</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-gray-500 dark:text-gray-400 mr-2">Français (FR)</span>
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="menu-item flex items-center justify-between p-4 cursor-pointer">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                                </svg>
+                            </div>
+                            <span class="font-medium text-gray-800 dark:text-white">Mode Sombre</span>
+                        </div>
+                        <div class="toggle-switch" id="dark-mode-toggle" onclick="toggleDarkMode()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section À propos -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">À propos</h3>
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+                    <div class="menu-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer" onclick="window.location.href='setting_aide.html'">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <span class="font-medium text-gray-800 dark:text-white">Centre d'Aide</span>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+
+                    <div class="menu-item flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer" onclick="window.location.href='setting_politique.html'">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                            </div>
+                            <span class="font-medium text-gray-800 dark:text-white">Politique de Confidentialité</span>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+
+                    <div class="menu-item flex items-center justify-between p-4 cursor-pointer" onclick="window.location.href='setting_apropos.html'">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <span class="font-medium text-gray-800 dark:text-white">À propos de Divy Transfert</span>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bouton Déconnexion -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+                <div class="menu-item flex items-center p-4 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20" onclick="showLogoutModal()">
+                    <div class="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                    </div>
+                    <span class="font-medium text-red-600 dark:text-red-400">Déconnexion</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation du bas -->
+        <div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2 safe-area-bottom">
+            <div class="flex justify-around items-center">
+                <button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 nav-button" onclick="window.location.href='home.html'">
+                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Accueil</span>
+                </button>
+
+                <button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 nav-button" onclick="window.location.href='contacts.html'">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Contacts</span>
+                </button>
+
+                <button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 relative nav-button" onclick="window.location.href='scan.html'">
+                    <div class="w-12 h-12 bg-divy-blue rounded-full flex items-center justify-center -mt-2 shadow-lg transition-transform duration-200">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zM19 13h2v2h-2v-2zM13 13h2v2h-2v-2zM15 15h2v2h-2v-2zM13 17h2v2h-2v-2zM15 19h2v2h-2v-2zM17 17h2v2h-2v-2zM17 13h2v2h-2v-2zM19 15h2v2h-2v-2z"/>
+                        </svg>
+                    </div>
+                </button>
+
+                <button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 nav-button" onclick="window.location.href='insights.html'">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Aperçus</span>
+                </button>
+
+                <button class="flex flex-col items-center p-2 text-divy-blue nav-button">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Compte</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Theme toggle button -->
+        <button id="theme-toggle" class="fixed top-4 right-4 p-2 rounded-full bg-white bg-opacity-20 backdrop-blur-sm text-white z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Modal QR Code -->
+    <div class="modal-overlay" id="qr-modal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white text-center mb-6">Mon QR Code</h2>
+            
+            <div class="qr-code">
+                <div class="qr-pattern"></div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn-outline" onclick="saveQRCode()">Enregistrer</button>
+                <button class="btn-solid" onclick="shareQRCode()">Partager</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Déconnexion -->
+    <div class="logout-modal" id="logout-modal">
+        <div class="logout-modal-content">
+            <h2 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">Logout</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">Are you sure want to log out?</p>
+            
+            <div class="logout-buttons">
+                <button class="cancel-btn" onclick="hideLogoutModal()">Cancel</button>
+                <button class="logout-confirm-btn" onclick="confirmLogout()">Yes, Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour afficher le QR Code
+        function showQRCode() {
+            const modal = document.getElementById('qr-modal');
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Fonction pour cacher le QR Code
+        function hideQRCode() {
+            const modal = document.getElementById('qr-modal');
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        // Fonction pour sauvegarder le QR Code
+        function saveQRCode() {
+            // Simuler la sauvegarde
+            alert('QR Code enregistré dans la galerie');
+            hideQRCode();
+        }
+
+        // Fonction pour partager le QR Code
+        function shareQRCode() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Mon QR Code Divy Transfert',
+                    text: 'Scannez ce QR Code pour m\'envoyer de l\'argent via Divy Transfert',
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                // Fallback pour les navigateurs qui ne supportent pas l'API Web Share
+                const textArea = document.createElement('textarea');
+                textArea.value = 'Mon QR Code Divy Transfert - andrew.ainsley@gmail.com';
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Lien copié dans le presse-papiers');
+            }
+            hideQRCode();
+        }
+
+        // Fonction pour afficher le modal de déconnexion
+        function showLogoutModal() {
+            const modal = document.getElementById('logout-modal');
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Fonction pour cacher le modal de déconnexion
+        function hideLogoutModal() {
+            const modal = document.getElementById('logout-modal');
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        // Fonction pour confirmer la déconnexion
+        function confirmLogout() {
+            // Animation de chargement
+            const btn = event.target;
+            btn.textContent = 'Logging out...';
+            btn.disabled = true;
+            
+            // Simuler la déconnexion
+            setTimeout(() => {
+                // Effacer le localStorage
+                localStorage.clear();
+                
+                // Rediriger vers la page de connexion
+                window.location.href = 'login.html';
+            }, 1500);
+        }
+
+        // Fonction pour activer/désactiver le mode sombre
+        function toggleDarkMode() {
+            const toggle = document.getElementById('dark-mode-toggle');
+            const isDark = document.documentElement.classList.contains('dark');
+            
+            if (isDark) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                toggle.classList.remove('active');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                toggle.classList.add('active');
+            }
+        }
+
+        // Fermer les modals en cliquant sur l'overlay
+        document.addEventListener('click', function(event) {
+            const qrModal = document.getElementById('qr-modal');
+            const logoutModal = document.getElementById('logout-modal');
+            
+            if (event.target === qrModal) {
+                hideQRCode();
+            }
+            if (event.target === logoutModal) {
+                hideLogoutModal();
+            }
+        });
+
+        // Fermer les modals avec la touche Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                hideQRCode();
+                hideLogoutModal();
+            }
+        });
+
+        // Initialisation de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion du thème
+            const isDark = localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('dark-mode-toggle').classList.add('active');
+            }
+            
+            // Gestion du toggle theme dans le header
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                const toggle = document.getElementById('dark-mode-toggle');
+                
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                    toggle.classList.remove('active');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                    toggle.classList.add('active');
+                }
+            });
+
+            // Animation des éléments de menu
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach((item, index) => {
+                item.style.animationDelay = `${index * 0.05}s`;
+                item.classList.add('profile-section');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Détail de transaction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd',
+                        'lime-green': '#3194db'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #3194db 0%, #3094db 100%);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .detail-row {
+            border-bottom: 1px solid #374151;
+            padding: 12px 0;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(166, 230, 110, 0.3);
+        }
+    </style>
+</head>
+<body class="antialiased bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header avec fond vert -->
+        <div class="gradient-bg text-black px-4 py-3 flex items-center justify-between">
+            <button onclick="window.location.href='historique_transaction.html'" class="p-2 hover:bg-black hover:bg-opacity-10 rounded-full transition-colors">
+                <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+            </button>
+            <h1 id="transaction-type" class="text-lg font-semibold">Envoyé</h1>
+            <button class="p-2 hover:bg-black hover:bg-opacity-10 rounded-full transition-colors">
+                <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Contenu principal sur fond vert -->
+        <div class="gradient-bg px-4 py-8 text-center">
+            <!-- Avatar -->
+            <div class="w-24 h-24 mx-auto mb-6">
+                <img 
+                    id="user-avatar" 
+                    src="" 
+                    alt="Avatar"
+                    class="w-full h-full rounded-full object-cover border-4 border-white shadow-lg"
+                >
+            </div>
+            
+            <!-- Montant -->
+            <div class="text-4xl font-bold text-black mb-4" id="transaction-amount">
+                -25 000 XOF
+            </div>
+            
+            <!-- Nom et email -->
+            <h2 id="user-name" class="text-xl font-semibold text-black mb-2">
+                Aminata Diallo
+            </h2>
+            <p id="user-email" class="text-black text-opacity-80">
+                aminata.diallo@gmail.com
+            </p>
+        </div>
+
+        <!-- Détails de la transaction sur fond sombre -->
+        <div class="flex-1 bg-gray-900 text-white px-4 py-6">
+            <div class="max-w-md mx-auto fade-in">
+                <div id="transaction-details">
+                    <!-- Les détails seront ajoutés ici dynamiquement -->
+                </div>
+                
+                <!-- Notes -->
+                <div class="pt-4">
+                    <span class="text-gray-400 block mb-2">Notes</span>
+                    <p class="text-white text-sm" id="transaction-notes">
+                        Illustration Design Freelance Payments
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton View Receipt -->
+        <div class="bg-gray-900 px-4 py-4">
+            <div class="max-w-md mx-auto">
+                <button 
+                    onclick="viewReceipt()"
+                    class="btn-primary w-full py-4 border-2 border-lime-green text-lime-green rounded-full font-medium hover:bg-lime-green hover:bg-opacity-10 transition-colors"
+                >
+                    Voir le reçu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Récupérer les paramètres de l'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const transactionData = {
+                id: urlParams.get('id'),
+                name: urlParams.get('name'),
+                amount: parseInt(urlParams.get('amount')),
+                time: urlParams.get('time'),
+                type: urlParams.get('type'),
+                date: urlParams.get('date'),
+                avatar: urlParams.get('avatar'),
+                email: urlParams.get('email')
+            };
+
+            // Mettre à jour l'affichage
+            updateTransactionDetail(transactionData);
+        });
+
+        function updateTransactionDetail(data) {
+            // Type de transaction
+            const typeTranslations = {
+                'sent': 'Envoyé',
+                'request': 'Demande reçue',
+                'income': 'Revenus',
+                'topup': 'Recharge',
+                'withdraw': 'Retrait'
+            };
+            document.getElementById('transaction-type').textContent = typeTranslations[data.type] || 'Transaction';
+
+            // Avatar
+            if (data.avatar) {
+                document.getElementById('user-avatar').src = data.avatar;
+            } else {
+                // Avatar par défaut ou icône
+                document.getElementById('user-avatar').src = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80';
+            }
+
+            // Montant avec couleur
+            const amountPrefix = data.amount > 0 ? '+' : '';
+            const amountColor = data.amount > 0 ? '' : '-';
+            document.getElementById('transaction-amount').textContent = `${amountColor}${Math.abs(data.amount).toLocaleString('fr-FR')} XOF`;
+
+            // Nom et email
+            document.getElementById('user-name').textContent = data.name;
+            document.getElementById('user-email').textContent = data.email;
+
+            // Détails de la transaction
+            const now = new Date();
+            const detailsHtml = `
+                <div class="detail-row flex justify-between">
+                    <span class="text-gray-400">Vous avez ${data.amount > 0 ? 'reçu' : 'envoyé'}</span>
+                    <span class="text-white font-medium">${Math.abs(data.amount).toLocaleString('fr-FR')} XOF</span>
+                </div>
+                
+                <div class="detail-row flex justify-between">
+                    <span class="text-gray-400">${data.amount > 0 ? 'De' : 'À'}</span>
+                    <span class="text-white font-medium">${data.name}</span>
+                </div>
+                
+                <div class="detail-row flex justify-between">
+                    <span class="text-gray-400">Email</span>
+                    <span class="text-white font-medium">${data.email}</span>
+                </div>
+                
+                <div class="detail-row flex justify-between">
+                    <span class="text-gray-400">Date</span>
+                    <span class="text-white font-medium">${data.date} • ${data.time}</span>
+                </div>
+                
+                <div class="detail-row flex justify-between">
+                    <span class="text-gray-400">ID de transaction</span>
+                    <div class="flex items-center">
+                        <span class="text-white font-medium mr-2" id="transaction-id">${generateTransactionId()}</span>
+                        <button onclick="copyTransactionId()" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="detail-row flex justify-between">
+                    <span class="text-gray-400">ID de référence</span>
+                    <div class="flex items-center">
+                        <span class="text-white font-medium mr-2" id="reference-id">${generateReferenceId()}</span>
+                        <button onclick="copyReferenceId()" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('transaction-details').innerHTML = detailsHtml;
+        }
+
+        function generateTransactionId() {
+            return Math.floor(Math.random() * 900000000000) + 100000000000;
+        }
+
+        function generateReferenceId() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 8; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function copyTransactionId() {
+            const transactionId = document.getElementById('transaction-id').textContent;
+            copyToClipboard(transactionId);
+            showToast('ID de transaction copié !');
+        }
+
+        function copyReferenceId() {
+            const referenceId = document.getElementById('reference-id').textContent;
+            copyToClipboard(referenceId);
+            showToast('ID de référence copié !');
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text);
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-lime-green text-white px-4 py-2 rounded-full text-sm z-50';
+            toast.textContent = message;
+            toast.style.animation = 'fadeIn 0.3s ease-out';
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 2000);
+        }
+
+        function viewReceipt() {
+            // Récupérer les données actuelles
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Rediriger vers la page de reçu
+            window.location.href = `receipt.html?${urlParams.toString()}`;
+        }
+    </script>
+</body>
+</html>

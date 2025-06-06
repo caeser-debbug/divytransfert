@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Ajouter une Carte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Animation pour la carte */
+        .card-preview {
+            background: linear-gradient(135deg, #8bc34a 0%, #4caf50 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .card-enter {
+            animation: slideInDown 0.5s ease-out;
+        }
+        
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Style pour les champs de saisie */
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            border-color: #3194db;
+            box-shadow: 0 0 0 3px rgba(49, 148, 219, 0.1);
+        }
+        
+        /* Animation du bouton Save */
+        .save-btn {
+            background: linear-gradient(135deg, #8bc34a 0%, #4caf50 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 195, 74, 0.4);
+        }
+        
+        .save-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Styles pour le bouton de thème */
+        .theme-toggle {
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 bg-gray-900 dark:bg-gray-900 text-white min-h-screen">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-4 pt-12">
+            <!-- Bouton fermer -->
+            <button onclick="window.location.href='payment-methods.html'" class="p-2 hover:bg-gray-800 dark:hover:bg-gray-700 rounded-full transition-colors">
+                <svg class="w-6 h-6 text-white dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            
+            <!-- Titre -->
+            <h1 class="text-lg font-semibold text-white dark:text-gray-100">Add New Payment</h1>
+            
+            <!-- Bouton scan -->
+            <button class="p-2 hover:bg-gray-800 dark:hover:bg-gray-700 rounded-full transition-colors">
+                <svg class="w-6 h-6 text-white dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Aperçu de la carte -->
+        <div class="px-4 mb-8">
+            <div class="card-preview card-enter rounded-2xl p-6 relative overflow-hidden">
+                <!-- Éléments décoratifs -->
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -mr-16 -mt-16"></div>
+                <div class="absolute bottom-0 left-0 w-20 h-20 bg-white bg-opacity-10 rounded-full -ml-10 -mb-10"></div>
+                
+                <!-- Contenu de la carte -->
+                <div class="relative z-10">
+                    <!-- En-tête avec logos -->
+                    <div class="flex justify-between items-start mb-8">
+                        <div class="text-white font-bold text-lg">Payment Card</div>
+                        <div class="flex space-x-2" id="card-logos">
+                            <!-- Les logos des cartes seront ajoutés ici dynamiquement -->
+                            <div class="w-8 h-6 bg-red-500 rounded flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">MC</span>
+                            </div>
+                            <div class="w-8 h-6 bg-blue-600 rounded flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">V</span>
+                            </div>
+                            <div class="w-8 h-6 bg-orange-500 rounded flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">A</span>
+                            </div>
+                            <div class="w-8 h-6 bg-green-600 rounded flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">AE</span>
+                            </div>
+                            <div class="w-8 h-6 bg-purple-600 rounded flex items-center justify-center">
+                                <span class="text-white text-xs font-bold">G</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Numéro de carte -->
+                    <div class="mb-6">
+                        <div class="text-2xl font-mono tracking-wider" id="card-number-display">
+                            •••• •••• •••• ••••
+                        </div>
+                    </div>
+                    
+                    <!-- Informations du titulaire et date d'expiration -->
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <div class="text-xs text-white text-opacity-70 mb-1">Card Holder Name</div>
+                            <div class="font-semibold" id="card-holder-display">Full Name</div>
+                        </div>
+                        <div>
+                            <div class="text-xs text-white text-opacity-70 mb-1">Expiry Date</div>
+                            <div class="font-semibold" id="expiry-display">00/00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire de saisie -->
+        <div class="px-4 space-y-6">
+            <!-- Nom du titulaire -->
+            <div>
+                <label class="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-2">Account Holder Name</label>
+                <input 
+                    type="text" 
+                    id="holder-name"
+                    placeholder="Andrew Ainsley"
+                    class="input-field w-full bg-gray-800 dark:bg-gray-700 border border-gray-700 dark:border-gray-600 rounded-xl px-4 py-3 text-white dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                    oninput="updateCardPreview()"
+                >
+            </div>
+
+            <!-- Numéro de carte -->
+            <div>
+                <label class="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-2">Card Number</label>
+                <input 
+                    type="text" 
+                    id="card-number"
+                    placeholder="2640 4763 7569 8456"
+                    maxlength="19"
+                    class="input-field w-full bg-gray-800 dark:bg-gray-700 border border-gray-700 dark:border-gray-600 rounded-xl px-4 py-3 text-white dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                    oninput="formatCardNumber(this); updateCardPreview()"
+                >
+            </div>
+
+            <!-- Date d'expiration et CVV -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Date d'expiration -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-2">Expiry Date</label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="expiry-date"
+                            placeholder="06/28"
+                            maxlength="5"
+                            class="input-field w-full bg-gray-800 dark:bg-gray-700 border border-gray-700 dark:border-gray-600 rounded-xl px-4 py-3 text-white dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none pr-10"
+                            oninput="formatExpiryDate(this); updateCardPreview()"
+                        >
+                        <!-- Icône calendrier -->
+                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CVV -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-2">CVV</label>
+                    <input 
+                        type="text" 
+                        id="cvv"
+                        placeholder="475"
+                        maxlength="4"
+                        class="input-field w-full bg-gray-800 dark:bg-gray-700 border border-gray-700 dark:border-gray-600 rounded-xl px-4 py-3 text-white dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
+                        oninput="formatCVV(this)"
+                    >
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton Save -->
+        <div class="px-4 py-8">
+            <button 
+                id="save-btn"
+                onclick="saveCard()"
+                class="save-btn w-full py-4 text-white rounded-2xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled
+            >
+                Save
+            </button>
+        </div>
+
+        <!-- Bouton de thème -->
+        <button id="theme-toggle" class="theme-toggle fixed top-4 right-16 p-2 rounded-full bg-white bg-opacity-20 backdrop-blur-sm text-white z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        // Variables pour stocker les informations de la carte
+        let cardData = {
+            holderName: '',
+            cardNumber: '',
+            expiryDate: '',
+            cvv: '',
+            provider: ''
+        };
+
+        // Gestion du thème
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser le thème
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                updateBodyClasses();
+            }
+            
+            // Gestionnaire pour le bouton de thème
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+                updateBodyClasses();
+            });
+
+            // Mettre à jour la couleur de la carte selon le provider
+            const provider = getCardProvider();
+            updateCardColor(provider);
+
+            // Ajouter des gestionnaires pour vérifier la validité
+            document.getElementById('holder-name').addEventListener('input', checkFormValidity);
+            document.getElementById('card-number').addEventListener('input', checkFormValidity);
+            document.getElementById('expiry-date').addEventListener('input', checkFormValidity);
+            document.getElementById('cvv').addEventListener('input', checkFormValidity);
+        });
+
+        // Fonction pour mettre à jour les classes du body selon le thème
+        function updateBodyClasses() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const body = document.body;
+            
+            if (isDark) {
+                body.className = 'antialiased transition-colors duration-300 bg-gray-900 dark:bg-gray-900 text-white min-h-screen';
+            } else {
+                body.className = 'antialiased transition-colors duration-300 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen';
+            }
+        }
+
+        // Récupérer le provider depuis l'URL
+        function getCardProvider() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('provider') || 'visa';
+        }
+
+        // Fonction pour mettre à jour la couleur de la carte
+        function updateCardColor(provider) {
+            const cardPreview = document.querySelector('.card-preview');
+            
+            switch(provider) {
+                case 'visa':
+                    cardPreview.style.background = 'linear-gradient(135deg, #1e3a8a, #3b82f6)';
+                    break;
+                case 'mastercard':
+                    cardPreview.style.background = 'linear-gradient(135deg, #dc2626, #ef4444)';
+                    break;
+                case 'amex':
+                    cardPreview.style.background = 'linear-gradient(135deg, #059669, #10b981)';
+                    break;
+                default:
+                    cardPreview.style.background = 'linear-gradient(135deg, #8bc34a, #4caf50)';
+            }
+        }
+
+        // Fonction pour formater le numéro de carte (ajouter des espaces)
+        function formatCardNumber(input) {
+            // Supprimer tous les caractères non numériques
+            let value = input.value.replace(/\D/g, '');
+            
+            // Limiter à 16 chiffres
+            value = value.substring(0, 16);
+            
+            // Ajouter des espaces tous les 4 chiffres
+            value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+            
+            input.value = value;
+            cardData.cardNumber = value.replace(/\s/g, '');
+        }
+
+        // Fonction pour formater la date d'expiration (MM/YY)
+        function formatExpiryDate(input) {
+            let value = input.value.replace(/\D/g, '');
+            
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            
+            input.value = value;
+            cardData.expiryDate = value;
+        }
+
+        // Fonction pour formater le CVV (seulement des chiffres)
+        function formatCVV(input) {
+            input.value = input.value.replace(/\D/g, '');
+            cardData.cvv = input.value;
+        }
+
+        // Fonction pour mettre à jour l'aperçu de la carte
+        function updateCardPreview() {
+            const holderName = document.getElementById('holder-name').value || 'Full Name';
+            const cardNumber = document.getElementById('card-number').value || '•••• •••• •••• ••••';
+            const expiryDate = document.getElementById('expiry-date').value || '00/00';
+
+            // Mettre à jour l'affichage
+            document.getElementById('card-holder-display').textContent = holderName;
+            document.getElementById('expiry-display').textContent = expiryDate;
+            
+            // Formater le numéro de carte pour l'affichage
+            if (cardNumber.replace(/\s/g, '').length > 0) {
+                const cleanNumber = cardNumber.replace(/\s/g, '');
+                if (cleanNumber.length <= 4) {
+                    document.getElementById('card-number-display').textContent = cardNumber + ' •••• •••• ••••';
+                } else if (cleanNumber.length <= 8) {
+                    document.getElementById('card-number-display').textContent = cardNumber + ' •••• ••••';
+                } else if (cleanNumber.length <= 12) {
+                    document.getElementById('card-number-display').textContent = cardNumber + ' ••••';
+                } else {
+                    document.getElementById('card-number-display').textContent = cardNumber;
+                }
+            } else {
+                document.getElementById('card-number-display').textContent = '•••• •••• •••• ••••';
+            }
+
+            // Mettre à jour les données
+            cardData.holderName = holderName;
+            
+            // Vérifier si le formulaire est valide
+            checkFormValidity();
+        }
+
+        // Fonction pour vérifier la validité du formulaire
+        function checkFormValidity() {
+            const holderName = document.getElementById('holder-name').value.trim();
+            const cardNumber = document.getElementById('card-number').value.replace(/\s/g, '');
+            const expiryDate = document.getElementById('expiry-date').value;
+            const cvv = document.getElementById('cvv').value;
+
+            const isValid = holderName.length > 0 && 
+                           cardNumber.length === 16 && 
+                           expiryDate.length === 5 && 
+                           cvv.length >= 3;
+
+            document.getElementById('save-btn').disabled = !isValid;
+        }
+
+        // Fonction pour sauvegarder la carte
+        function saveCard() {
+            const holderName = document.getElementById('holder-name').value.trim();
+            const cardNumber = document.getElementById('card-number').value.replace(/\s/g, '');
+            const expiryDate = document.getElementById('expiry-date').value;
+            const cvv = document.getElementById('cvv').value;
+
+            // Validation finale
+            if (!holderName || cardNumber.length !== 16 || expiryDate.length !== 5 || cvv.length < 3) {
+                alert('Veuillez remplir tous les champs correctement');
+                return;
+            }
+
+            // Simuler la sauvegarde
+            const cardInfo = {
+                holderName,
+                cardNumber: cardNumber.substring(cardNumber.length - 4), // Garder seulement les 4 derniers chiffres
+                expiryDate,
+                provider: getCardProvider(),
+                id: Date.now() // ID unique simple
+            };
+
+            // Sauvegarder dans le localStorage pour la simulation
+            let savedCards = JSON.parse(localStorage.getItem('savedCards') || '[]');
+            savedCards.push(cardInfo);
+            localStorage.setItem('savedCards', JSON.stringify(savedCards));
+
+            // Animation de succès
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.textContent = 'Saved!';
+            saveBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+
+            // Rediriger vers la page des moyens de paiement après 1.5 secondes
+            setTimeout(() => {
+                window.location.href = 'payment-methods.html';
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Simulation de Transfert</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #3194db 0%, #124556 100%);
+        }
+        
+        .step-card {
+            transition: all 0.3s ease;
+        }
+        
+        .step-card.active {
+            border-color: #3194db;
+            background: rgba(49, 148, 219, 0.05);
+        }
+        
+        .option-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option-card.selected {
+            border-color: #3194db;
+            background: rgba(49, 148, 219, 0.1);
+        }
+        
+        .fee-breakdown {
+            animation: slideInUp 0.5s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #3194db 0%, #124556 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(49, 148, 219, 0.4);
+        }
+        
+        .calculate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-900 bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <div class="gradient-bg text-white px-4 pt-12 pb-6">
+            <div class="flex items-center justify-between mb-4">
+                <button onclick="window.location.href='home.html'" class="p-2 hover:bg-white hover:bg-opacity-10 rounded-full transition-colors">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </button>
+                <h1 class="text-lg font-semibold">Simulation de Transfert</h1>
+                <div class="w-10"></div>
+            </div>
+            
+            <div class="text-center">
+                <p class="text-white text-opacity-80 text-sm">Calculez vos frais de transaction</p>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 px-4 py-6 space-y-6">
+            <!-- Étape 1: Type de transaction -->
+            <div class="step-card bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border-2 border-gray-100 dark:border-gray-700 active">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                    <span class="w-8 h-8 bg-divy-blue text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">1</span>
+                    Type de transaction
+                </h2>
+                
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent text-center" onclick="selectTransactionType('envoi')">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Envoi</span>
+                    </div>
+                    
+                    <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent text-center" onclick="selectTransactionType('recharge')">
+                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Recharge</span>
+                    </div>
+                    
+                    <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent text-center" onclick="selectTransactionType('retrait')">
+                        <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Retrait</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Étape 2: Moyen de paiement source -->
+            <div class="step-card bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border-2 border-gray-100 dark:border-gray-700" id="source-step">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                    <span class="w-8 h-8 bg-gray-400 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">2</span>
+                    <span id="source-title">Moyen de paiement source</span>
+                </h2>
+                
+                <div class="space-y-3">
+                    <!-- Compte Divy Transfert -->
+                    <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent" onclick="selectPaymentSource('divytransfert')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-gradient-to-r from-divy-blue to-divy-dark rounded-xl flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-800 dark:text-white">Compte Divy Transfert</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Solde disponible: 485,750 XOF</p>
+                            </div>
+                            <div class="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full">
+                                0% frais
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile Money -->
+                    <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent" onclick="selectPaymentSource('mobile')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-800 dark:text-white">Mobile Money</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Orange Money, MTN, Moov Money</p>
+                            </div>
+                            <div class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                                1.5% frais
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Carte bancaire -->
+                    <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent" onclick="selectPaymentSource('card')">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-800 dark:text-white">Carte Bancaire</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Visa, Mastercard, GIM-UEMOA</p>
+                            </div>
+                            <div class="text-xs bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full">
+                                2.5% frais
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Étape 3: Destination -->
+            <div class="step-card bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border-2 border-gray-100 dark:border-gray-700" id="destination-step">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                    <span class="w-8 h-8 bg-gray-400 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">3</span>
+                    <span id="destination-title">Destination</span>
+                </h2>
+                
+                <div class="space-y-3" id="destination-options">
+                    <!-- Les options de destination seront ajoutées dynamiquement -->
+                </div>
+            </div>
+
+            <!-- Étape 4: Montant -->
+            <div class="step-card bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border-2 border-gray-100 dark:border-gray-700" id="amount-step">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                    <span class="w-8 h-8 bg-gray-400 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">4</span>
+                    Montant
+                </h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Montant à <span id="amount-action">envoyer</span></label>
+                        <div class="relative">
+                            <input 
+                                type="number" 
+                                id="amount-input"
+                                placeholder="0"
+                                min="100"
+                                max="5000000"
+                                class="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 pr-16 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-divy-blue focus:border-transparent text-right text-xl font-semibold"
+                                oninput="calculateFees()"
+                            >
+                            <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 font-medium">
+                                XOF
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Montant minimum: 100 XOF • Maximum: 5,000,000 XOF</p>
+                    </div>
+                    
+                    <!-- Montants rapides -->
+                    <div>
+                        <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Montants rapides</p>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button class="bg-gray-100 dark:bg-gray-600 hover:bg-divy-light dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 rounded-lg px-3 py-2 text-sm font-medium transition-colors" onclick="setQuickAmount(5000)">
+                                5,000
+                            </button>
+                            <button class="bg-gray-100 dark:bg-gray-600 hover:bg-divy-light dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 rounded-lg px-3 py-2 text-sm font-medium transition-colors" onclick="setQuickAmount(10000)">
+                                10,000
+                            </button>
+                            <button class="bg-gray-100 dark:bg-gray-600 hover:bg-divy-light dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 rounded-lg px-3 py-2 text-sm font-medium transition-colors" onclick="setQuickAmount(25000)">
+                                25,000
+                            </button>
+                            <button class="bg-gray-100 dark:bg-gray-600 hover:bg-divy-light dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 rounded-lg px-3 py-2 text-sm font-medium transition-colors" onclick="setQuickAmount(50000)">
+                                50,000
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Récapitulatif des frais -->
+            <div id="fee-summary" class="fee-breakdown bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border-2 border-divy-blue hidden">
+                <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                    <svg class="w-6 h-6 text-divy-blue mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16a2 2 0 002 2z"></path>
+                    </svg>
+                    Récapitulatif des frais
+                </h2>
+                
+                <div class="space-y-4">
+                    <!-- Détail des frais -->
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 dark:text-gray-400">Montant de base</span>
+                                <span class="font-semibold text-gray-800 dark:text-white" id="base-amount">0 XOF</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center" id="source-fee-row">
+                                <span class="text-gray-600 dark:text-gray-400">Frais <span id="source-fee-label">source</span></span>
+                                <span class="font-semibold text-gray-800 dark:text-white" id="source-fee">0 XOF</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 dark:text-gray-400">Frais Ligdicash</span>
+                                <span class="font-semibold text-gray-800 dark:text-white" id="ligdicash-fee">0 XOF</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600 dark:text-gray-400">Frais Divy Transfert</span>
+                                <span class="font-semibold text-gray-800 dark:text-white" id="divy-fee">0 XOF</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center" id="destination-fee-row">
+                                <span class="text-gray-600 dark:text-gray-400">Frais <span id="destination-fee-label">destination</span></span>
+                                <span class="font-semibold text-gray-800 dark:text-white" id="destination-fee">0 XOF</span>
+                            </div>
+                            
+                            <hr class="border-gray-300 dark:border-gray-600">
+                            
+                            <div class="flex justify-between items-center text-lg">
+                                <span class="font-bold text-gray-800 dark:text-white">Total à payer</span>
+                                <span class="font-bold text-divy-blue text-xl" id="total-amount">0 XOF</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Informations supplémentaires -->
+                    <div class="bg-blue-50 dark:bg-blue-900 dark:bg-opacity-30 rounded-xl p-4">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div>
+                                <h4 class="font-medium text-blue-800 dark:text-blue-200 mb-1">Informations</h4>
+                                <p class="text-sm text-blue-700 dark:text-blue-300" id="transaction-info">
+                                    Transaction instantanée et sécurisée
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bouton de calcul/simulation -->
+            <div class="py-4">
+                <button 
+                    id="simulate-btn"
+                    onclick="performSimulation()"
+                    class="calculate-btn w-full py-4 text-white rounded-2xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled
+                >
+                    <span id="btn-text">Sélectionnez les options pour calculer</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Theme toggle button -->
+        <button id="theme-toggle" class="fixed top-4 right-4 p-2 rounded-full bg-white bg-opacity-20 backdrop-blur-sm text-white z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        // Variables globales pour la simulation
+        let simulationData = {
+            transactionType: '',
+            paymentSource: '',
+            destination: '',
+            amount: 0
+        };
+
+        // Pourcentages de frais
+        const feeRates = {
+            mobile: 0.015, // 1.5%
+            card: 0.025,   // 2.5%
+            ligdicash: 0.01, // 1%
+            divytransfert: 0.005 // 0.5%
+        };
+
+        // Gestion du thème
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        });
+
+        // Fonction pour sélectionner le type de transaction
+        function selectTransactionType(type) {
+            simulationData.transactionType = type;
+            
+            // Mettre à jour l'interface
+            document.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            
+            // Mettre à jour les titres et options
+            updateStepTitles(type);
+            updateDestinationOptions(type);
+            activateStep('source-step');
+            
+            checkSimulationReadiness();
+        }
+
+        // Fonction pour mettre à jour les titres selon le type de transaction
+        function updateStepTitles(type) {
+            const sourceTitle = document.getElementById('source-title');
+            const destinationTitle = document.getElementById('destination-title');
+            const amountAction = document.getElementById('amount-action');
+            
+            switch(type) {
+                case 'envoi':
+                    sourceTitle.textContent = 'Depuis quel compte';
+                    destinationTitle.textContent = 'Vers quel compte';
+                    amountAction.textContent = 'envoyer';
+                    break;
+                case 'recharge':
+                    sourceTitle.textContent = 'Moyen de paiement';
+                    destinationTitle.textContent = 'Recharger le compte';
+                    amountAction.textContent = 'recharger';
+                    break;
+                case 'retrait':
+                    sourceTitle.textContent = 'Depuis le compte';
+                    destinationTitle.textContent = 'Vers quel moyen';
+                    amountAction.textContent = 'retirer';
+                    break;
+            }
+        }
+
+        // Fonction pour sélectionner la source de paiement
+        function selectPaymentSource(source) {
+            simulationData.paymentSource = source;
+            
+            // Mettre à jour l'interface
+            document.querySelectorAll('#source-step .option-card').forEach(card => card.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            
+            activateStep('destination-step');
+            checkSimulationReadiness();
+        }
+
+        // Fonction pour mettre à jour les options de destination
+        function updateDestinationOptions(type) {
+            const destinationContainer = document.getElementById('destination-options');
+            let options = '';
+            
+            // Suite de la fonction updateDestinationOptions
+        if (type === 'envoi') {
+            options = `
+                <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent" onclick="selectDestination('divytransfert')">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-divy-blue to-divy-dark rounded-xl flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-800 dark:text-white">Compte Divy Transfert</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Vers un autre utilisateur Divy</p>
+                        </div>
+                        <div class="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full">
+                            Gratuit
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent" onclick="selectDestination('mobile')">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-800 dark:text-white">Mobile Money</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Orange Money, MTN, Moov Money</p>
+                        </div>
+                        <div class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                            1.5% frais
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent" onclick="selectDestination('card')">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-800 dark:text-white">Carte Bancaire</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Visa, Mastercard, GIM-UEMOA</p>
+                        </div>
+                        <div class="text-xs bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full">
+                            2.5% frais
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (type === 'recharge') {
+            options = `
+                <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent" onclick="selectDestination('divytransfert')">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-divy-blue to-divy-dark rounded-xl flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-800 dark:text-white">Mon Compte Divy Transfert</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Recharger mon solde principal</p>
+                        </div>
+                        <div class="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full">
+                            Instantané
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (type === 'retrait') {
+            options = `
+                <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent" onclick="selectDestination('mobile')">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-800 dark:text-white">Mobile Money</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Orange Money, MTN, Moov Money</p>
+                        </div>
+                        <div class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
+                            1.5% frais
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent" onclick="selectDestination('card')">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-800 dark:text-white">Carte Bancaire</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Visa, Mastercard, GIM-UEMOA</p>
+                        </div>
+                        <div class="text-xs bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full">
+                            2.5% frais
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent" onclick="selectDestination('bank')">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-600 rounded-xl flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M10.5 3L12 2l1.5 1H21l-1.5 1.5L12 7.5 4.5 4.5 3 3h7.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-800 dark:text-white">Compte Bancaire</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Virement vers banque locale</p>
+                        </div>
+                        <div class="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded-full">
+                            1-2 jours
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        destinationContainer.innerHTML = options;
+    }
+
+    // Fonction pour sélectionner la destination
+    function selectDestination(destination) {
+        simulationData.destination = destination;
+        
+        // Mettre à jour l'interface
+        document.querySelectorAll('#destination-step .option-card').forEach(card => card.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+        
+        activateStep('amount-step');
+        checkSimulationReadiness();
+    }
+
+    // Fonction pour activer une étape
+    function activateStep(stepId) {
+        const step = document.getElementById(stepId);
+        const stepNumber = step.querySelector('span');
+        
+        step.classList.add('active');
+        stepNumber.classList.remove('bg-gray-400');
+        stepNumber.classList.add('bg-divy-blue');
+    }
+
+    // Fonction pour définir un montant rapide
+    function setQuickAmount(amount) {
+        document.getElementById('amount-input').value = amount;
+        simulationData.amount = amount;
+        calculateFees();
+        checkSimulationReadiness();
+    }
+
+    // Fonction pour calculer les frais
+    function calculateFees() {
+        const amount = parseFloat(document.getElementById('amount-input').value) || 0;
+        simulationData.amount = amount;
+        
+        if (amount < 100) {
+            document.getElementById('fee-summary').classList.add('hidden');
+            return;
+        }
+        
+        // Calcul des frais selon la source et destination
+        let sourceFee = 0;
+        let destinationFee = 0;
+        let ligdicashFee = amount * feeRates.ligdicash;
+        let divyFee = amount * feeRates.divytransfert;
+        
+        // Frais de la source
+        if (simulationData.paymentSource === 'mobile') {
+            sourceFee = amount * feeRates.mobile;
+        } else if (simulationData.paymentSource === 'card') {
+            sourceFee = amount * feeRates.card;
+        }
+        
+        // Frais de destination (uniquement pour envoi et retrait)
+        if (simulationData.transactionType !== 'recharge') {
+            if (simulationData.destination === 'mobile') {
+                destinationFee = amount * feeRates.mobile;
+            } else if (simulationData.destination === 'card') {
+                destinationFee = amount * feeRates.card;
+            }
+        }
+        
+        // Si source et destination sont Divy Transfert, pas de frais externes
+        if (simulationData.paymentSource === 'divytransfert' && 
+            simulationData.destination === 'divytransfert') {
+            sourceFee = 0;
+            destinationFee = 0;
+            ligdicashFee = 0;
+            divyFee = 0;
+        }
+        
+        const totalFees = sourceFee + destinationFee + ligdicashFee + divyFee;
+        const totalAmount = amount + totalFees;
+        
+        // Mise à jour de l'affichage
+        updateFeeDisplay(amount, sourceFee, destinationFee, ligdicashFee, divyFee, totalAmount);
+        
+        document.getElementById('fee-summary').classList.remove('hidden');
+    }
+
+    // Fonction pour mettre à jour l'affichage des frais
+    function updateFeeDisplay(baseAmount, sourceFee, destinationFee, ligdicashFee, divyFee, totalAmount) {
+        document.getElementById('base-amount').textContent = formatCurrency(baseAmount);
+        document.getElementById('source-fee').textContent = formatCurrency(sourceFee);
+        document.getElementById('ligdicash-fee').textContent = formatCurrency(ligdicashFee);
+        document.getElementById('divy-fee').textContent = formatCurrency(divyFee);
+        document.getElementById('destination-fee').textContent = formatCurrency(destinationFee);
+        document.getElementById('total-amount').textContent = formatCurrency(totalAmount);
+        
+        // Mise à jour des labels
+        const sourceLabels = {
+            'divytransfert': 'Divy Transfert',
+            'mobile': 'Mobile Money',
+            'card': 'Carte bancaire'
+        };
+        
+        const destinationLabels = {
+            'divytransfert': 'Divy Transfert',
+            'mobile': 'Mobile Money',
+            'card': 'Carte bancaire',
+            'bank': 'Banque'
+        };
+        
+        document.getElementById('source-fee-label').textContent = sourceLabels[simulationData.paymentSource] || 'source';
+        document.getElementById('destination-fee-label').textContent = destinationLabels[simulationData.destination] || 'destination';
+        
+        // Masquer les lignes avec frais à 0
+        document.getElementById('source-fee-row').style.display = sourceFee > 0 ? 'flex' : 'none';
+        document.getElementById('destination-fee-row').style.display = destinationFee > 0 ? 'flex' : 'none';
+        
+        // Mettre à jour les informations de transaction
+        updateTransactionInfo();
+    }
+
+    // Fonction pour mettre à jour les informations de transaction
+    function updateTransactionInfo() {
+        const infoElement = document.getElementById('transaction-info');
+        let info = '';
+        
+        switch(simulationData.transactionType) {
+            case 'envoi':
+                if (simulationData.paymentSource === 'divytransfert' && 
+                    simulationData.destination === 'divytransfert') {
+                    info = 'Transfert instantané gratuit entre comptes Divy Transfert';
+                } else {
+                    info = 'Transaction sécurisée avec confirmation par SMS/email';
+                }
+                break;
+            case 'recharge':
+                info = 'Rechargement instantané de votre solde Divy Transfert';
+                break;
+            case 'retrait':
+                if (simulationData.destination === 'bank') {
+                    info = 'Virement bancaire sous 1-2 jours ouvrables';
+                } else {
+                    info = 'Retrait instantané vers votre compte mobile/carte';
+                }
+                break;
+        }
+        
+        infoElement.textContent = info;
+    }
+
+    // Fonction pour formater la devise
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('fr-FR').format(Math.round(amount)) + ' XOF';
+    }
+
+    // Fonction pour vérifier si la simulation est prête
+    function checkSimulationReadiness() {
+        const isReady = simulationData.transactionType && 
+                       simulationData.paymentSource && 
+                       simulationData.destination && 
+                       simulationData.amount >= 100;
+        
+        const btn = document.getElementById('simulate-btn');
+        const btnText = document.getElementById('btn-text');
+        
+        if (isReady) {
+            btn.disabled = false;
+            btnText.textContent = 'Calculer les frais de transaction';
+            btn.classList.add('bg-divy-blue');
+        } else {
+            btn.disabled = true;
+            if (!simulationData.transactionType) {
+                btnText.textContent = 'Sélectionnez le type de transaction';
+            } else if (!simulationData.paymentSource) {
+                btnText.textContent = 'Sélectionnez la source de paiement';
+            } else if (!simulationData.destination) {
+                btnText.textContent = 'Sélectionnez la destination';
+            } else if (simulationData.amount < 100) {
+                btnText.textContent = 'Entrez un montant (min. 100 XOF)';
+            }
+        }
+    }
+
+    // Fonction pour effectuer la simulation
+    function performSimulation() {
+        calculateFees();
+        
+        // Animation du bouton
+        const btn = document.getElementById('simulate-btn');
+        const originalText = btn.textContent;
+        
+        btn.textContent = 'Calcul en cours...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            btn.textContent = 'Nouvelle simulation';
+            btn.disabled = false;
+            
+            // Scroll vers le récapitulatif
+            document.getElementById('fee-summary').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }, 1000);
+    }
+
+    // Gestionnaire pour le champ montant
+    document.getElementById('amount-input').addEventListener('input', function() {
+        const amount = parseFloat(this.value) || 0;
+        simulationData.amount = amount;
+        
+        if (amount >= 100) {
+            calculateFees();
+        } else {
+            document.getElementById('fee-summary').classList.add('hidden');
+        }
+        
+        checkSimulationReadiness();
+    });
+
+    // Fonction pour réinitialiser la simulation
+    function resetSimulation() {
+        simulationData = {
+            transactionType: '',
+            paymentSource: '',
+            destination: '',
+            amount: 0
+        };
+        
+        // Réinitialiser l'interface
+        document.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
+        document.querySelectorAll('.step-card').forEach(step => step.classList.remove('active'));
+        document.querySelectorAll('.step-card span').forEach(span => {
+            span.classList.remove('bg-divy-blue');
+            span.classList.add('bg-gray-400');
+        });
+        
+        document.getElementById('amount-input').value = '';
+        document.getElementById('fee-summary').classList.add('hidden');
+        
+        // Réactiver la première étape
+        document.querySelector('.step-card').classList.add('active');
+        document.querySelector('.step-card span').classList.remove('bg-gray-400');
+        document.querySelector('.step-card span').classList.add('bg-divy-blue');
+        
+        checkSimulationReadiness();
+    }
+
+    // Ajouter un bouton de réinitialisation dans l'interface si nécessaire
+    function addResetButton() {
+        const resetBtn = document.createElement('button');
+        resetBtn.className = 'w-full py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-medium transition-colors mt-4';
+        resetBtn.textContent = 'Nouvelle simulation';
+        resetBtn.onclick = resetSimulation;
+        
+        const buttonContainer = document.querySelector('.py-4');
+        buttonContainer.appendChild(resetBtn);
+    }
+
+    // Gestion des erreurs de validation
+    function validateSimulation() {
+        const errors = [];
+        
+        if (!simulationData.transactionType) {
+            errors.push('Veuillez sélectionner un type de transaction');
+        }
+        
+        if (!simulationData.paymentSource) {
+            errors.push('Veuillez sélectionner une source de paiement');
+        }
+        
+        if (!simulationData.destination) {
+            errors.push('Veuillez sélectionner une destination');
+        }
+        
+        if (simulationData.amount < 100) {
+            errors.push('Le montant minimum est de 100 XOF');
+        }
+        
+        if (simulationData.amount > 5000000) {
+            errors.push('Le montant maximum est de 5,000,000 XOF');
+        }
+        
+        return errors;
+    }
+
+    // Fonction pour afficher les erreurs
+    function showErrors(errors) {
+        if (errors.length > 0) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-xl p-4 mb-4';
+            errorDiv.innerHTML = `
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <h4 class="font-medium text-red-800 dark:text-red-200 mb-1">Erreurs de validation</h4>
+                        <ul class="text-sm text-red-700 dark:text-red-300 space-y-1">
+                            ${errors.map(error => `<li>• ${error}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            // Insérer au début du contenu principal
+            const mainContent = document.querySelector('.flex-1');
+            mainContent.insertBefore(errorDiv, mainContent.firstChild);
+            
+            // Supprimer après 5 secondes
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+    }
+</script>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Politique de Confidentialité</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Animation pour le contenu */
+        .content-section {
+            animation: slideInUp 0.6s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Style pour le texte */
+        .privacy-text {
+            line-height: 1.7;
+        }
+        
+        .section-title {
+            animation: fadeInLeft 0.5s ease-out;
+        }
+        
+        @keyframes fadeInLeft {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Style pour les listes */
+        .privacy-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .privacy-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+        
+        .privacy-list li::before {
+            content: '•';
+            color: #3194db;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-900 bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <div class="bg-white dark:bg-gray-800 shadow-sm px-4 pt-12 pb-4">
+            <div class="flex items-center justify-between">
+                <!-- Bouton retour -->
+                <button onclick="window.location.href='compte.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </button>
+                
+                <!-- Titre -->
+                <h1 class="text-lg font-semibold text-gray-800 dark:text-white">Politique de Confidentialité</h1>
+                
+                <!-- Espace pour équilibrer -->
+                <div class="w-10"></div>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="px-4 py-6">
+            <div class="max-w-4xl mx-auto">
+                
+                <!-- Introduction -->
+                <div class="content-section mb-8" style="animation-delay: 0.1s;">
+                    <p class="privacy-text text-gray-700 dark:text-gray-300 text-base leading-relaxed">
+                        Chez Divy Transfert, nous respectons et protégeons la confidentialité de nos utilisateurs. Cette Politique de Confidentialité décrit les types d'informations personnelles que nous collectons, comment nous les utilisons et comment nous protégeons vos informations.
+                    </p>
+                </div>
+
+                <!-- Section: Informations que nous collectons -->
+                <div class="content-section mb-8" style="animation-delay: 0.2s;">
+                    <h2 class="section-title text-xl font-bold text-gray-900 dark:text-white mb-6">Informations que nous collectons</h2>
+                    <p class="privacy-text text-gray-700 dark:text-gray-300 text-base mb-4">
+                        Lorsque vous utilisez notre application, nous pouvons collecter les types suivants d'informations personnelles :
+                    </p>
+                    
+                    <ul class="privacy-list text-gray-700 dark:text-gray-300">
+                        <li>
+                            <strong>Informations sur l'appareil :</strong> Nous pouvons collecter des informations sur le type d'appareil que vous utilisez, son système d'exploitation et d'autres détails techniques pour nous aider à améliorer notre application.
+                        </li>
+                        <li>
+                            <strong>Informations d'utilisation :</strong> Nous pouvons collecter des informations sur la façon dont vous utilisez notre application, telles que les fonctionnalités que vous utilisez et la fréquence d'utilisation.
+                        </li>
+                        <li>
+                            <strong>Informations personnelles :</strong> Nous pouvons collecter des informations personnelles, telles que votre nom, adresse e-mail ou numéro de téléphone, si vous choisissez de nous les fournir.
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Section: Comment nous utilisons vos informations -->
+                <div class="content-section mb-8" style="animation-delay: 0.3s;">
+                    <h2 class="section-title text-xl font-bold text-gray-900 dark:text-white mb-6">Comment nous utilisons vos informations</h2>
+                    <p class="privacy-text text-gray-700 dark:text-gray-300 text-base mb-4">
+                        Nous utilisons vos informations aux fins suivantes :
+                    </p>
+                    
+                    <ul class="privacy-list text-gray-700 dark:text-gray-300">
+                        <li>
+                            <strong>Pour fournir et améliorer notre application :</strong> Nous utilisons vos informations pour faire fonctionner, maintenir et améliorer les fonctionnalités et services de notre application.
+                        </li>
+                        <li>
+                            <strong>Pour traiter les transactions :</strong> Nous utilisons vos informations pour traiter les transferts d'argent et autres services financiers que vous demandez.
+                        </li>
+                        <li>
+                            <strong>Pour la sécurité :</strong> Nous utilisons vos informations pour détecter, prévenir et traiter les activités frauduleuses, les abus et autres activités nuisibles.
+                        </li>
+                        <li>
+                            <strong>Pour la communication :</strong> Nous pouvons utiliser vos informations pour vous envoyer des notifications importantes sur votre compte ou nos services.
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Section: Protection de vos informations -->
+                <div class="content-section mb-8" style="animation-delay: 0.4s;">
+                    <h2 class="section-title text-xl font-bold text-gray-900 dark:text-white mb-6">Protection de vos informations</h2>
+                    <p class="privacy-text text-gray-700 dark:text-gray-300 text-base mb-4">
+                        Nous mettons en place des mesures de sécurité appropriées pour protéger vos informations personnelles :
+                    </p>
+                    
+                    <ul class="privacy-list text-gray-700 dark:text-gray-300">
+                        <li>
+                            <strong>Cryptage :</strong> Nous utilisons un cryptage de niveau bancaire pour protéger vos données sensibles lors de leur transmission et stockage.
+                        </li>
+                        <li>
+                            <strong>Authentification :</strong> Nous exigeons une authentification forte, y compris l'authentification à deux facteurs pour l'accès aux comptes.
+                        </li>
+                        <li>
+                            <strong>Accès limité :</strong> Seul le personnel autorisé a accès à vos informations personnelles, et uniquement quand cela est nécessaire.
+                        </li>
+                        <li>
+                            <strong>Surveillance :</strong> Nous surveillons en permanence nos systèmes pour détecter toute activité suspecte ou non autorisée.
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Section: Partage d'informations -->
+                <div class="content-section mb-8" style="animation-delay: 0.5s;">
+                    <h2 class="section-title text-xl font-bold text-gray-900 dark:text-white mb-6">Partage d'informations</h2>
+                    <p class="privacy-text text-gray-700 dark:text-gray-300 text-base mb-4">
+                        Nous ne vendons, ne louons ni ne partageons vos informations personnelles avec des tiers, sauf dans les cas suivants :
+                    </p>
+                    
+                    <ul class="privacy-list text-gray-700 dark:text-gray-300">
+                        <li>Avec votre consentement explicite</li>
+                        <li>Pour se conformer aux obligations légales ou réglementaires</li>
+                        <li>Avec nos partenaires de services financiers pour traiter vos transactions</li>
+                        <li>Pour protéger nos droits, notre propriété ou notre sécurité</li>
+                    </ul>
+                </div>
+
+                <!-- Section: Vos droits -->
+                <div class="content-section mb-8" style="animation-delay: 0.6s;">
+                    <h2 class="section-title text-xl font-bold text-gray-900 dark:text-white mb-6">Vos droits</h2>
+                    <p class="privacy-text text-gray-700 dark:text-gray-300 text-base mb-4">
+                        Vous avez le droit de :
+                    </p>
+                    
+                    <ul class="privacy-list text-gray-700 dark:text-gray-300">
+                        <li>Accéder à vos informations personnelles que nous détenons</li>
+                        <li>Demander la correction d'informations inexactes</li>
+                        <li>Demander la suppression de vos informations personnelles</li>
+                        <li>Vous opposer au traitement de vos informations</li>
+                        <li>Demander la portabilité de vos données</li>
+                    </ul>
+                </div>
+
+                <!-- Section: Contact -->
+                <div class="content-section mb-8" style="animation-delay: 0.7s;">
+                    <h2 class="section-title text-xl font-bold text-gray-900 dark:text-white mb-6">Nous contacter</h2>
+                    <p class="privacy-text text-gray-700 dark:text-gray-300 text-base">
+                        Si vous avez des questions concernant cette Politique de Confidentialité, veuillez nous contacter à :
+                        <br><br>
+                        <strong>Email :</strong> privacy@divytransfert.com<br>
+                        <strong>Téléphone :</strong> +227 20 XX XX XX<br>
+                        <strong>Adresse :</strong> Niamey, Niger
+                    </p>
+                </div>
+
+                <!-- Dernière mise à jour -->
+                <div class="content-section border-t border-gray-200 dark:border-gray-700 pt-6" style="animation-delay: 0.8s;">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 text-center">
+                        Dernière mise à jour : Juin 2025
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Theme toggle button -->
+        <button id="theme-toggle" class="fixed top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        // Fonction d'initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion du thème sombre/clair
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

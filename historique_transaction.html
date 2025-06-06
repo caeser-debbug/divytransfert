@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Historique des transactions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd',
+                        'lime-green': '#3194db'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .transaction-item {
+            transition: all 0.2s ease;
+        }
+        
+        .transaction-item:hover {
+            transform: translateX(4px);
+        }
+        
+        .filter-button {
+            transition: all 0.3s ease;
+        }
+        
+        .filter-button.active {
+            background-color: #3194db;
+            color: white;
+        }
+        
+        .filter-button:not(.active) {
+            background-color: transparent;
+            color: #6b7280;
+            border: 1px solid #374151;
+        }
+        
+        .dark .filter-button:not(.active) {
+            color: #9ca3af;
+            border-color: #4b5563;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-800 bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <div class="bg-white dark:bg-gray-800 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+                <button onclick="window.location.href='home.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </button>
+                <h1 class="text-lg font-semibold text-gray-800 dark:text-white">Historique des transactions</h1>
+                <button class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Filtres -->
+        <div class="px-4 py-4 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+            <div class="flex space-x-3 overflow-x-auto pb-2">
+                <button class="filter-button active px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" data-filter="all">
+                    Tout
+                </button>
+                <button class="filter-button px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" data-filter="income">
+                    Revenus
+                </button>
+                <button class="filter-button px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" data-filter="sent">
+                    Envoyé
+                </button>
+                <button class="filter-button px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" data-filter="request">
+                    Demandes
+                </button>
+                <button class="filter-button px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" data-filter="topup">
+                    Recharge
+                </button>
+                <button class="filter-button px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" data-filter="withdraw">
+                    Retrait
+                </button>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 px-4 py-4" id="transactions-container">
+            <!-- Les transactions seront ajoutées ici dynamiquement -->
+        </div>
+
+        <!-- Theme toggle button -->
+        <button id="theme-toggle" class="fixed top-4 right-16 p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion du thème
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+
+            // Données des transactions
+            const transactions = [
+                {
+                    id: 1,
+                    name: "Aminata Diallo",
+                    amount: -25000,
+                    time: "09:40",
+                    type: "sent",
+                    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                    date: "Aujourd'hui"
+                },
+                {
+                    id: 2,
+                    name: "Moussa Traoré",
+                    amount: 45000,
+                    time: "08:15",
+                    type: "request",
+                    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                    date: "Aujourd'hui"
+                },
+                {
+                    id: 3,
+                    name: "Fatou Koné",
+                    amount: 75000,
+                    time: "22:38",
+                    type: "income",
+                    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                    date: "Hier"
+                },
+                {
+                    id: 4,
+                    name: "Ibrahim Sanogo",
+                    amount: -15000,
+                    time: "16:49",
+                    type: "sent",
+                    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                    date: "Hier"
+                },
+                {
+                    id: 5,
+                    name: "Khadija Coulibaly",
+                    amount: 128000,
+                    time: "10:25",
+                    type: "topup",
+                    icon: "topup",
+                    date: "Hier"
+                },
+                {
+                    id: 6,
+                    name: "Seydou Keita",
+                    amount: 29000,
+                    time: "16:49",
+                    type: "income",
+                    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                    date: "22 déc. 2023"
+                },
+                {
+                    id: 7,
+                    name: "Mamadou Diarra",
+                    amount: -100000,
+                    time: "12:40",
+                    type: "withdraw",
+                    icon: "withdraw",
+                    date: "22 déc. 2023"
+                },
+                {
+                    id: 8,
+                    name: "Aissata Touré",
+                    amount: 52000,
+                    time: "09:15",
+                    type: "request",
+                    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+                    date: "21 déc. 2023"
+                }
+            ];
+
+            const typeTranslations = {
+                'sent': 'Envoyé',
+                'request': 'Demande reçue',
+                'income': 'Revenus',
+                'topup': 'Recharge',
+                'withdraw': 'Retrait'
+            };
+
+            function getTransactionIcon(type) {
+                const icons = {
+                    'topup': `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>`,
+                    'withdraw': `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>`
+                };
+                return icons[type] || '';
+            }
+
+            function renderTransactions(filteredTransactions = transactions) {
+                const container = document.getElementById('transactions-container');
+                container.innerHTML = '';
+                
+                // Grouper par date
+                const groupedTransactions = {};
+                filteredTransactions.forEach(transaction => {
+                    const date = transaction.date;
+                    if (!groupedTransactions[date]) {
+                        groupedTransactions[date] = [];
+                    }
+                    groupedTransactions[date].push(transaction);
+                });
+
+                // Afficher par groupe de date
+                Object.keys(groupedTransactions).forEach(date => {
+                    // En-tête de date
+                    const dateHeader = document.createElement('div');
+                    dateHeader.className = 'mb-4';
+                    dateHeader.innerHTML = `<h2 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">${date}</h2>`;
+                    container.appendChild(dateHeader);
+
+                    // Transactions pour cette date
+                    groupedTransactions[date].forEach((transaction, index) => {
+                        const transactionElement = document.createElement('div');
+                        transactionElement.className = 'transaction-item bg-white dark:bg-gray-700 rounded-xl p-4 mb-3 shadow-sm border border-gray-100 dark:border-gray-600 fade-in';
+                        transactionElement.style.animationDelay = `${index * 0.05}s`;
+                        
+                        const amountColor = transaction.amount > 0 ? 'text-green-600' : 'text-red-600';
+                        const amountPrefix = transaction.amount > 0 ? '+' : '';
+                        
+                        // Icône ou avatar
+                        let avatarOrIcon = '';
+                        if (transaction.avatar) {
+                            avatarOrIcon = `<img src="${transaction.avatar}" alt="${transaction.name}" class="w-12 h-12 rounded-full mr-4 flex-shrink-0">`;
+                        } else {
+                            const iconColor = transaction.type === 'topup' ? 'text-divy-blue' : 'text-gray-600';
+                            avatarOrIcon = `<div class="w-12 h-12 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0 ${iconColor}">
+                                ${getTransactionIcon(transaction.type)}
+                            </div>`;
+                        }
+                        
+                        transactionElement.innerHTML = `
+                            <div class="flex items-center cursor-pointer" onclick="viewTransactionDetail(${transaction.id})">
+                                ${avatarOrIcon}
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="text-sm font-semibold text-gray-800 dark:text-white mb-1">${transaction.name}</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">${transaction.time}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-sm font-semibold ${amountColor} mb-1">${amountPrefix}${Math.abs(transaction.amount).toLocaleString('fr-FR')} XOF</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">${typeTranslations[transaction.type]}</p>
+                                </div>
+                                <svg class="w-4 h-4 text-gray-400 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        `;
+                        
+                        container.appendChild(transactionElement);
+                    });
+                });
+
+                // Message si aucune transaction
+                if (filteredTransactions.length === 0) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'flex flex-col items-center justify-center py-12';
+                    emptyState.innerHTML = `
+                        <div class="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-2">Aucune transaction</h3>
+                        <p class="text-gray-500 dark:text-gray-400 text-center">Aucune transaction trouvée pour ce filtre.</p>
+                    `;
+                    container.appendChild(emptyState);
+                }
+            }
+
+            // Gestion des filtres
+            const filterButtons = document.querySelectorAll('.filter-button');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Retirer la classe active de tous les boutons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Ajouter la classe active au bouton cliqué
+                    this.classList.add('active');
+                    
+                    // Filtrer les transactions
+                    const filter = this.dataset.filter;
+                    let filteredTransactions = transactions;
+                    
+                    if (filter !== 'all') {
+                        filteredTransactions = transactions.filter(transaction => transaction.type === filter);
+                    }
+                    
+                    // Réafficher les transactions
+                    renderTransactions(filteredTransactions);
+                });
+            });
+
+            // Affichage initial
+            renderTransactions();
+
+            // Fonction globale pour voir les détails d'une transaction
+            window.viewTransactionDetail = function(transactionId) {
+                const transaction = transactions.find(t => t.id === transactionId);
+                if (transaction) {
+                    // Rediriger vers la page de détail avec les paramètres
+                    const params = new URLSearchParams({
+                        id: transaction.id,
+                        name: transaction.name,
+                        amount: transaction.amount,
+                        time: transaction.time,
+                        type: transaction.type,
+                        date: transaction.date,
+                        avatar: transaction.avatar || '',
+                        email: transaction.name.toLowerCase().replace(' ', '.') + '@gmail.com'
+                    });
+                    window.location.href = `transaction-detail.html?${params.toString()}`;
+                }
+            };
+        });
+    </script>
+</body>
+</html>

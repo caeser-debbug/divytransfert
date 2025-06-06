@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Moyens de Paiement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Animation pour l'entrée des cartes */
+        .payment-card {
+            transition: all 0.3s ease;
+            animation: slideInUp 0.4s ease-out;
+        }
+        
+        .payment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Style pour le bouton d'ajout */
+        .add-button {
+            transition: all 0.3s ease;
+        }
+        
+        .add-button:hover {
+            transform: scale(1.05);
+            background: rgba(49, 148, 219, 0.1);
+        }
+        
+        /* Animation pour le statut "Connected" */
+        .connected-badge {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-900 bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <div class="bg-white dark:bg-gray-800 shadow-sm px-4 pt-12 pb-4">
+            <div class="flex items-center justify-between">
+                <!-- Bouton retour -->
+                <button onclick="window.location.href='compte.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </button>
+                
+                <!-- Titre -->
+                <h1 class="text-lg font-semibold text-gray-800 dark:text-white">Payment Methods</h1>
+                
+                <!-- Bouton d'ajout -->
+                <button onclick="openAddPaymentModal()" class="add-button p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Liste des moyens de paiement -->
+        <div class="px-4 py-6">
+            <div id="payment-methods-list" class="space-y-4">
+
+                <!-- Mastercard -->
+                <div class="payment-card bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <!-- Logo Mastercard -->
+                            <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center">
+                                <span class="text-white font-bold text-xs">MC</span>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 dark:text-white">•••• •••• •••• 4679</h3>
+                            </div>
+                        </div>
+                        <div class="connected-badge px-3 py-1 rounded-full">
+                            <span class="text-white text-sm font-medium">Connected</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visa -->
+                <div class="payment-card bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <!-- Logo Visa -->
+                            <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                                <span class="text-white font-bold text-xs">VISA</span>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 dark:text-white">•••• •••• •••• 5567</h3>
+                            </div>
+                        </div>
+                        <div class="connected-badge px-3 py-1 rounded-full">
+                            <span class="text-white text-sm font-medium">Connected</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orange Money -->
+                <div class="payment-card bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <!-- Logo Orange Money -->
+                            <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">O</span>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 dark:text-white">Orange Money</h3>
+                            </div>
+                        </div>
+                        <div class="connected-badge px-3 py-1 rounded-full">
+                            <span class="text-white text-sm font-medium">Connected</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MTN Mobile Money -->
+                <div class="payment-card bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <!-- Logo MTN -->
+                            <div class="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center">
+                                <span class="text-white font-bold text-xs">MTN</span>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 dark:text-white">MTN Mobile Money</h3>
+                            </div>
+                        </div>
+                        <div class="connected-badge px-3 py-1 rounded-full">
+                            <span class="text-white text-sm font-medium">Connected</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme toggle button -->
+        <button id="theme-toggle" class="fixed top-4 right-16 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Modal pour sélectionner le type de paiement -->
+    <div id="add-payment-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-end justify-center min-h-screen">
+            <div class="bg-white dark:bg-gray-800 rounded-t-3xl w-full max-w-md transform transition-transform duration-300 translate-y-full" id="modal-content">
+                <!-- Header du modal -->
+                <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Add Payment Method</h3>
+                    <button onclick="closeAddPaymentModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
+                        <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Options de paiement -->
+                <div class="p-6 space-y-4 max-h-96 overflow-y-auto">
+                    <!-- Cartes bancaires -->
+                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Cartes bancaires</h4>
+                    
+                    <button onclick="addPaymentMethod('card', 'visa')" class="w-full flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold text-xs">VISA</span>
+                        </div>
+                        <span class="text-gray-800 dark:text-white font-medium">Visa</span>
+                    </button>
+
+                    <button onclick="addPaymentMethod('card', 'mastercard')" class="w-full flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold text-xs">MC</span>
+                        </div>
+                        <span class="text-gray-800 dark:text-white font-medium">Mastercard</span>
+                    </button>
+
+                    <button onclick="addPaymentMethod('card', 'amex')" class="w-full flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold text-xs">AMEX</span>
+                        </div>
+                        <span class="text-gray-800 dark:text-white font-medium">American Express</span>
+                    </button>
+
+                    <!-- Mobile Money -->
+                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mt-6">Mobile Money</h4>
+                    
+                    <button onclick="addPaymentMethod('mobile', 'orange')" class="w-full flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold text-sm">O</span>
+                        </div>
+                        <span class="text-gray-800 dark:text-white font-medium">Orange Money</span>
+                    </button>
+
+                    <button onclick="addPaymentMethod('mobile', 'mtn')" class="w-full flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold text-xs">MTN</span>
+                        </div>
+                        <span class="text-gray-800 dark:text-white font-medium">MTN Mobile Money</span>
+                    </button>
+
+                    <button onclick="addPaymentMethod('mobile', 'moov')" class="w-full flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold text-sm">M</span>
+                        </div>
+                        <span class="text-gray-800 dark:text-white font-medium">Moov Money</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion du thème sombre/clair
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier le thème sauvegardé ou utiliser la préférence système
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            // Gestionnaire pour le bouton de changement de thème
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        });
+
+        // Fonction pour ouvrir le modal d'ajout de moyen de paiement
+        function openAddPaymentModal() {
+            const modal = document.getElementById('add-payment-modal');
+            const modalContent = document.getElementById('modal-content');
+            
+            modal.classList.remove('hidden');
+            
+            // Animation d'ouverture
+            setTimeout(() => {
+                modalContent.classList.remove('translate-y-full');
+                modalContent.classList.add('translate-y-0');
+            }, 10);
+        }
+
+        // Fonction pour fermer le modal
+        function closeAddPaymentModal() {
+            const modal = document.getElementById('add-payment-modal');
+            const modalContent = document.getElementById('modal-content');
+            
+            // Animation de fermeture
+            modalContent.classList.remove('translate-y-0');
+            modalContent.classList.add('translate-y-full');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Fonction pour ajouter un moyen de paiement (redirection vers la page de configuration)
+        function addPaymentMethod(type, provider) {
+            closeAddPaymentModal();
+            
+            // Rediriger vers la page de configuration appropriée
+            if (type === 'card') {
+                window.location.href = `add-card.html?provider=${provider}`;
+            } else if (type === 'mobile') {
+                window.location.href = `add-mobile-money.html?provider=${provider}`;
+            }
+        }
+
+        // Fermer le modal en cliquant sur l'arrière-plan
+        document.getElementById('add-payment-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAddPaymentModal();
+            }
+        });
+    </script>
+</body>
+</html>

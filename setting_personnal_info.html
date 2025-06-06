@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Informations Personnelles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Animation pour l'avatar */
+        .avatar-container {
+            transition: all 0.3s ease;
+        }
+        
+        .avatar-container:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Style pour les champs de saisie */
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            border-color: #3194db;
+            box-shadow: 0 0 0 3px rgba(49, 148, 219, 0.1);
+        }
+        
+        /* Animation pour les labels */
+        .field-container {
+            animation: slideInUp 0.4s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Style pour le bouton Save */
+        .save-btn {
+            background: linear-gradient(135deg, #8bc34a 0%, #4caf50 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 195, 74, 0.4);
+        }
+        
+        .save-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Style pour le bouton d'édition de photo */
+        .edit-photo-btn {
+            background: rgba(139, 195, 74, 0.9);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .edit-photo-btn:hover {
+            background: rgba(139, 195, 74, 1);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-900 bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <div class="bg-white dark:bg-gray-800 shadow-sm px-4 pt-12 pb-4">
+            <div class="flex items-center justify-between">
+                <!-- Bouton retour -->
+                <button onclick="window.location.href='compte.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                </button>
+                
+                <!-- Titre -->
+                <h1 class="text-lg font-semibold text-gray-800 dark:text-white">Informations Personnelles</h1>
+                
+                <!-- Espace pour équilibrer -->
+                <div class="w-10"></div>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="px-4 py-6">
+            <!-- Photo de profil -->
+            <div class="text-center mb-8">
+                <div class="avatar-container relative inline-block">
+                    <img 
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
+                        alt="Photo de profil" 
+                        class="w-24 h-24 rounded-full mx-auto border-4 border-white dark:border-gray-700 shadow-lg"
+                        id="profile-photo"
+                    >
+                    <!-- Bouton d'édition de photo -->
+                    <button class="edit-photo-btn absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center" onclick="changeProfilePhoto()">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Formulaire des informations personnelles -->
+            <div class="space-y-6">
+                <!-- Nom complet -->
+                <div class="field-container" style="animation-delay: 0.1s;">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nom Complet</label>
+                    <input 
+                        type="text" 
+                        id="full-name"
+                        value="Andrew Ainsley"
+                        class="input-field w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none"
+                        oninput="checkFormChanges()"
+                    >
+                </div>
+
+                <!-- Email -->
+                <div class="field-container" style="animation-delay: 0.2s;">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Adresse Email</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <input 
+                            type="email" 
+                            id="email"
+                            value="andrew.ainsley@gmail.com"
+                            class="input-field w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl pl-10 pr-4 py-3 text-gray-900 dark:text-white focus:outline-none"
+                            oninput="checkFormChanges()"
+                        >
+                    </div>
+                </div>
+
+                <!-- Numéro de téléphone -->
+                <div class="field-container" style="animation-delay: 0.3s;">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Numéro de Téléphone</label>
+                    <div class="flex space-x-3">
+                        <!-- Sélecteur de pays -->
+                        <select class="input-field bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-3 text-gray-900 dark:text-white focus:outline-none" id="country-code" onchange="checkFormChanges()">
+                            <option value="+227">🇳🇪 +227</option>
+                            <option value="+221">🇸🇳 +221</option>
+                            <option value="+223">🇲🇱 +223</option>
+                            <option value="+226">🇧🇫 +226</option>
+                            <option value="+225">🇨🇮 +225</option>
+                        </select>
+                        <!-- Numéro -->
+                        <input 
+                            type="tel" 
+                            id="phone-number"
+                            value="88 88 88 88"
+                            class="input-field flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none"
+                            oninput="formatPhoneNumber(this); checkFormChanges()"
+                        >
+                    </div>
+                </div>
+
+                <!-- Date de naissance -->
+                <div class="field-container" style="animation-delay: 0.4s;">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date de Naissance</label>
+                    <div class="relative">
+                        <input 
+                            type="date" 
+                            id="birth-date"
+                            value="1995-12-27"
+                            class="input-field w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none"
+                            oninput="checkFormChanges()"
+                        >
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Genre -->
+                <div class="field-container" style="animation-delay: 0.5s;">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Genre</label>
+                    <select class="input-field w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 text-gray-900 dark:text-white focus:outline-none" id="gender" onchange="checkFormChanges()">
+                        <option value="">Sélectionnez votre genre</option>
+                        <option value="male" selected>Homme</option>
+                        <option value="female">Femme</option>
+                        <option value="other">Autre</option>
+                        <option value="prefer-not-to-say">Préfère ne pas dire</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Bouton Save -->
+            <div class="mt-8 mb-8">
+                <button 
+                    id="save-btn"
+                    onclick="savePersonalInfo()"
+                    class="save-btn w-full py-4 text-white rounded-2xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled
+                >
+                    Enregistrer
+                </button>
+            </div>
+        </div>
+
+        <!-- Theme toggle button -->
+        <button id="theme-toggle" class="fixed top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+
+        <!-- Input file caché pour changer la photo -->
+        <input type="file" id="photo-input" accept="image/*" class="hidden" onchange="handlePhotoChange(event)">
+    </div>
+
+    <script>
+        // Variables pour stocker les valeurs initiales
+        let initialValues = {};
+
+        // Fonction d'initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Charger les données sauvegardées
+            loadSavedData();
+            
+            // Sauvegarder les valeurs initiales
+            saveInitialValues();
+
+            // Gestion du thème
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        });
+
+        // Fonction pour sauvegarder les valeurs initiales
+        function saveInitialValues() {
+            initialValues = {
+                fullName: document.getElementById('full-name').value,
+                email: document.getElementById('email').value,
+                countryCode: document.getElementById('country-code').value,
+                phoneNumber: document.getElementById('phone-number').value,
+                birthDate: document.getElementById('birth-date').value,
+                gender: document.getElementById('gender').value
+            };
+        }
+
+        // Fonction pour formater le numéro de téléphone
+        function formatPhoneNumber(input) {
+            let value = input.value.replace(/\D/g, ''); // Supprimer tout sauf les chiffres
+            
+            // Formater selon le format américain ou international
+            if (value.length > 0) {
+                if (value.length <= 3) {
+                    value = value;
+                } else if (value.length <= 6) {
+                    value = value.slice(0, 3) + ' ' + value.slice(3);
+                } else if (value.length <= 9) {
+                    value = value.slice(0, 3) + ' ' + value.slice(3, 6) + ' ' + value.slice(6);
+                } else {
+                    value = value.slice(0, 3) + ' ' + value.slice(3, 6) + ' ' + value.slice(6, 9) + ' ' + value.slice(9, 12);
+                }
+            }
+            
+            input.value = value;
+        }
+
+        // Fonction pour vérifier si des changements ont été apportés
+        function checkFormChanges() {
+            const currentValues = {
+                fullName: document.getElementById('full-name').value,
+                email: document.getElementById('email').value,
+                countryCode: document.getElementById('country-code').value,
+                phoneNumber: document.getElementById('phone-number').value,
+                birthDate: document.getElementById('birth-date').value,
+                gender: document.getElementById('gender').value
+            };
+
+            // Vérifier si au moins une valeur a changé
+            const hasChanges = Object.keys(currentValues).some(key => 
+                currentValues[key] !== initialValues[key]
+            );
+
+            // Activer/désactiver le bouton Save
+            document.getElementById('save-btn').disabled = !hasChanges;
+        }
+
+        // Fonction pour changer la photo de profil
+        function changeProfilePhoto() {
+            document.getElementById('photo-input').click();
+        }
+
+        // Fonction pour gérer le changement de photo
+        function handlePhotoChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-photo').src = e.target.result;
+                    checkFormChanges(); // Marquer comme modifié
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Fonction pour sauvegarder les informations personnelles
+        function savePersonalInfo() {
+            const saveBtn = document.getElementById('save-btn');
+            
+            // Animation de chargement
+            saveBtn.textContent = 'Enregistrement...';
+            saveBtn.disabled = true;
+
+            // Simuler la sauvegarde
+            setTimeout(() => {
+                // Mettre à jour les valeurs initiales avec les nouvelles valeurs
+                saveInitialValues();
+                
+                // Animation de succès
+                saveBtn.textContent = 'Enregistré !';
+                saveBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                
+                // Sauvegarder dans localStorage
+                const personalInfo = {
+                    fullName: document.getElementById('full-name').value,
+                    email: document.getElementById('email').value,
+                    countryCode: document.getElementById('country-code').value,
+                    phoneNumber: document.getElementById('phone-number').value,
+                    birthDate: document.getElementById('birth-date').value,
+                    gender: document.getElementById('gender').value,
+                    profilePhoto: document.getElementById('profile-photo').src
+                };
+                localStorage.setItem('personalInfo', JSON.stringify(personalInfo));
+
+                // Remettre le bouton à l'état initial après 2 secondes
+                setTimeout(() => {
+                    saveBtn.textContent = 'Enregistrer';
+                    saveBtn.style.background = 'linear-gradient(135deg, #8bc34a 0%, #4caf50 100%)';
+                    saveBtn.disabled = true; // Désactiver car aucun changement
+                }, 2000);
+            }, 1500);
+        }
+
+        // Charger les données sauvegardées au démarrage
+        function loadSavedData() {
+            const savedInfo = localStorage.getItem('personalInfo');
+            if (savedInfo) {
+                const data = JSON.parse(savedInfo);
+                
+                document.getElementById('full-name').value = data.fullName || 'Andrew Ainsley';
+                document.getElementById('email').value = data.email || 'andrew.ainsley@gmail.com';
+                document.getElementById('country-code').value = data.countryCode || '+1';
+                document.getElementById('phone-number').value = data.phoneNumber || '111 467 378 399';
+                document.getElementById('birth-date').value = data.birthDate || '1995-12-27';
+                document.getElementById('gender').value = data.gender || 'male';
+                
+                if (data.profilePhoto) {
+                    document.getElementById('profile-photo').src = data.profilePhoto;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

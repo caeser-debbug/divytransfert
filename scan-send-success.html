@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Transfert réussi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd',
+                        'lime-green': '#3194db'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .success-animation {
+            animation: successScale 0.8s ease-out;
+        }
+        
+        @keyframes successScale {
+            0% { 
+                transform: scale(0); 
+                opacity: 0; 
+            }
+            50% { 
+                transform: scale(1.1); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: scale(1); 
+                opacity: 1; 
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out 0.3s both;
+        }
+        
+        .fade-in-delay {
+            animation: fadeIn 0.6s ease-out 0.6s both;
+        }
+        
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(166, 230, 110, 0.3);
+        }
+
+        .dark .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(49, 148, 219, 0.3);
+        }
+        
+        .btn-secondary {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            background-color: rgba(166, 230, 110, 0.1);
+        }
+
+        .dark .btn-secondary:hover {
+            background-color: rgba(49, 148, 219, 0.1);
+        }
+        
+        .detail-row {
+            border-bottom: 1px solid #374151;
+            padding: 12px 0;
+            transition: border-color 0.3s ease;
+        }
+
+        .dark .detail-row {
+            border-bottom-color: #374151;
+        }
+
+        .light .detail-row {
+            border-bottom-color: #e5e7eb;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .copy-feedback {
+            animation: copyPulse 0.3s ease-out;
+        }
+        
+        @keyframes copyPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .details-card {
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        }
+
+        .dark .gradient-bg {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        }
+
+        .light .gradient-bg {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+    </style>
+</head>
+<body class="antialiased bg-gray-900 dark:bg-gray-900 bg-gray-50 text-white dark:text-white text-gray-900 transition-colors duration-300 gradient-bg">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-4 pt-12">
+            <div class="w-10"></div>
+            
+            <!-- Theme toggle button -->
+            <button id="theme-toggle" class="p-2 rounded-full bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-50 backdrop-blur-sm text-gray-800 dark:text-gray-200 hover:bg-opacity-30 transition-all">
+                <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+                </svg>
+                <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                </svg>
+            </button>
+
+            <button onclick="window.location.href='home.html'" class="p-2 hover:bg-gray-800 dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-colors">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 flex flex-col items-center justify-center px-4 py-8">
+            <!-- Icône de succès -->
+            <div class="w-20 h-20 bg-lime-green dark:bg-divy-blue rounded-full flex items-center justify-center mb-8 success-animation">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+
+            <!-- Montant et destinataire -->
+            <div class="text-center mb-8 fade-in">
+                <div class="text-4xl font-bold mb-4 text-gray-900 dark:text-white" id="amount-display">
+                    150 000 XOF
+                </div>
+                <p class="text-gray-600 dark:text-gray-300 mb-2">Envoyé à <span id="recipient-name" class="text-gray-900 dark:text-white font-medium">Cameron Williamson</span></p>
+                <p class="text-gray-500 dark:text-gray-400 text-sm" id="recipient-email">cameron.williamson@gmail.com</p>
+            </div>
+
+            <!-- Détails de la transaction -->
+            <div class="w-full max-w-md details-card bg-white dark:bg-gray-800 rounded-2xl p-6 mb-8 fade-in-delay shadow-lg dark:shadow-none">
+                <div class="detail-row flex justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">Vous avez envoyé</span>
+                    <span class="text-gray-900 dark:text-white font-medium" id="detail-amount">150 000 XOF</span>
+                </div>
+                
+                <div class="detail-row flex justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">À</span>
+                    <span class="text-gray-900 dark:text-white font-medium" id="detail-recipient">Cameron Williamson</span>
+                </div>
+                
+                <div class="detail-row flex justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">Email</span>
+                    <span class="text-gray-900 dark:text-white font-medium" id="detail-email">cameron.williamson@gmail.com</span>
+                </div>
+                
+                <div class="detail-row flex justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">Date</span>
+                    <span class="text-gray-900 dark:text-white font-medium" id="detail-date">24 déc. 2023 • 09:46</span>
+                </div>
+                
+                <div class="detail-row flex justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">ID de transaction</span>
+                    <div class="flex items-center">
+                        <span class="text-gray-900 dark:text-white font-medium mr-2" id="transaction-id">241220230946</span>
+                        <button onclick="copyTransactionId()" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors" id="copy-transaction-btn">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="detail-row flex justify-between">
+                    <span class="text-gray-500 dark:text-gray-400">ID de référence</span>
+                    <div class="flex items-center">
+                        <span class="text-gray-900 dark:text-white font-medium mr-2" id="reference-id">C7B2XSZ2</span>
+                        <button onclick="copyReferenceId()" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors" id="copy-reference-btn">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="pt-4">
+                    <span class="text-gray-500 dark:text-gray-400 block mb-2">Notes</span>
+                    <p class="text-gray-900 dark:text-white text-sm" id="transaction-notes">
+                        Paiement des salaires de fin d'année et des avantages.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="px-4 py-4">
+            <div class="max-w-md mx-auto flex space-x-4 fade-in-delay">
+                <button 
+                    onclick="downloadReceipt()"
+                    class="btn-secondary flex-1 py-4 border-2 border-lime-green dark:border-divy-blue text-lime-green dark:text-divy-blue rounded-full font-medium hover:bg-lime-green hover:bg-opacity-10 dark:hover:bg-divy-blue dark:hover:bg-opacity-10 transition-colors"
+                >
+                    Télécharger le reçu
+                </button>
+                <button 
+                    onclick="shareReceipt()"
+                    class="btn-primary flex-1 py-4 bg-lime-green dark:bg-divy-blue text-white rounded-full font-medium hover:bg-opacity-90 transition-colors"
+                >
+                    Partager le reçu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion du thème
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser le thème
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.body.classList.remove('light');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.body.classList.add('light');
+            }
+            
+            // Gestionnaire du bouton de thème
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    document.body.classList.add('light');
+                    document.body.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    document.body.classList.remove('light');
+                    document.body.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+
+            // Récupérer les paramètres de l'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const amount = urlParams.get('amount');
+            const contactName = urlParams.get('contact');
+            const notes = urlParams.get('notes');
+            const timestamp = urlParams.get('timestamp');
+
+            // Mettre à jour l'affichage
+            if (amount) {
+                const formattedAmount = parseInt(amount).toLocaleString('fr-FR');
+                document.getElementById('amount-display').textContent = `${formattedAmount} XOF`;
+                document.getElementById('detail-amount').textContent = `${formattedAmount} XOF`;
+            }
+
+            if (contactName) {
+                document.getElementById('recipient-name').textContent = contactName;
+                document.getElementById('detail-recipient').textContent = contactName;
+                
+                // Générer l'email
+                const email = contactName.toLowerCase().replace(' ', '.') + '@gmail.com';
+                document.getElementById('recipient-email').textContent = email;
+                document.getElementById('detail-email').textContent = email;
+            }
+
+            if (notes) {
+                document.getElementById('transaction-notes').textContent = notes;
+            }
+
+            // Générer la date et heure
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('fr-FR', { 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric' 
+            });
+            const timeStr = now.toLocaleTimeString('fr-FR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            document.getElementById('detail-date').textContent = `${dateStr} • ${timeStr}`;
+
+            // Générer les IDs de transaction
+            const transactionId = generateTransactionId();
+            const referenceId = generateReferenceId();
+            document.getElementById('transaction-id').textContent = transactionId;
+            document.getElementById('reference-id').textContent = referenceId;
+        });
+
+        function generateTransactionId() {
+            const now = new Date();
+            const year = now.getFullYear().toString().slice(2);
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const hour = now.getHours().toString().padStart(2, '0');
+            const minute = now.getMinutes().toString().padStart(2, '0');
+            return `${year}${month}${day}${hour}${minute}`;
+        }
+
+        function generateReferenceId() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 8; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function copyTransactionId() {
+            const transactionId = document.getElementById('transaction-id').textContent;
+            copyToClipboard(transactionId);
+            
+            // Animation de feedback
+            const btn = document.getElementById('copy-transaction-btn');
+            btn.classList.add('copy-feedback');
+            setTimeout(() => btn.classList.remove('copy-feedback'), 300);
+            
+            showToast('ID de transaction copié !');
+        }
+
+        function copyReferenceId() {
+            const referenceId = document.getElementById('reference-id').textContent;
+            copyToClipboard(referenceId);
+            
+            // Animation de feedback
+            const btn = document.getElementById('copy-reference-btn');
+            btn.classList.add('copy-feedback');
+            setTimeout(() => btn.classList.remove('copy-feedback'), 300);
+            
+            showToast('ID de référence copié !');
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text);
+            } else {
+                // Fallback pour les navigateurs plus anciens
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function showToast(message) {
+            // Créer un toast temporaire
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-lime-green dark:bg-divy-blue text-white px-4 py-2 rounded-full text-sm z-50';
+            toast.textContent = message;
+            toast.style.animation = 'fadeIn 0.3s ease-out';
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 2000);
+        }
+
+        function downloadReceipt() {
+            // Simuler le téléchargement du reçu
+            showToast('Téléchargement du reçu en cours...');
+            
+            // Ici vous pourriez implémenter la génération et le téléchargement d'un PDF
+            setTimeout(() => {
+                showToast('Reçu téléchargé avec succès !');
+            }, 2000);
+        }
+
+        function shareReceipt() {
+            // Préparer les données à partager
+            const amount = document.getElementById('amount-display').textContent;
+            const recipient = document.getElementById('recipient-name').textContent;
+            const transactionId = document.getElementById('transaction-id').textContent;
+            
+            const shareText = `Transfert DivyTransfert réussi\n💰 ${amount}\n👤 Destinataire: ${recipient}\n🔗 ID: ${transactionId}`;
+            
+            if (navigator.share) {
+                // API Web Share (mobile)
+                navigator.share({
+                    title: 'Reçu DivyTransfert',
+                    text: shareText,
+                }).catch(() => {
+                    fallbackShare(shareText);
+                });
+            } else {
+                fallbackShare(shareText);
+            }
+        }
+
+        function fallbackShare(text) {
+            // Copier dans le presse-papiers comme fallback
+            copyToClipboard(text);
+            showToast('Détails du reçu copiés dans le presse-papiers !');
+        }
+
+        // Ajouter les animations CSS manquantes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from { 
+                    opacity: 1; 
+                    transform: translate(-50%, 0); 
+                }
+                to { 
+                    opacity: 0; 
+                    transform: translate(-50%, 10px); 
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

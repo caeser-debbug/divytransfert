@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Divy Transfert - Aperçus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'divy-dark': '#124556',
+                        'divy-blue': '#3194db',
+                        'divy-light': '#e3f2fd'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #3194db 0%, #124556 100%);
+        }
+        
+        .card-animate {
+            animation: slideUp 0.6s ease-out forwards;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .chart-crosshair {
+            position: absolute;
+            width: 2px;
+            background: #3194db;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 10;
+        }
+        
+        .chart-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            z-index: 20;
+            transform: translateX(-50%);
+        }
+        
+        .chart-tooltip.dark {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1f2937;
+        }
+        
+        .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .dropdown-menu {
+            transform: translateY(-10px);
+            opacity: 0;
+            transition: all 0.2s ease;
+            pointer-events: none;
+        }
+        
+        .dropdown-menu.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .nav-button {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300 dark:bg-gray-900 bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <div class="gradient-bg text-white px-4 pt-12 pb-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                    <div class="w-14 h-14 mr-3 flex items-center justify-center">
+                        <img src="logo/logo1.png" alt="Divy Transfert" class="w-full h-full object-contain" />
+                    </div>
+                    <h1 class="text-xl font-bold text-white">Aperçus</h1>
+                </div>
+                <button class="p-2 hover:bg-white hover:bg-opacity-10 rounded-full transition-colors">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Contrôles du graphique -->
+        <div class="px-4 py-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center justify-between">
+                <span class="text-gray-700 dark:text-gray-300 font-medium">Afficher le graphique en</span>
+                <div class="relative">
+                    <button 
+                        id="period-dropdown-btn"
+                        class="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                        onclick="toggleDropdown()"
+                    >
+                        <span id="selected-period">7 derniers jours</span>
+                        <svg class="w-4 h-4 ml-2 transform transition-transform" id="dropdown-arrow" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    
+                    <div id="period-dropdown" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                        <div class="py-2">
+                            <button onclick="selectPeriod('today', 'Aujourd\'hui')" class="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Aujourd'hui</button>
+                            <button onclick="selectPeriod('7days', '7 derniers jours')" class="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">7 derniers jours</button>
+                            <button onclick="selectPeriod('30days', '30 derniers jours')" class="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">30 derniers jours</button>
+                            <button onclick="selectPeriod('month', 'Dernier mois')" class="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Dernier mois</button>
+                            <button onclick="selectPeriod('3months', '3 derniers mois')" class="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">3 derniers mois</button>
+                            <button onclick="selectPeriod('year', 'Cette année')" class="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Cette année</button>
+                            <button onclick="selectPeriod('lastyear', 'Année dernière')" class="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Année dernière</button>
+                            <button onclick="selectPeriod('alltime', 'Tout le temps')" class="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Tout le temps</button>
+                            <hr class="my-2 border-gray-200 dark:border-gray-600">
+                            <button onclick="selectPeriod('custom', 'Plage personnalisée...')" class="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Plage personnalisée...</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="flex-1 px-4 py-6 overflow-y-auto">
+            <!-- Graphique principal -->
+            <div class="card-animate bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6">
+                <div class="chart-container">
+                    <div id="chart-crosshair" class="chart-crosshair"></div>
+                    <div id="chart-tooltip" class="chart-tooltip"></div>
+                    <canvas id="mainChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Cartes de résumé -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <!-- Revenus -->
+                <div class="card-animate bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4" style="animation-delay: 0.1s">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Revenus</span>
+                        <span class="text-sm text-green-600 font-medium">+ 5,6%</span>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-800 dark:text-white mb-2">3 564,50 XOF</div>
+                    <div class="h-12">
+                        <canvas id="incomeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Dépenses -->
+                <div class="card-animate bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4" style="animation-delay: 0.2s">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Dépenses</span>
+                        <span class="text-sm text-red-600 font-medium">- 3,2%</span>
+                    </div>
+                    <div class="text-2xl font-bold text-gray-800 dark:text-white mb-2">2 058,45 XOF</div>
+                    <div class="h-12">
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nombre de transactions -->
+            <div class="card-animate bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6" style="animation-delay: 0.3s">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-6">Nombre de Transactions</h3>
+                
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-gray-800 dark:text-white">32</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Revenus</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-gray-800 dark:text-white">24</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Envoyés</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-gray-800 dark:text-white">15</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Demandes</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-gray-800 dark:text-white">8</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Recharges</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-gray-800 dark:text-white">6</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Retraits</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-gray-800 dark:text-white">85</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Total Trans...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation du bas -->
+        <div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2 safe-area-bottom">
+            <div class="flex justify-around items-center">
+                <button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 nav-button" onclick="window.location.href='home.html'">
+                    <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Accueil</span>
+                </button>
+
+                <button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 nav-button" onclick="window.location.href='contacts.html'">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Contacts</span>
+                </button>
+
+                <button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 relative nav-button" onclick="window.location.href='scan.html'">
+                    <div class="w-12 h-12 bg-divy-blue rounded-full flex items-center justify-center -mt-2 shadow-lg transition-transform duration-200">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zM19 13h2v2h-2v-2zM13 13h2v2h-2v-2zM15 15h2v2h-2v-2zM13 17h2v2h-2v-2zM15 19h2v2h-2v-2zM17 17h2v2h-2v-2zM17 13h2v2h-2v-2zM19 15h2v2h-2v-2z"/>
+                        </svg>
+                    </div>
+                </button>
+
+                <button class="flex flex-col items-center p-2 text-divy-blue nav-button">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Aperçus</span>
+                </button>
+
+                <button class="flex flex-col items-center p-2 text-gray-400 dark:text-gray-500 nav-button" onclick="window.location.href='compte.html'">
+                    <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span class="text-xs font-medium">Compte</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Theme toggle button -->
+        <button id="theme-toggle" class="fixed top-4 right-4 p-2 rounded-full bg-white bg-opacity-20 backdrop-blur-sm text-white z-10">
+            <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+            </svg>
+            <svg id="dark-icon" class="w-5 h-5 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        let mainChart, incomeChart, expenseChart;
+        let currentPeriod = '7days';
+
+        // Données pour différentes périodes
+        const chartData = {
+            '7days': {
+                labels: ['17', '18', '19', '20', '21', '22', '23', '24'],
+                income: [350, 450, 380, 420, 470, 520, 480, 550],
+                expense: [380, 420, 360, 400, 440, 480, 460, 520]
+            },
+            'today': {
+                labels: ['00h', '04h', '08h', '12h', '16h', '20h'],
+                income: [20, 35, 80, 120, 90, 45],
+                expense: [15, 40, 75, 110, 85, 50]
+            },
+            '30days': {
+                labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+                income: [1200, 1400, 1600, 1350],
+                expense: [1100, 1250, 1400, 1200]
+            }
+        };
+
+        function initCharts() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#D1D5DB' : '#374151';
+            const gridColor = isDark ? '#374151' : '#E5E7EB';
+
+            // Graphique principal
+            const mainCtx = document.getElementById('mainChart').getContext('2d');
+            const data = chartData[currentPeriod] || chartData['7days'];
+            
+            mainChart = new Chart(mainCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Revenus',
+                        data: data.income,
+                        backgroundColor: '#22C55E',
+                        borderRadius: 8,
+                        maxBarThickness: 40
+                    }, {
+                        label: 'Dépenses', 
+                        data: data.expense,
+                        backgroundColor: '#EF4444',
+                        borderRadius: 8,
+                        maxBarThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toLocaleString('fr-FR') + ' XOF';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor,
+                                callback: function(value) {
+                                    return value + ' XOF';
+                                }
+                            }
+                        }
+                    },
+                    onHover: (event, activeElements, chart) => {
+                        const canvasRect = chart.canvas.getBoundingClientRect();
+                        const x = event.native.clientX - canvasRect.left;
+                        const y = event.native.clientY - canvasRect.top;
+                        
+                        if (activeElements.length > 0) {
+                            const element = activeElements[0];
+                            const dataIndex = element.index;
+                            const datasetIndex = element.datasetIndex;
+                            
+                            // Afficher la ligne verticale
+                            showCrosshair(x, canvasRect.height - 40);
+                            
+                            // Afficher le tooltip
+                            const value = data[datasetIndex === 0 ? 'income' : 'expense'][dataIndex];
+                            const label = datasetIndex === 0 ? 'Revenus' : 'Dépenses';
+                            showTooltip(x, y - 40, label + ': ' + value.toLocaleString('fr-FR') + ' XOF');
+                        } else {
+                            hideCrosshair();
+                            hideTooltip();
+                        }
+                    },
+                    onLeave: () => {
+                        hideCrosshair();
+                        hideTooltip();
+                    }
+                }
+            });
+
+            // Graphique revenus (mini)
+            const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+            incomeChart = new Chart(incomeCtx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.income,
+                        borderColor: '#22C55E',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    },
+                    elements: {
+                        point: { radius: 0 }
+                    }
+                }
+            });
+
+            // Graphique dépenses (mini)
+            const expenseCtx = document.getElementById('expenseChart').getContext('2d');
+            expenseChart = new Chart(expenseCtx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.expense,
+                        borderColor: '#EF4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    },
+                    elements: {
+                        point: { radius: 0 }
+                    }
+                }
+            });
+        }
+
+        function showCrosshair(x, height) {
+            const crosshair = document.getElementById('chart-crosshair');
+            crosshair.style.left = x + 'px';
+            crosshair.style.top = '0px';
+            crosshair.style.height = height + 'px';
+            crosshair.style.opacity = '1';
+        }
+
+        function hideCrosshair() {
+            const crosshair = document.getElementById('chart-crosshair');
+            crosshair.style.opacity = '0';
+        }
+
+        function showTooltip(x, y, text) {
+            const tooltip = document.getElementById('chart-tooltip');
+            const isDark = document.documentElement.classList.contains('dark');
+            
+            tooltip.textContent = text;
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+            tooltip.style.opacity = '1';
+            
+            if (isDark) {
+                tooltip.classList.add('dark');
+            } else {
+                tooltip.classList.remove('dark');
+            }
+        }
+
+        function hideTooltip() {
+            const tooltip = document.getElementById('chart-tooltip');
+            tooltip.style.opacity = '0';
+        }
+
+        function showTooltip(event, value) {
+            // Fonction legacy - peut être supprimée si plus utilisée
+        }
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById('period-dropdown');
+            const arrow = document.getElementById('dropdown-arrow');
+            
+            if (dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+                arrow.style.transform = 'rotate(0deg)';
+            } else {
+                dropdown.classList.add('show');
+                arrow.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function selectPeriod(period, label) {
+            currentPeriod = period;
+            document.getElementById('selected-period').textContent = label;
+            toggleDropdown();
+            updateCharts();
+        }
+
+        function updateCharts() {
+            const data = chartData[currentPeriod] || chartData['7days'];
+            
+            // Mettre à jour le graphique principal
+            mainChart.data.labels = data.labels;
+            mainChart.data.datasets[0].data = data.income;
+            mainChart.data.datasets[1].data = data.expense;
+            mainChart.update();
+            
+            // Mettre à jour les mini graphiques
+            incomeChart.data.labels = data.labels;
+            incomeChart.data.datasets[0].data = data.income;
+            incomeChart.update();
+            
+            expenseChart.data.labels = data.labels;
+            expenseChart.data.datasets[0].data = data.expense;
+            expenseChart.update();
+        }
+
+        // Fermer le dropdown en cliquant ailleurs
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('period-dropdown');
+            const button = document.getElementById('period-dropdown-btn');
+            
+            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.remove('show');
+                document.getElementById('dropdown-arrow').style.transform = 'rotate(0deg)';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion du thème
+            if (localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+                
+                // Recréer les graphiques avec les nouvelles couleurs
+                if (mainChart) {
+                    mainChart.destroy();
+                    incomeChart.destroy();
+                    expenseChart.destroy();
+                    setTimeout(initCharts, 100);
+                }
+            });
+
+            // Initialiser les graphiques
+            setTimeout(initCharts, 100);
+        });
+    </script>
+</body>
+</html>
