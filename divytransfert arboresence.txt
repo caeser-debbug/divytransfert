@@ -1,0 +1,68 @@
+Divytransfert/
+├── 📄 index.html				page d'acceuil du site
+├── 📄 home.html 				Page d'accueil alternative (dashboard user)
+├── 📄 page1.html				Pages génériques
+├── 📄 page2.html  				Pages génériques
+├── 📄 page3.html  				Pages génériques
+├── 📄 login.html 				Page de connexion
+├── 📄 register.html  				Page d'inscription
+├── 📄 register_name.html  			Étape nom d'inscription
+├── 📄 register_card_photo.html 			Étape photo de carte
+├── 📄 register_card_type.html   		Étape type de carte
+├── 📄 register_card_verify.html			Vérification de carte
+├── 📄 register_pays.html   			Sélection pays
+├── 📄 register_pin.html				Configuration PIN
+├── 📄 register_fini.html 			Fin d'inscription
+├── 📄 register_selfie.html 			Photo instruction
+├── 📄 register_selfie_confirmation.html		Confirmation selfie
+├── 📄 register_selfie_photo.html 		Prise de photo selfie
+├── 📄 register_recap.html 			Récapitulatif inscription
+├── 📄 pwd_reset.html  				Réinitialisation mot de passe
+├── 📄 verif_pwd_reset.html  			Vérification reset mot de passe
+├── 📄 transaction-detail.html 			Détails de transaction
+├── 📄 historique_transaction.html  		Historique des transactions
+├── 📄 receipt.html   				Reçu de transaction
+├── 📄 insights.html 				Analyses financières
+├── 📄 send-money.html   			Envoi d'argent
+├── 📄 send_verif.html   			Vérification envoi
+├── 📄 scan.html     				Scanner pour transfert et ajout de contact
+├── 📄 scan_send_money.html  			Scanner envoi argent
+├── 📄 scan-send-success.html 			Succès scan envoi
+├── 📄 add-mobile-money.html   			Ajout mobile money
+├── 📄 mobile-money-options.html  		Options mobile money
+├── 📄 topup-amount.html 			Montant de recharge
+├── 📄 topup-confirmation.html 			Confirmation recharge
+├── 📄 topup-detail.html 			Détails recharge
+├── 📄 topup-success.html			Succès recharge
+├── 📄 top-up-options.html 			Options de recharge
+├── 📄 withdraw-amount.html  			Montant de retrait
+├── 📄 withdraw-card-options.html  		Options carte retrait
+├── 📄 withdraw-confirmation.html  		Confirmation retrait
+├── 📄 withdraw-detail-xof.html  		Détails retrait XOF
+├── 📄 withdraw-mobile-money-options.html   	Options mobile money retrait
+├── 📄 withdraw-options.html  			Options de retrait
+├── 📄 withdraw-success.html  			Succès retrait
+├── 📄 income-detail.html  			Détails des revenus
+├── 📄 add-card.html   				Ajout de carte
+├── 📄 add-contact.html  			Ajout de contact
+├── 📄 card-options.html  			Options de carte
+├── 📄 type_compte.html  			Type de compte
+├── 📄 payment-methods.html 			Méthodes de paiement
+├── 📄 payment-success-xof-complete.html		Succès paiement XOF
+├── 📄 incoming-request-xof.html			Demande entrante XOF
+├── 📄 outgoing-request-xof.html 		Demande sortante XOF
+├── 📄 compte.html   				Profil complet
+├── 📄 contacts.html   				Liste des contacts
+├── 📄 transfer-simulation.html   		Simulation de transfert
+├── 📄 setting_aide.html     			Page d'aide
+├── 📄 setting_apropos.html  			À propos
+├── 📄 setting_langue.html  			Paramètres langue
+├── 📄 setting_notif.html  			Paramètres notifications
+├── 📄 setting_personnel_info.html  		Informations personnelles
+├── 📄 setting_politique.html  			Politique
+├── 📄 setting_securite.html 			Paramètres sécurité
+├── 📄 search-result.html 			Résultats de recherche
+├── 📄 notifications.html  			Page des notifications
+├── 📄 scan-send-summary.html			verification d'envoie apres scan
+└── 📁 admin/
+    └── 📁 dashboard.html                       Page administration
