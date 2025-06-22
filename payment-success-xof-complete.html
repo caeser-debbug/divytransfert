@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Divy Transfert - Paiement réussi</title>
+    <title>Divytransfert - Paiement réussi</title>
     <link rel="icon" href="logo/short.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -388,7 +388,7 @@ Transaction ID: ${document.getElementById('transaction-id').textContent}
         function downloadReceipt() {
             // Créer un contenu de reçu formaté
             const receiptContent = `
-DIVY TRANSFERT - REÇU DE PAIEMENT
+Divytransfert - REÇU DE PAIEMENT
 =====================================
 
 Date: ${document.getElementById('transaction-date').textContent}
@@ -402,7 +402,7 @@ Référence: ${document.getElementById('reference-id').textContent}
 Notes: ${transactionData.notes}
 
 =====================================
-Merci d'utiliser Divy Transfert
+Merci d'utiliser Divytransfert
             `.trim();
 
             // Créer et télécharger le fichier

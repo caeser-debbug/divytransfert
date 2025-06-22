@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Divy Transfert - Compte</title>
+    <title>Divytransfert - Compte</title>
     <link rel="icon" href="logo/short.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -334,7 +334,7 @@
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center">
                     <div class="w-16 h-16 mr-3 flex items-center justify-center">
-                        <img src="logo/logo1.png" alt="Divy Transfert" class="w-full h-full object-contain" />
+                        <img src="logo/logo1.png" alt="Divytransfert" class="w-full h-full object-contain" />
                     </div>
                     <h1 class="text-xl font-bold text-white">Compte</h1>
                 </div>
@@ -499,7 +499,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
-                            <span class="font-medium text-gray-800 dark:text-white">À propos de Divy Transfert</span>
+                            <span class="font-medium text-gray-800 dark:text-white">À propos de Divytransfert</span>
                         </div>
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -550,7 +550,7 @@
                     <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                     </svg>
-                    <span class="text-xs font-medium">Aperçus</span>
+                    <span class="text-xs font-medium">Voir le profil</span>
                 </button>
 
                 <button class="flex flex-col items-center p-2 text-divy-blue nav-button">
@@ -628,14 +628,14 @@
         function shareQRCode() {
             if (navigator.share) {
                 navigator.share({
-                    title: 'Mon QR Code Divy Transfert',
-                    text: 'Scannez ce QR Code pour m\'envoyer de l\'argent via Divy Transfert',
+                    title: 'Mon QR Code Divytransfert',
+                    text: 'Scannez ce QR Code pour m\'envoyer de l\'argent via Divytransfert',
                     url: window.location.href
                 }).catch(console.error);
             } else {
                 // Fallback pour les navigateurs qui ne supportent pas l'API Web Share
                 const textArea = document.createElement('textarea');
-                textArea.value = 'Mon QR Code Divy Transfert - andrew.ainsley@gmail.com';
+                textArea.value = 'Mon QR Code Divytransfert - andrew.ainsley@gmail.com';
                 document.body.appendChild(textArea);
                 textArea.select();
                 document.execCommand('copy');

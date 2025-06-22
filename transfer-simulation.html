@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Divy Transfert - Simulation de Transfert</title>
+    <title>Divytransfert - Simulation de Transfert</title>
     <link rel="icon" href="logo/short.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -148,7 +148,7 @@
                 </h2>
                 
                 <div class="space-y-3">
-                    <!-- Compte Divy Transfert -->
+                    <!-- Compte Divytransfert -->
                     <div class="option-card bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border-2 border-transparent" onclick="selectPaymentSource('divytransfert')">
                         <div class="flex items-center">
                             <div class="w-12 h-12 bg-gradient-to-r from-divy-blue to-divy-dark rounded-xl flex items-center justify-center mr-4">
@@ -157,7 +157,7 @@
                                 </svg>
                             </div>
                             <div class="flex-1">
-                                <h3 class="font-semibold text-gray-800 dark:text-white">Compte Divy Transfert</h3>
+                                <h3 class="font-semibold text-gray-800 dark:text-white">Compte Divytransfert</h3>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">Solde disponible: 485,750 XOF</p>
                             </div>
                             <div class="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full">
@@ -293,7 +293,7 @@
                             </div>
                             
                             <div class="flex justify-between items-center">
-                                <span class="text-gray-600 dark:text-gray-400">Frais Divy Transfert</span>
+                                <span class="text-gray-600 dark:text-gray-400">Frais Divytransfert</span>
                                 <span class="font-semibold text-gray-800 dark:text-white" id="divy-fee">0 XOF</span>
                             </div>
                             
@@ -456,7 +456,7 @@
                             </svg>
                         </div>
                         <div class="flex-1">
-                            <h3 class="font-semibold text-gray-800 dark:text-white">Compte Divy Transfert</h3>
+                            <h3 class="font-semibold text-gray-800 dark:text-white">Compte Divytransfert</h3>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Vers un autre utilisateur Divy</p>
                         </div>
                         <div class="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full">
@@ -509,7 +509,7 @@
                             </svg>
                         </div>
                         <div class="flex-1">
-                            <h3 class="font-semibold text-gray-800 dark:text-white">Mon Compte Divy Transfert</h3>
+                            <h3 class="font-semibold text-gray-800 dark:text-white">Mon Compte Divytransfert</h3>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Recharger mon solde principal</p>
                         </div>
                         <div class="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full">
@@ -638,7 +638,7 @@
             }
         }
         
-        // Si source et destination sont Divy Transfert, pas de frais externes
+        // Si source et destination sont Divytransfert, pas de frais externes
         if (simulationData.paymentSource === 'divytransfert' && 
             simulationData.destination === 'divytransfert') {
             sourceFee = 0;
@@ -667,13 +667,13 @@
         
         // Mise à jour des labels
         const sourceLabels = {
-            'divytransfert': 'Divy Transfert',
+            'divytransfert': 'Divytransfert',
             'mobile': 'Mobile Money',
             'card': 'Carte bancaire'
         };
         
         const destinationLabels = {
-            'divytransfert': 'Divy Transfert',
+            'divytransfert': 'Divytransfert',
             'mobile': 'Mobile Money',
             'card': 'Carte bancaire',
             'bank': 'Banque'
@@ -699,13 +699,13 @@
             case 'envoi':
                 if (simulationData.paymentSource === 'divytransfert' && 
                     simulationData.destination === 'divytransfert') {
-                    info = 'Transfert instantané gratuit entre comptes Divy Transfert';
+                    info = 'Transfert instantané gratuit entre comptes Divytransfert';
                 } else {
                     info = 'Transaction sécurisée avec confirmation par SMS/email';
                 }
                 break;
             case 'recharge':
-                info = 'Rechargement instantané de votre solde Divy Transfert';
+                info = 'Rechargement instantané de votre solde Divytransfert';
                 break;
             case 'retrait':
                 if (simulationData.destination === 'bank') {

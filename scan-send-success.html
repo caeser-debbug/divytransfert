@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Divy Transfert - Transfert réussi</title>
+    <title>Divytransfert - Transfert réussi</title>
     <link rel="icon" href="logo/short.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -15,7 +15,7 @@
                         'divy-dark': '#124556',
                         'divy-blue': '#3194db',
                         'divy-light': '#e3f2fd',
-                        'lime-green': '#3194db'
+                        'lime-green': '#10b981'
                     }
                 }
             }
@@ -66,7 +66,7 @@
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(166, 230, 110, 0.3);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         .dark .btn-primary:hover {
@@ -79,29 +79,19 @@
         
         .btn-secondary:hover {
             transform: translateY(-2px);
-            background-color: rgba(166, 230, 110, 0.1);
-        }
-
-        .dark .btn-secondary:hover {
-            background-color: rgba(49, 148, 219, 0.1);
         }
         
         .detail-row {
-            border-bottom: 1px solid #374151;
             padding: 12px 0;
             transition: border-color 0.3s ease;
         }
-
-        .dark .detail-row {
-            border-bottom-color: #374151;
-        }
-
-        .light .detail-row {
-            border-bottom-color: #e5e7eb;
-        }
         
-        .detail-row:last-child {
-            border-bottom: none;
+        .detail-row:not(:last-child) {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dark .detail-row:not(:last-child) {
+            border-bottom-color: #374151;
         }
         
         .copy-feedback {
@@ -115,30 +105,38 @@
         }
 
         .details-card {
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+            transition: all 0.3s ease;
         }
 
-        .gradient-bg {
-            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        /* Backgrounds fixes */
+        body {
+            background: #f8fafc;
         }
 
-        .dark .gradient-bg {
-            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        body.dark {
+            background: #0f172a;
         }
 
-        .light .gradient-bg {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        @keyframes fadeOut {
+            from { 
+                opacity: 1; 
+                transform: translate(-50%, 0); 
+            }
+            to { 
+                opacity: 0; 
+                transform: translate(-50%, 10px); 
+            }
         }
     </style>
 </head>
-<body class="antialiased bg-gray-900 dark:bg-gray-900 bg-gray-50 text-white dark:text-white text-gray-900 transition-colors duration-300 gradient-bg">
+<body class="antialiased min-h-screen transition-colors duration-300">
     <div class="min-h-screen flex flex-col">
         <!-- Header -->
         <div class="flex items-center justify-between p-4 pt-12">
             <div class="w-10"></div>
             
             <!-- Theme toggle button -->
-            <button id="theme-toggle" class="p-2 rounded-full bg-white bg-opacity-20 dark:bg-gray-800 dark:bg-opacity-50 backdrop-blur-sm text-gray-800 dark:text-gray-200 hover:bg-opacity-30 transition-all">
+            <button id="theme-toggle" class="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md dark:shadow-none border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
                 <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
                 </svg>
@@ -147,8 +145,8 @@
                 </svg>
             </button>
 
-            <button onclick="window.location.href='home.html'" class="p-2 hover:bg-gray-800 dark:hover:bg-gray-800 hover:bg-gray-200 rounded-full transition-colors">
-                <svg class="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button onclick="window.location.href='home.html'" class="p-2 rounded-full bg-white dark:bg-gray-800 shadow-md dark:shadow-none border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
@@ -157,7 +155,7 @@
         <!-- Contenu principal -->
         <div class="flex-1 flex flex-col items-center justify-center px-4 py-8">
             <!-- Icône de succès -->
-            <div class="w-20 h-20 bg-lime-green dark:bg-divy-blue rounded-full flex items-center justify-center mb-8 success-animation">
+            <div class="w-20 h-20 bg-lime-green dark:bg-divy-blue rounded-full flex items-center justify-center mb-8 success-animation shadow-lg">
                 <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                 </svg>
@@ -173,7 +171,7 @@
             </div>
 
             <!-- Détails de la transaction -->
-            <div class="w-full max-w-md details-card bg-white dark:bg-gray-800 rounded-2xl p-6 mb-8 fade-in-delay shadow-lg dark:shadow-none">
+            <div class="w-full max-w-md details-card bg-white dark:bg-gray-800 rounded-2xl p-6 mb-8 fade-in-delay shadow-lg border border-gray-100 dark:border-gray-700">
                 <div class="detail-row flex justify-between">
                     <span class="text-gray-500 dark:text-gray-400">Vous avez envoyé</span>
                     <span class="text-gray-900 dark:text-white font-medium" id="detail-amount">150 000 XOF</span>
@@ -186,7 +184,7 @@
                 
                 <div class="detail-row flex justify-between">
                     <span class="text-gray-500 dark:text-gray-400">Email</span>
-                    <span class="text-gray-900 dark:text-white font-medium" id="detail-email">cameron.williamson@gmail.com</span>
+                    <span class="text-gray-900 dark:text-white font-medium text-sm" id="detail-email">cameron.williamson@gmail.com</span>
                 </div>
                 
                 <div class="detail-row flex justify-between">
@@ -197,8 +195,8 @@
                 <div class="detail-row flex justify-between">
                     <span class="text-gray-500 dark:text-gray-400">ID de transaction</span>
                     <div class="flex items-center">
-                        <span class="text-gray-900 dark:text-white font-medium mr-2" id="transaction-id">241220230946</span>
-                        <button onclick="copyTransactionId()" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors" id="copy-transaction-btn">
+                        <span class="text-gray-900 dark:text-white font-medium font-mono text-sm mr-2" id="transaction-id">241220230946</span>
+                        <button onclick="copyTransactionId()" class="text-gray-500 dark:text-gray-400 hover:text-lime-green dark:hover:text-divy-blue transition-colors p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700" id="copy-transaction-btn">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                             </svg>
@@ -209,8 +207,8 @@
                 <div class="detail-row flex justify-between">
                     <span class="text-gray-500 dark:text-gray-400">ID de référence</span>
                     <div class="flex items-center">
-                        <span class="text-gray-900 dark:text-white font-medium mr-2" id="reference-id">C7B2XSZ2</span>
-                        <button onclick="copyReferenceId()" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors" id="copy-reference-btn">
+                        <span class="text-gray-900 dark:text-white font-medium font-mono text-sm mr-2" id="reference-id">C7B2XSZ2</span>
+                        <button onclick="copyReferenceId()" class="text-gray-500 dark:text-gray-400 hover:text-lime-green dark:hover:text-divy-blue transition-colors p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700" id="copy-reference-btn">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                             </svg>
@@ -219,9 +217,9 @@
                 </div>
 
                 <!-- Notes -->
-                <div class="pt-4">
-                    <span class="text-gray-500 dark:text-gray-400 block mb-2">Notes</span>
-                    <p class="text-gray-900 dark:text-white text-sm" id="transaction-notes">
+                <div class="pt-4 border-t border-gray-100 dark:border-gray-700 mt-4">
+                    <span class="text-gray-500 dark:text-gray-400 block mb-2 font-medium">Notes</span>
+                    <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed" id="transaction-notes">
                         Paiement des salaires de fin d'année et des avantages.
                     </p>
                 </div>
@@ -229,7 +227,7 @@
         </div>
 
         <!-- Boutons d'action -->
-        <div class="px-4 py-4">
+        <div class="px-4 py-6 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
             <div class="max-w-md mx-auto flex space-x-4 fade-in-delay">
                 <button 
                     onclick="downloadReceipt()"
@@ -239,7 +237,7 @@
                 </button>
                 <button 
                     onclick="shareReceipt()"
-                    class="btn-primary flex-1 py-4 bg-lime-green dark:bg-divy-blue text-white rounded-full font-medium hover:bg-opacity-90 transition-colors"
+                    class="btn-primary flex-1 py-4 bg-lime-green dark:bg-divy-blue text-white rounded-full font-medium hover:bg-opacity-90 transition-colors shadow-md"
                 >
                     Partager le reçu
                 </button>
@@ -251,25 +249,25 @@
         // Gestion du thème
         document.addEventListener('DOMContentLoaded', function() {
             // Initialiser le thème
-            if (localStorage.getItem('theme') === 'dark' || 
-                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            const isDarkMode = localStorage.getItem('theme') === 'dark' || 
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            
+            if (isDarkMode) {
                 document.documentElement.classList.add('dark');
-                document.body.classList.remove('light');
+                document.body.classList.add('dark');
             } else {
                 document.documentElement.classList.remove('dark');
-                document.body.classList.add('light');
+                document.body.classList.remove('dark');
             }
             
             // Gestionnaire du bouton de thème
             document.getElementById('theme-toggle').addEventListener('click', function() {
                 if (document.documentElement.classList.contains('dark')) {
                     document.documentElement.classList.remove('dark');
-                    document.body.classList.add('light');
                     document.body.classList.remove('dark');
                     localStorage.setItem('theme', 'light');
                 } else {
                     document.documentElement.classList.add('dark');
-                    document.body.classList.remove('light');
                     document.body.classList.add('dark');
                     localStorage.setItem('theme', 'dark');
                 }
@@ -383,7 +381,7 @@
         function showToast(message) {
             // Créer un toast temporaire
             const toast = document.createElement('div');
-            toast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-lime-green dark:bg-divy-blue text-white px-4 py-2 rounded-full text-sm z-50';
+            toast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-lime-green dark:bg-divy-blue text-white px-6 py-3 rounded-full text-sm z-50 shadow-lg';
             toast.textContent = message;
             toast.style.animation = 'fadeIn 0.3s ease-out';
             
@@ -435,22 +433,6 @@
             copyToClipboard(text);
             showToast('Détails du reçu copiés dans le presse-papiers !');
         }
-
-        // Ajouter les animations CSS manquantes
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeOut {
-                from { 
-                    opacity: 1; 
-                    transform: translate(-50%, 0); 
-                }
-                to { 
-                    opacity: 0; 
-                    transform: translate(-50%, 10px); 
-                }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>

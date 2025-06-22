@@ -42,7 +42,7 @@ Divytransfert/
 ├── 📄 withdraw-mobile-money-options.html   	Options mobile money retrait
 ├── 📄 withdraw-options.html  			Options de retrait
 ├── 📄 withdraw-success.html  			Succès retrait
-├── 📄 income-detail.html  			Détails des revenus
+├── 📄 income-detail.html  			Détails des Réception et Envoi
 ├── 📄 add-card.html   				Ajout de carte
 ├── 📄 add-contact.html  			Ajout de contact
 ├── 📄 card-options.html  			Options de carte

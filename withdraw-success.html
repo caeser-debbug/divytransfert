@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Divy Transfert - Retrait réussi</title>
+    <title>Divytransfert - Retrait réussi</title>
     <link rel="icon" href="logo/short.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -227,7 +227,7 @@
                 <!-- Note finale -->
                 <div class="bg-blue-50 dark:bg-gray-700 rounded-xl p-4 mb-6">
                     <p class="text-sm text-gray-600 dark:text-gray-300 text-center">
-                        Retrait effectué avec succès via Divy Transfert. Conservez ce reçu pour vos dossiers.
+                        Retrait effectué avec succès via Divytransfert. Conservez ce reçu pour vos dossiers.
                     </p>
                 </div>
 
@@ -373,7 +373,7 @@
         function shareReceipt() {
             if (navigator.share) {
                 const shareData = {
-                    title: 'Reçu de retrait Divy Transfert',
+                    title: 'Reçu de retrait Divytransfert',
                     text: `Retrait de ${currentAmount.toLocaleString('fr-FR')} XOF effectué avec succès.\nMontant net reçu: ${netAmount.toLocaleString('fr-FR')} XOF\nTransaction ID: ${transactionId}`,
                     url: window.location.href
                 };
@@ -382,7 +382,7 @@
             } else {
                 // Fallback pour les navigateurs qui ne supportent pas l'API Web Share
                 const receiptText = `
-Reçu de retrait Divy Transfert
+Reçu de retrait Divytransfert
 Montant retiré: ${currentAmount.toLocaleString('fr-FR')} XOF
 Frais: ${fees.toLocaleString('fr-FR')} XOF
 Montant net reçu: ${netAmount.toLocaleString('fr-FR')} XOF
@@ -403,7 +403,7 @@ Date: ${new Date().toLocaleDateString('fr-FR')}
         function downloadReceipt() {
             // Créer un contenu de reçu formaté
             const receiptContent = `
-DIVY TRANSFERT - REÇU DE RETRAIT
+Divytransfert - REÇU DE RETRAIT
 =====================================
 
 Date: ${new Date().toLocaleDateString('fr-FR')} ${new Date().toLocaleTimeString('fr-FR')}
@@ -422,7 +422,7 @@ ${notes ? `Notes: ${notes}` : ''}
 Statut: ${document.getElementById('status-info').textContent}
 
 =====================================
-Merci d'utiliser Divy Transfert
+Merci d'utiliser Divytransfert
             `.trim();
 
             // Créer et télécharger le fichier

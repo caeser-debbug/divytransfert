@@ -52,7 +52,7 @@
             box-shadow: 0 0 0 3px rgba(49, 148, 219, 0.1);
         }
         
-        /* Animation du bouton Save */
+        /* Animation du bouton Enregistrer */
         .save-btn {
             background: linear-gradient(135deg, #3194db 0%, #124556 100%);
             transition: all 0.3s ease;
@@ -82,7 +82,7 @@
 </head>
 <body class="antialiased transition-colors duration-300 bg-gray-900 dark:bg-gray-900 text-white min-h-screen">
     <div class="min-h-screen">
-        <!-- Header -->
+        <!-- En-tête -->
         <div class="flex items-center justify-between p-4 pt-12">
             <!-- Bouton fermer -->
             <button onclick="window.location.href='payment-methods.html'" class="p-2 hover:bg-gray-800 dark:hover:bg-gray-700 rounded-full transition-colors">
@@ -92,7 +92,7 @@
             </button>
             
             <!-- Titre -->
-            <h1 class="text-lg font-semibold text-white dark:text-gray-100">Add New Payment</h1>
+            <h1 class="text-lg font-semibold text-white dark:text-gray-100">Ajouter un Moyen de Paiement</h1>
             
             <!-- Bouton scan -->
             <button class="p-2 hover:bg-gray-800 dark:hover:bg-gray-700 rounded-full transition-colors">
@@ -113,7 +113,7 @@
                 <div class="relative z-10">
                     <!-- En-tête avec logos -->
                     <div class="flex justify-between items-start mb-8">
-                        <div class="text-white font-bold text-lg">Payment Card</div>
+                        <div class="text-white font-bold text-lg">Carte de Paiement</div>
                         <div class="flex space-x-2" id="card-logos">
                             <!-- Les logos des cartes seront ajoutés ici dynamiquement -->
                             <div class="w-8 h-6 bg-red-500 rounded flex items-center justify-center">
@@ -144,11 +144,11 @@
                     <!-- Informations du titulaire et date d'expiration -->
                     <div class="flex justify-between items-end">
                         <div>
-                            <div class="text-xs text-white text-opacity-70 mb-1">Card Holder Name</div>
-                            <div class="font-semibold" id="card-holder-display">Full Name</div>
+                            <div class="text-xs text-white text-opacity-70 mb-1">Nom du Titulaire</div>
+                            <div class="font-semibold" id="card-holder-display">Nom Complet</div>
                         </div>
                         <div>
-                            <div class="text-xs text-white text-opacity-70 mb-1">Expiry Date</div>
+                            <div class="text-xs text-white text-opacity-70 mb-1">Date d'Expiration</div>
                             <div class="font-semibold" id="expiry-display">00/00</div>
                         </div>
                     </div>
@@ -160,11 +160,11 @@
         <div class="px-4 space-y-6">
             <!-- Nom du titulaire -->
             <div>
-                <label class="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-2">Account Holder Name</label>
+                <label class="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-2">Nom du Titulaire du Compte</label>
                 <input 
                     type="text" 
                     id="holder-name"
-                    placeholder="Andrew Ainsley"
+                    placeholder="Pierre Dupont"
                     class="input-field w-full bg-gray-800 dark:bg-gray-700 border border-gray-700 dark:border-gray-600 rounded-xl px-4 py-3 text-white dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
                     oninput="updateCardPreview()"
                 >
@@ -172,7 +172,7 @@
 
             <!-- Numéro de carte -->
             <div>
-                <label class="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-2">Card Number</label>
+                <label class="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-2">Numéro de Carte</label>
                 <input 
                     type="text" 
                     id="card-number"
@@ -187,7 +187,7 @@
             <div class="grid grid-cols-2 gap-4">
                 <!-- Date d'expiration -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-2">Expiry Date</label>
+                    <label class="block text-sm font-medium text-gray-300 dark:text-gray-400 mb-2">Date d'Expiration</label>
                     <div class="relative">
                         <input 
                             type="text" 
@@ -221,7 +221,7 @@
             </div>
         </div>
 
-        <!-- Bouton Save -->
+        <!-- Bouton Enregistrer -->
         <div class="px-4 py-8">
             <button 
                 id="save-btn"
@@ -229,7 +229,7 @@
                 class="save-btn w-full py-4 text-white rounded-2xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled
             >
-                Save
+                Enregistrer
             </button>
         </div>
 
@@ -275,7 +275,7 @@
                 updateBodyClasses();
             });
 
-            // Mettre à jour la couleur de la carte selon le provider
+            // Mettre à jour la couleur de la carte selon le fournisseur
             const provider = getCardProvider();
             updateCardColor(provider);
 
@@ -298,7 +298,7 @@
             }
         }
 
-        // Récupérer le provider depuis l'URL
+        // Récupérer le fournisseur depuis l'URL
         function getCardProvider() {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get('provider') || 'visa';
@@ -338,7 +338,7 @@
             cardData.cardNumber = value.replace(/\s/g, '');
         }
 
-        // Fonction pour formater la date d'expiration (MM/YY)
+        // Fonction pour formater la date d'expiration (MM/AA)
         function formatExpiryDate(input) {
             let value = input.value.replace(/\D/g, '');
             
@@ -358,7 +358,7 @@
 
         // Fonction pour mettre à jour l'aperçu de la carte
         function updateCardPreview() {
-            const holderName = document.getElementById('holder-name').value || 'Full Name';
+            const holderName = document.getElementById('holder-name').value || 'Nom Complet';
             const cardNumber = document.getElementById('card-number').value || '•••• •••• •••• ••••';
             const expiryDate = document.getElementById('expiry-date').value || '00/00';
 
@@ -433,7 +433,7 @@
 
             // Animation de succès
             const saveBtn = document.getElementById('save-btn');
-            saveBtn.textContent = 'Saved!';
+            saveBtn.textContent = 'Enregistré !';
             saveBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
 
             // Rediriger vers la page des moyens de paiement après 1.5 secondes

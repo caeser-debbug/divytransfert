@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Divy Transfert - Réinitialisation de mot de passe</title>
+    <title>Divytransfert - Réinitialisation de mot de passe</title>
     <link rel="icon" href="logo/short.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -50,7 +50,7 @@
     <div class="min-h-screen flex flex-col justify-between relative overflow-hidden">
         <!-- Contenu principal (zone du haut) -->
         <div class="w-full p-4 flex flex-col items-center">
-            <!-- Header avec bouton retour -->
+            <!-- En-tête avec bouton retour -->
             <div class="w-full max-w-md flex items-center mb-8 mt-4">
                 <a href="index.html" class="text-gray-800 dark:text-white p-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -62,37 +62,37 @@
             <!-- Contenu de réinitialisation -->
             <div class="w-full max-w-md px-4">
                 <h1 class="text-3xl font-bold text-gray-800 dark:text-white flex items-center">
-                    Reset your password <span class="ml-2">🔑</span>
+                    Réinitialisez votre mot de passe <span class="ml-2">🔑</span>
                 </h1>
                 <p class="text-gray-600 dark:text-gray-300 mt-2 mb-8">
-                    Please enter your email and we will send an OTP code in the next step to reset your password.
+                    Veuillez saisir votre e-mail et nous vous enverrons un code OTP à l'étape suivante pour réinitialiser votre mot de passe.
                 </p>
 
                 <form id="reset-form">
-                    <!-- Email input -->
+                    <!-- Champ e-mail -->
                     <div class="mb-6">
-                        <label for="email" class="block text-gray-800 dark:text-white font-medium mb-2">Email</label>
+                        <label for="email" class="block text-gray-800 dark:text-white font-medium mb-2">E-mail</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                 </svg>
                             </div>
-                            <input type="email" id="email" value="andrew.ainsley@gmail.com" class="w-full pl-12 pr-4 py-4 bg-gray-100 dark:bg-gray-800 border-0 rounded-lg text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-divy-blue focus:outline-none transition-all duration-200">
+                            <input type="email" id="email" value="pierre.dupont@gmail.com" class="w-full pl-12 pr-4 py-4 bg-gray-100 dark:bg-gray-800 border-0 rounded-lg text-gray-800 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-divy-blue focus:outline-none transition-all duration-200">
                         </div>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Bouton Continue (zone du bas) -->
+        <!-- Bouton Continuer (zone du bas) -->
         <div class="w-full p-4 flex justify-center pb-8">
             <button id="continue-btn" class="w-full max-w-md py-4 rounded-full font-semibold transition-colors duration-200 bg-green-400 text-white">
-                Continue
+                Continuer
             </button>
         </div>
 
-        <!-- Theme toggle button (fixed at top right) -->
+        <!-- Bouton de basculement du thème (fixé en haut à droite) -->
         <button id="theme-toggle" class="fixed top-4 right-4 p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
             <svg id="light-icon" class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
@@ -105,7 +105,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Check for saved theme preference or use preferred color scheme
+            // Vérifier la préférence de thème sauvegardée ou utiliser le schéma de couleurs préféré
             if (localStorage.getItem('theme') === 'dark' || 
                 (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
@@ -113,7 +113,7 @@
                 document.documentElement.classList.remove('dark');
             }
             
-            // Theme toggle function
+            // Fonction de basculement du thème
             document.getElementById('theme-toggle').addEventListener('click', function() {
                 if (document.documentElement.classList.contains('dark')) {
                     document.documentElement.classList.remove('dark');
@@ -124,12 +124,12 @@
                 }
             });
             
-            // Continue button event
+            // Événement du bouton Continuer
             document.getElementById('continue-btn').addEventListener('click', function() {
                 // Simuler un envoi de code OTP
-                alert('Un code OTP a été envoyé à votre adresse email.');
+                alert('Un code OTP a été envoyé à votre adresse e-mail.');
                 // En production, redirigez vers une page pour entrer le code OTP
-                // window.location.href = '/otp-verification.html';
+                // window.location.href = '/verification-otp.html';
             });
         });
     </script>
