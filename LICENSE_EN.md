@@ -5,7 +5,7 @@ Effective Date: July 21, 2025
 Project: Divytransfert  
 Copyright Holder: Divytransfert – 100% Gabonese legal entity  
 Legal Representative: Mr. Chrysus Marthély Angoghe Ndong (ATC, FOOL)  
-Contact: divytransfert.legal@gmail.com  
+Contact: codingtime31@gmail.com
 
 Article 1 – Purpose  
 This license defines the conditions of use, possession, reproduction, and distribution of the Divytransfert application's source code, while ensuring exclusive ownership by the holder. Divytransfert is a 100% Gabonese application.
