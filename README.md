@@ -10,4 +10,4 @@ Son usage, reproduction, modification ou diffusion est interdit sans accord écr
 📄 Voir [LICENSE](./LICENSE) pour les termes complets.  
 📄 Read the [English version](./LICENSE_EN.md).
 
-**Contact légal :** [divytransfert.legal@gmail.com](mailto:divytransfert.legal@gmail.com)
+**Contact légal :** [codingtime31@gmail.com](mailto:codingtime31@gmail.com)
